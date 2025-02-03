@@ -64,13 +64,7 @@ export const NODE_CONVERTER: NodeConverterRegistration[] = [
     converter: {
       init: function (node: SyntaxNode, process: CodeGeneratorProcess<{}>) {
         const value = node.properties["value"];
-        if (isNaN(parseFloat(value))) {
-          // The value is not a number, put in in quotes
-          process.addConvertedFragment(`'${value}'`, node);
-        } else {
-          // The value is a number, it does not need quotes
-          process.addConvertedFragment(value, node);
-        }
+                  process.addConvertedFragment(value, node);
       },
     },
   },
