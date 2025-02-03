@@ -57,7 +57,7 @@ COPY --from=blattwerkzeug-client /blattwerkzeug/client/src/vendor ./client/src/v
 COPY schema/ ./schema
 
 # Create the data folder structure for saving data.
-RUN mkdir -p data/dev/projects
+RUN mkdir -p data/{dev,prod}/projects
 
 # Copy the seed folder, allowing to populate the database with the necessary seed data.
 COPY seed/ ./seed
@@ -68,7 +68,7 @@ EXPOSE 9292
 # Define the Environment variables:
 
 # Entrypoint script for seeding the database and starting the rails server.
-COPY docker/server-development-entrypoint.sh /entrypoint.sh
+COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
