@@ -73,4 +73,4 @@ RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Start the rails server
-#CMD ["rails", "server", "-b", "0.0.0.0", "-p", "9292"]
+CMD ["rails", "server",  "-p", "9292"]

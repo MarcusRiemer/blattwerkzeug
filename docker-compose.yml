@@ -22,6 +22,7 @@ services:
       - db
     environment:
       - DATABASE_HOST=db
+      - RAILS_ENV=production
     volumes:
       - data-files-volume:/blattwerkzeug/rails_app/data
     tmpfs:
