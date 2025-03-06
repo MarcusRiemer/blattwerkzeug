@@ -82,7 +82,8 @@ export const specProvideGrammarResponse = async (
   const op = await specGqlWaitQuery(
     (op) =>
       op.operationName === getOperationName(FullGrammarDocument) &&
-      op.variables.id === response.id
+      op.variables.id === response.id,
+    `Grammar: ${response.id} `
   );
   op.flush({
     data: { grammar: response },

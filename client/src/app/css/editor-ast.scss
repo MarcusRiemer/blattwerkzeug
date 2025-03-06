@@ -205,10 +205,23 @@ draggable-block-list, sidebar-item-host {
         cursor: default;
         font-size: 1.2rem;
         border: 2px solid black;
-        white-space: nowrap;
         padding-left: 1em;
         padding-right: 1em;
         margin-bottom: 10px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .block span{
+        display: inline-block;
+        transform: translateX(0);
+        transition: 1s
+    }
+
+    .block:hover span{
+        background-color: aqua;
+        transform: translateX(- 15%)
     }
 
     .rounded {
@@ -221,4 +234,8 @@ draggable-block-list, sidebar-item-host {
             display: inline;
         }
     }
+}
+
+.holeIsSelected {
+    box-shadow: 0px 0px 15px 3px yellow
 }
