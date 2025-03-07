@@ -10,20 +10,15 @@ export interface EnvironmentDescription {
   piwik: {
     host: string;
     id: number;
+    active: boolean;
   };
   loginEnabled: boolean;
   // Tracking bugs in the live environment with Sentry
   sentry: {
     dsn: string;
-  } & (
-    | {
-        active: true;
-        showDialogue: boolean;
-      }
-    | {
-        active: false;
-      }
-  );
+    active: boolean;
+    showDialogue: boolean;
+  };
   // Build information
   version: {
     hash: string;

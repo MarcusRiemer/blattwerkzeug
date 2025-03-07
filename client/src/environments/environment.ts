@@ -14,10 +14,12 @@ export const environment: EnvironmentDescription = {
   piwik: {
     host: "//piwik.blattwerkzeug.de",
     id: 2,
+    active: false,
   },
   sentry: {
     dsn: "//e64499f04f2c44bb8167cfb43a1928b3@sentry.blattwerkzeug.de/2",
     active: false,
+    showDialogue: false,
   },
   version: {
     hash: VERSION.GIT_REVISION,
