@@ -30,132 +30,140 @@
   </li>
 </ul>
 
-<h2 i18n="privacy matomo headline@@privacyMatomoHeadline">
-  Benutzeranalyse mit Matomo
-</h2>
-<p i18n="privacy matomo text@@privacyMatomoText">
-  Dieses Projekt verwendet die
-  <a href="https://matomo.org/">Open Source-Software Matomo (ehemals Piwik)</a>
-  um Besucherzugriffe statistisch auswerten zu können. Die dabei erhobenen Daten
-  werden ausschließlich im Rahmen der Weiterentwicklung und der Forschung
-  eingesetzt. Zum Beispiel um Fragestellungen wie die folgenden zu klären:
-</p>
-<ul>
-  <li
-    i18n="privacy matomo user details tracked@@privacyMatomoUserDetailsTracked"
-  >
-    Wie viele Besucher nutzen das Angebot zu welchen Zeiten und an welchen
-    Orten?
-  </li>
-  <li
-    i18n="privacy matomo technical details tracked@@privacyMatomoTechnicalDetailsTracked"
-  >
-    Welche technischen Voraussetzungen (Browser, Bildschirmauflösung, ...) haben
-    die von den Benutzern verwendeten Geräte?
-  </li>
-  <li
-    i18n="privacy matomo editor details tracked@@privacyMatomoEditorDetailsTracked"
-  >
-    Die Editoren für welche Programmiersprachen werden am häufigsten verwendet?
-  </li>
-</ul>
+<ng-container *ngIf="hasPiwik">
+  <h2 i18n="privacy matomo headline@@privacyMatomoHeadline">
+    Benutzeranalyse mit Matomo
+  </h2>
+  <p i18n="privacy matomo text@@privacyMatomoText">
+    Dieses Projekt verwendet die
+    <a href="https://matomo.org/">
+      Open Source-Software Matomo (ehemals Piwik)
+    </a>
+    um Besucherzugriffe statistisch auswerten zu können. Die dabei erhobenen
+    Daten werden ausschließlich im Rahmen der Weiterentwicklung und der
+    Forschung eingesetzt. Zum Beispiel um Fragestellungen wie die folgenden zu
+    klären:
+  </p>
+  <ul>
+    <li
+      i18n="privacy matomo user details tracked@@privacyMatomoUserDetailsTracked"
+    >
+      Wie viele Besucher nutzen das Angebot zu welchen Zeiten und an welchen
+      Orten?
+    </li>
+    <li
+      i18n="privacy matomo technical details tracked@@privacyMatomoTechnicalDetailsTracked"
+    >
+      Welche technischen Voraussetzungen (Browser, Bildschirmauflösung, ...)
+      haben die von den Benutzern verwendeten Geräte?
+    </li>
+    <li
+      i18n="privacy matomo editor details tracked@@privacyMatomoEditorDetailsTracked"
+    >
+      Die Editoren für welche Programmiersprachen werden am häufigsten
+      verwendet?
+    </li>
+  </ul>
 
-<h3
-  i18n="privacy matomo tracked data headline@@privacyMatomoTrackedDataHeadline"
->
-  Erfasste Daten
-</h3>
-<p i18n="privacy matomo tracked data text@@privacyMatomoTrackedDataText">
-  Piwik verwendet so genannte
-  <a href="https://de.wikipedia.org/wiki/Cookie">Cookies</a>
-  die eine Analyse der Benutzung der Website durch Sie ermöglichen. Die
-  IP-Adresse wird sofort nach der Verarbeitung und vor deren Speicherung
-  anonymisiert. Wir merken uns, zusammen mit dieser anonymisierten IP und mit
-  einem Zeitstempel, welche Seiten du benutzt oder wie du mit dem Block-Editor
-  interagierst.
-</p>
-
-<h3 i18n="privacy dissent headline@@privacyMatomoDissentHeadline">
-  Widerspruch
-</h3>
-<p i18n="privacy dissent text@@privacyMatomoDissentText">
-  Du kannst das Anlegen der Cookies auf dieser Seite mit dem unten stehenden
-  Dialog auf dem aktuell genutzten Rechner unterbinden.
-</p>
-
-<iframe
-  style="border: 1px solid black; height: 180px; width: 100%"
-  src="https://piwik.blattwerkzeug.de/index.php?module=CoreAdminHome&action=optOut&language=de"
-  i18n-src="privacy matomo opt out url@@privacyMatomoOptOutUrl"
-></iframe>
-
-<h2 i18n="privacy bug tracking headline@@privacyBugTrackingHeadline">
-  Fehleranalyse mit Sentry
-</h2>
-<p i18n="privacy bug tracking description@@privacyBugTrackingDescription">
-  Wenn ein Fehler auftritt ist das ärgerlich! Für dich als Benutzer, weil unser
-  Programm nicht so funktioniert, wie es sollte. Und für uns als Entwickler,
-  weil wir im Normalfall nichts von Fehlern erfahren. Und dann ist es für beide
-  Seiten eine potenziell ziemlich mühselige Angelegenheit den Fehler
-  einzugrenzen und schließlich zu beheben.
-</p>
-<p i18n="privacy sentry description@@privacySentryDescription">
-  Deswegen gibt es auf dieser Seite einen automatischen Fehlerreporter namens
-  <a href="https://sentry.io/">Sentry</a>
-  . Das ist eine Open Source-Software, die wir auf unseren eigenen Servern
-  betreiben. Immer wenn es bei dir zu einem unerwarteten Fehler kommt färbt sich
-  der Seitenhintergrund rot. Und zusätzlich bekommen wir noch einen
-  ausführlichen Fehlerreport.
-</p>
-
-<h3
-  i18n="privacy sentry tracked data headline@@privacySentryTrackedDataHeadline"
->
-  Erfasste Daten
-</h3>
-<p i18n="privacy sentry tracked data text@@privacySentryTrackedDataText">
-  Sentry schreibt die folgenden Daten automatisch mit und schickt Sie
-  <em>im Fehlerfall</em>
-  an unseren Server:
-</p>
-<ul>
-  <li i18n="privacy sentry tracked logs@@privacySentryTrackedLogs">
-    Logeinträge, die von BlattWerkzeug selbst erzeugt werden.
-  </li>
-  <li i18n="privacy sentry tracked requests@@privacySentryTrackedRequests">
-    Anfragen an den BlattWerkzeug.de-Server, zum Beispiel wenn Projekte geladen
-    oder gespeichert werden.
-  </li>
-  <li
-    i18n="privacy sentry tracked clicked elements@@privacySentryTrackedClickedElements"
+  <h3
+    i18n="privacy matomo tracked data headline@@privacyMatomoTrackedDataHeadline"
   >
-    Die technischen Namen der Elemente, auf die du im Browser klickst.
-  </li>
-  <li i18n="privacy sentry tracked pages@@privacySentryTrackedPages">
-    Die Namen der Unterseiten, zwischen denen du navigierst.
-  </li>
-</ul>
-<p>
-  <ng-container i18n="privacy sentry too abstract@@privacySentryTooAbstract">
-    Das ist dir zu abstrakt?
-  </ng-container>
-  <a
-    href="/vendor/privacy/screenshot-sentry-breadcrumbs.png"
-    i18n="privacy sentry image link text@@privacySentryImageLinkText"
+    Erfasste Daten
+  </h3>
+  <p i18n="privacy matomo tracked data text@@privacyMatomoTrackedDataText">
+    Piwik verwendet so genannte
+    <a href="https://de.wikipedia.org/wiki/Cookie">Cookies</a>
+    die eine Analyse der Benutzung der Website durch Sie ermöglichen. Die
+    IP-Adresse wird sofort nach der Verarbeitung und vor deren Speicherung
+    anonymisiert. Wir merken uns, zusammen mit dieser anonymisierten IP und mit
+    einem Zeitstempel, welche Seiten du benutzt oder wie du mit dem Block-Editor
+    interagierst.
+  </p>
+
+  <h3 i18n="privacy dissent headline@@privacyMatomoDissentHeadline">
+    Widerspruch
+  </h3>
+  <p i18n="privacy dissent text@@privacyMatomoDissentText">
+    Du kannst das Anlegen der Cookies auf dieser Seite mit dem unten stehenden
+    Dialog auf dem aktuell genutzten Rechner unterbinden.
+  </p>
+
+  <iframe
+    style="border: 1px solid black; height: 180px; width: 100%"
+    src="https://piwik.blattwerkzeug.de/index.php?module=CoreAdminHome&action=optOut&language=de"
+    i18n-src="privacy matomo opt out url@@privacyMatomoOptOutUrl"
+  ></iframe>
+</ng-container>
+
+<ng-container *ngIf="hasSentry">
+  <h2 i18n="privacy bug tracking headline@@privacyBugTrackingHeadline">
+    Fehleranalyse mit Sentry
+  </h2>
+  <p i18n="privacy bug tracking description@@privacyBugTrackingDescription">
+    Wenn ein Fehler auftritt ist das ärgerlich! Für dich als Benutzer, weil
+    unser Programm nicht so funktioniert, wie es sollte. Und für uns als
+    Entwickler, weil wir im Normalfall nichts von Fehlern erfahren. Und dann ist
+    es für beide Seiten eine potenziell ziemlich mühselige Angelegenheit den
+    Fehler einzugrenzen und schließlich zu beheben.
+  </p>
+  <p i18n="privacy sentry description@@privacySentryDescription">
+    Deswegen gibt es auf dieser Seite einen automatischen Fehlerreporter namens
+    <a href="https://sentry.io/">Sentry</a>
+    . Das ist eine Open Source-Software, die wir auf unseren eigenen Servern
+    betreiben. Immer wenn es bei dir zu einem unerwarteten Fehler kommt färbt
+    sich der Seitenhintergrund rot. Und zusätzlich bekommen wir noch einen
+    ausführlichen Fehlerreport.
+  </p>
+
+  <h3
+    i18n="privacy sentry tracked data headline@@privacySentryTrackedDataHeadline"
   >
-    Dann haben wir ein Beispielbild für dich vorbereitet
-  </a>
-  .
-  <ng-container
-    i18n="privacy sentry sentry image description@@privacySentryImageDescription"
-  >
-    Hier kannst du für einen Beispielfehler sehen, welche Art von Daten an uns
-    übermittelt wird.
-  </ng-container>
-</p>
-<p i18n="privacy sentry conclusion@@privacySentryConclusion">
-  Mit diesen Informationen können wir, ohne dich nochmal zu fragen, recht gut
-  nachvollziehen wo der Fehler aufgetreten ist und was du dabei gemacht hast.
-  Und im besten Fall können wir den Fehler damit auch beheben, ohne dass du
-  dafür irgendetwas tun musst.
-</p>
+    Erfasste Daten
+  </h3>
+  <p i18n="privacy sentry tracked data text@@privacySentryTrackedDataText">
+    Sentry schreibt die folgenden Daten automatisch mit und schickt Sie
+    <em>im Fehlerfall</em>
+    an unseren Server:
+  </p>
+  <ul>
+    <li i18n="privacy sentry tracked logs@@privacySentryTrackedLogs">
+      Logeinträge, die von BlattWerkzeug selbst erzeugt werden.
+    </li>
+    <li i18n="privacy sentry tracked requests@@privacySentryTrackedRequests">
+      Anfragen an den BlattWerkzeug.de-Server, zum Beispiel wenn Projekte
+      geladen oder gespeichert werden.
+    </li>
+    <li
+      i18n="privacy sentry tracked clicked elements@@privacySentryTrackedClickedElements"
+    >
+      Die technischen Namen der Elemente, auf die du im Browser klickst.
+    </li>
+    <li i18n="privacy sentry tracked pages@@privacySentryTrackedPages">
+      Die Namen der Unterseiten, zwischen denen du navigierst.
+    </li>
+  </ul>
+  <p>
+    <ng-container i18n="privacy sentry too abstract@@privacySentryTooAbstract">
+      Das ist dir zu abstrakt?
+    </ng-container>
+    <a
+      href="/vendor/privacy/screenshot-sentry-breadcrumbs.png"
+      i18n="privacy sentry image link text@@privacySentryImageLinkText"
+    >
+      Dann haben wir ein Beispielbild für dich vorbereitet
+    </a>
+    .
+    <ng-container
+      i18n="privacy sentry sentry image description@@privacySentryImageDescription"
+    >
+      Hier kannst du für einen Beispielfehler sehen, welche Art von Daten an uns
+      übermittelt wird.
+    </ng-container>
+  </p>
+  <p i18n="privacy sentry conclusion@@privacySentryConclusion">
+    Mit diesen Informationen können wir, ohne dich nochmal zu fragen, recht gut
+    nachvollziehen wo der Fehler aufgetreten ist und was du dabei gemacht hast.
+    Und im besten Fall können wir den Fehler damit auch beheben, ohne dass du
+    dafür irgendetwas tun musst.
+  </p>
+</ng-container>

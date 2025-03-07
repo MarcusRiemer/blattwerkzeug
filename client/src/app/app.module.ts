@@ -161,7 +161,7 @@ export class AppModule {
   private setupTracking(platformId: string) {
     // Setting up Piwik if there is a configuration and we are running in the browser
     const piwikConf = environment.piwik;
-    if (piwikConf && isPlatformBrowser(platformId)) {
+    if (piwikConf?.active && isPlatformBrowser(platformId)) {
       // Basic tracking settings
       _paq.push(["setTrackerUrl", piwikConf.host + "/piwik.php"]);
       _paq.push(["setSiteId", piwikConf.id]);

@@ -9,10 +9,11 @@ export const environment: EnvironmentDescription = {
   piwik: {
     host: "https://piwik.blattwerkzeug.de",
     id: 1,
+    active: false,
   },
   sentry: {
     dsn: "https://e64499f04f2c44bb8167cfb43a1928b3@sentry.blattwerkzeug.de/2",
-    active: true,
+    active: false,
     showDialogue: true,
   },
   version: {
