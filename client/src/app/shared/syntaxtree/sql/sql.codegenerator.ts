@@ -64,7 +64,7 @@ export const NODE_CONVERTER: NodeConverterRegistration[] = [
     converter: {
       init: function (node: SyntaxNode, process: CodeGeneratorProcess<{}>) {
         const value = node.properties["value"];
-                  process.addConvertedFragment(value, node);
+        process.addConvertedFragment(value, node);
       },
     },
   },
