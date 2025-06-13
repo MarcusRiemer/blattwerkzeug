@@ -229,13 +229,32 @@ export class BlockEditorComponent implements OnInit, OnDestroy {
    * The visual components that should be displayed.
    */
   readonly editorComponents: Observable<PlacedEditorComponent[]> =
+    //TODO1:Refactor mit Marcus Tipp
     this.editorComponentDescriptions.pipe(
+      map((components): EditorComponentDescription[] => {
+        console.log("Komponenten:", components);
+        // To possibly deactivate the AI Coach
+        const aiCoachActive: boolean = true;
+        const blockEditorIndex = components.findIndex(
+          (c) => c.componentType === "block-root"
+        );
+
+        //noch einfacher mit splice(blockEditorIndex, 0, item)
+        if (blockEditorIndex >= 0 && aiCoachActive) {
+          return components
+            .slice(0, blockEditorIndex + 1)
+            .concat([{ componentType: "ai-coach", columnClasses: ["col-8"] }])
+            .concat(components.slice(blockEditorIndex + 1));
+        }
+
+        return components;
+      }),
       map((components): PlacedEditorComponent[] =>
         components.map((c) => {
           // Resolved component and sane defaults for components that are displayed
           return {
             portal: this.createEditorComponentPortal(c),
-            columnClasses: c.columnClasses || ["col-12"],
+            columnClasses: c.columnClasses || ["col-8"],
           };
         })
       )
