@@ -4,12 +4,8 @@ import { CurrentCodeResourceService } from "../current-coderesource.service";
 import { ErrorCodes, SyntaxTree } from "src/app/shared";
 import { first, map, switchMap, withLatestFrom } from "rxjs/operators";
 import { DragService } from "../drag.service";
-import { Subscription, interval } from "rxjs";
+import { ReplaySubject, Subscription, interval } from "rxjs";
 
-// TODO2: Pre /Prompt Area einrichten (JSON AST im BW als bsp. über Debug Options anzeigbar) ✅
-// TODO3: Prompt schreiben mit den Informationen die hier bereits generiert ✅
-// TODO4: Copy to Clipboard Button einrichten ✅
-// TODO5: Subscribe in Z38 unsiubscriben und mit replay subject speichern
 /**
  * Assists the user in writing code by providing feedback and tips.
  */
@@ -17,11 +13,13 @@ import { Subscription, interval } from "rxjs";
   templateUrl: "templates/ai-coach.html",
 })
 export class AiCoachComponent {
-  public lastDraggedBlock: any = null;
   public timerValue = 0;
 
-  private _subscription: Subscription;
-  private _lastCurrentDraggedBlock: any = null;
+  private _subscriptions = new Subscription();
+  private _timerSubscription: Subscription;
+  private _replaySubjectLastDraggedBlock = new ReplaySubject<any>(1);
+  readonly lastDraggedBlock$ =
+    this._replaySubjectLastDraggedBlock.asObservable();
 
   constructor(
     private _currentCodeResource: CurrentCodeResourceService,
@@ -31,25 +29,29 @@ export class AiCoachComponent {
      *  Subscribe to the current drag service to track the currently dragged block
      *  and update the last dragged block when the drag operation ends.
      */
-    //subscribe in Z38 muss noch unsubscribed werden
-    // noch besser speichern in einem replay subject, innerhalb der pipe
-    this._dragService.currentDrag
-      .pipe(withLatestFrom(this.currentlyDraggedBlock$))
-      .subscribe(([drag, currentlyDraggedBlock]) => {
-        // The current drag operation goes on as long as the drag is (not un)defined
-        if (drag !== undefined) {
-          this._lastCurrentDraggedBlock = currentlyDraggedBlock;
-          this._subscription.unsubscribe();
-          this.timerValue = 0;
-        }
-        // The current drag operation ends if the draf is undefined
-        if (drag === undefined) {
-          this.lastDraggedBlock = this._lastCurrentDraggedBlock;
-          this._subscription = interval(1000).subscribe(() => {
-            this.timerValue++;
-          });
-        }
-      });
+    this._subscriptions.add(
+      this._dragService.currentDrag
+        .pipe(withLatestFrom(this.currentlyDraggedBlock$))
+        .subscribe(([drag, currentlyDraggedBlock]) => {
+          // The current drag operation goes on as long as the drag is (not un)defined
+          if (drag !== undefined) {
+            this._replaySubjectLastDraggedBlock.next(
+              currentlyDraggedBlock ?? null
+            );
+            if (this._timerSubscription) {
+              this._timerSubscription.unsubscribe();
+            }
+            this.timerValue = 0;
+          }
+          // The current drag operation ends if the drag is undefined
+          if (drag === undefined) {
+            this._timerSubscription = interval(1000).subscribe(() => {
+              this.timerValue++;
+            });
+            this._subscriptions.add(this._timerSubscription);
+          }
+        })
+    );
   }
 
   /**
@@ -63,18 +65,14 @@ export class AiCoachComponent {
    */
   readonly result$ = this._currentCodeResource.validationResult;
 
-  readonly errors$ = this.result$.pipe(
-    map((result) =>
-      result.errors.map((e) => {
-        return { ...e };
-      })
-    )
-  );
+  /**
+   * Receive the errors from the validation result.
+   */
+  readonly errors$ = this.result$.pipe(map((result) => result.errors));
 
   /**
    * Counts the number of holes by counting the number of errors
    * that are either MissingChild or InvalidMinOccurences.
-   * TODO: Führt zu Fehlverhalten bei Desc und Asc, da diese keine Fehler werfen => Bessere Lösung finden
    */
   readonly countHoles$ = this.result$.pipe(
     map(
@@ -104,11 +102,6 @@ export class AiCoachComponent {
     map((drag) => drag?.draggedDescription)
   );
 
-  //   readonly currentTree$ = this._currentCodeResource.currentTree;
-  //   readonly currentTreeModel$ = this._currentCodeResource.currentTree.pipe(
-  //     map((tree) => tree?.toModel())
-  //   );
-
   /**
    * Receive the emitted language from the current code resource.
    */
@@ -122,10 +115,11 @@ export class AiCoachComponent {
    * @requires The last dragged block must be set.
    */
   async getCodeForLastDraggedBlock() {
+    const lastDraggedBlock = await this.lastDraggedBlock$
+      .pipe(first())
+      .toPromise();
     const lang = await this.emittedLanguage$.pipe(first()).toPromise();
-    const blockTree = new SyntaxTree(
-      this.lastDraggedBlock[0] ?? this.lastDraggedBlock
-    );
+    const blockTree = new SyntaxTree(lastDraggedBlock[0] ?? lastDraggedBlock);
     return lang.emitTree(blockTree);
   }
 
@@ -138,6 +132,11 @@ export class AiCoachComponent {
    * Copies a prompt to the clipboard that can be used to ask for help.
    */
   async copyPromptToClipboard() {
+    //TODO: Wenn noch kein Block gezogen, hängt der Code hier
+    const lastDraggedBlock = await this.lastDraggedBlock$
+      .pipe(first())
+      .toPromise();
+
     const numberOfErrors = await this.errors$
       .pipe(
         map((errors) => errors.length),
@@ -150,24 +149,24 @@ export class AiCoachComponent {
       const task = "Zeige die Auftritte pro Charakter an";
 
       let prompt =
-        "Mein Aufgabe lautet wie folgt:" +
+        "Meine Aufgabe lautet wie folgt: " +
         task +
-        "." +
-        "Ich möchte nun dafür diesen Code vervollständigen:" +
+        ". " +
+        "Ich möchte nun dafür diesen Code vervollständigen: " +
         generatedCode +
-        ".";
-      if (this.lastDraggedBlock) {
+        ". ";
+      if (lastDraggedBlock) {
         const lastDraggedBlockCode = await this.getCodeForLastDraggedBlock();
         prompt +=
           "Dafür habe ich zuletzt diesen Codeabschnitt genutzt: " +
           lastDraggedBlockCode +
-          ".";
+          ". ";
       }
       if (numberOfErrors > 0) {
-        prompt += " Dabei werden mir " + numberOfErrors + " Fehler angezeigt.";
+        prompt += " Dabei werden mir " + numberOfErrors + " Fehler angezeigt. ";
       }
       prompt +=
-        " Bitte gib mir Feedback zu meinem aktuellen Code und wie ich weitermachen sollte, um meine Aufgabe zu erledigen. Gib mir aber nicht die Lösung vor, sondern nur Hinweise.";
+        "Bitte gib mir Feedback zu meinem aktuellen Code und wie ich weitermachen sollte, um meine Aufgabe zu erledigen. Gib mir aber nicht die Lösung vor, sondern nur Hinweise. ";
 
       await navigator.clipboard.writeText(prompt);
       console.log("Copied the following prompt to the clipboard", prompt);
@@ -180,6 +179,6 @@ export class AiCoachComponent {
    * Unsubscribe when the component is destroyed
    */
   ngOnDestroy() {
-    this._subscription.unsubscribe();
+    this._subscriptions.unsubscribe();
   }
 }
