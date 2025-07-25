@@ -44,4 +44,12 @@ export class ProjectPerformData extends ResourcesData {
       policyAction: "remove_member",
     };
   }
+
+  public educational(resourceId: string): MayPerformRequestDescription {
+    return {
+      resourceType: this.resourceType,
+      resourceId: resourceId,
+      policyAction: "educational",
+    };
+  }
 }

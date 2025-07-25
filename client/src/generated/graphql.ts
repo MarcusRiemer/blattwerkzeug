@@ -167,6 +167,7 @@ export type ChangeOwnerPayload = {
 
 export type CodeResource = {
   __typename?: "CodeResource";
+  assignment?: Maybe<Scalars["String"]>;
   ast?: Maybe<Scalars["NodeDescription"]>;
   blockLanguage: BlockLanguage;
   blockLanguageId: Scalars["ID"];
@@ -198,6 +199,7 @@ export type CodeResourceCreateInput = {
   /** A unique identifier for the client performing the mutation. */
   clientMutationId?: Maybe<Scalars["String"]>;
   name: Scalars["String"];
+  assignment?: Maybe<Scalars["String"]>;
   projectId: Scalars["ID"];
   blockLanguageId: Scalars["ID"];
   programmingLanguageId: Scalars["ID"];
@@ -245,6 +247,7 @@ export type CodeResourceUpdateInput = {
   clientMutationId?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   name: Scalars["String"];
+  assignment?: Maybe<Scalars["String"]>;
   ast?: Maybe<Scalars["NodeDescription"]>;
   blockLanguageId: Scalars["ID"];
   programmingLanguageId: Scalars["ID"];
@@ -1546,6 +1549,7 @@ export type CreateBlockLanguageMutation = { __typename?: "Mutation" } & {
 
 export type CreateCodeResourceMutationVariables = Exact<{
   name: Scalars["String"];
+  assignment?: Maybe<Scalars["String"]>;
   projectId: Scalars["ID"];
   blockLanguageId: Scalars["ID"];
   programmingLanguageId: Scalars["ID"];
@@ -1556,7 +1560,12 @@ export type CreateCodeResourceMutation = { __typename?: "Mutation" } & {
     { __typename?: "CodeResourceCreatePayload" } & {
       codeResource: { __typename?: "CodeResource" } & Pick<
         CodeResource,
-        "id" | "name" | "blockLanguageId" | "ast" | "programmingLanguageId"
+        | "id"
+        | "name"
+        | "assignment"
+        | "blockLanguageId"
+        | "ast"
+        | "programmingLanguageId"
       >;
     }
   >;
@@ -1936,7 +1945,12 @@ export type FullProjectQuery = { __typename?: "Query" } & {
       codeResources: Array<
         { __typename?: "CodeResource" } & Pick<
           CodeResource,
-          "id" | "name" | "ast" | "blockLanguageId" | "programmingLanguageId"
+          | "id"
+          | "name"
+          | "assignment"
+          | "ast"
+          | "blockLanguageId"
+          | "programmingLanguageId"
         >
       >;
       grammars: Array<
@@ -2383,6 +2397,7 @@ export type UpdateBlockLanguageMutation = { __typename?: "Mutation" } & {
 export type UpdateCodeResourceMutationVariables = Exact<{
   id: Scalars["ID"];
   name: Scalars["String"];
+  assignment?: Maybe<Scalars["String"]>;
   ast?: Maybe<Scalars["NodeDescription"]>;
   blockLanguageId: Scalars["ID"];
   programmingLanguageId: Scalars["ID"];
@@ -2393,7 +2408,11 @@ export type UpdateCodeResourceMutation = { __typename?: "Mutation" } & {
     { __typename?: "CodeResourceUpdatePayload" } & {
       codeResource: { __typename?: "CodeResource" } & Pick<
         CodeResource,
-        "name" | "ast" | "blockLanguageId" | "programmingLanguageId"
+        | "name"
+        | "ast"
+        | "assignment"
+        | "blockLanguageId"
+        | "programmingLanguageId"
       >;
       affected: Array<
         | ({ __typename: "BlockLanguage" } & Pick<
@@ -2898,6 +2917,7 @@ export class CreateBlockLanguageGQL extends Apollo.Mutation<
 export const CreateCodeResourceDocument = gql`
   mutation CreateCodeResource(
     $name: String!
+    $assignment: String
     $projectId: ID!
     $blockLanguageId: ID!
     $programmingLanguageId: ID!
@@ -2905,6 +2925,7 @@ export const CreateCodeResourceDocument = gql`
     createCodeResource(
       input: {
         name: $name
+        assignment: $assignment
         projectId: $projectId
         blockLanguageId: $blockLanguageId
         programmingLanguageId: $programmingLanguageId
@@ -2913,6 +2934,7 @@ export const CreateCodeResourceDocument = gql`
       codeResource {
         id
         name
+        assignment
         blockLanguageId
         ast
         programmingLanguageId
@@ -3438,6 +3460,7 @@ export const FullProjectDocument = gql`
       codeResources {
         id
         name
+        assignment
         ast
         blockLanguageId
         programmingLanguageId
@@ -4104,6 +4127,7 @@ export const UpdateCodeResourceDocument = gql`
   mutation UpdateCodeResource(
     $id: ID!
     $name: String!
+    $assignment: String
     $ast: NodeDescription
     $blockLanguageId: ID!
     $programmingLanguageId: ID!
@@ -4112,6 +4136,7 @@ export const UpdateCodeResourceDocument = gql`
       input: {
         id: $id
         name: $name
+        assignment: $assignment
         ast: $ast
         blockLanguageId: $blockLanguageId
         programmingLanguageId: $programmingLanguageId
@@ -4120,6 +4145,7 @@ export const UpdateCodeResourceDocument = gql`
       codeResource {
         name
         ast
+        assignment
         blockLanguageId
         programmingLanguageId
       }

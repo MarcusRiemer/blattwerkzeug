@@ -14,6 +14,9 @@ export interface CodeResourceDescription extends ProjectResourceDescription {
 
   // The block language this resource uses
   blockLanguageId: string;
+
+  // The task the user has to solve
+  assignment?: string;
 }
 
 // Only used to allow a `null` ast (which indicates deletion)

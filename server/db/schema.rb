@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_30_083329) do
-
+ActiveRecord::Schema[7.0].define(version: 2025_07_25_101626) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "pgcrypto"
@@ -41,8 +40,8 @@ ActiveRecord::Schema.define(version: 2021_09_30_083329) do
   create_table "code_resource_references", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "origin_id", null: false
     t.uuid "target_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["origin_id", "target_id"], name: "code_resource_references_unique", unique: true
     t.index ["origin_id"], name: "index_code_resource_references_on_origin_id"
     t.index ["target_id"], name: "index_code_resource_references_on_target_id"
@@ -57,6 +56,7 @@ ActiveRecord::Schema.define(version: 2021_09_30_083329) do
     t.uuid "block_language_id", null: false
     t.text "programming_language_id", null: false
     t.string "compiled"
+    t.string "assignment"
     t.index ["block_language_id"], name: "index_code_resources_on_block_language_id"
     t.index ["programming_language_id"], name: "index_code_resources_on_programming_language_id"
     t.index ["project_id"], name: "index_code_resources_on_project_id"
@@ -66,8 +66,8 @@ ActiveRecord::Schema.define(version: 2021_09_30_083329) do
     t.uuid "origin_id", null: false
     t.uuid "target_id", null: false
     t.integer "reference_type", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["origin_id", "target_id"], name: "grammar_references_unique", unique: true
     t.index ["origin_id"], name: "index_grammar_references_on_origin_id"
     t.index ["target_id"], name: "index_grammar_references_on_target_id"
@@ -141,8 +141,8 @@ ActiveRecord::Schema.define(version: 2021_09_30_083329) do
     t.uuid "user_id", null: false
     t.uuid "project_id", null: false
     t.integer "membership_type", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_project_members_on_project_id"
     t.index ["user_id"], name: "index_project_members_on_user_id"
   end

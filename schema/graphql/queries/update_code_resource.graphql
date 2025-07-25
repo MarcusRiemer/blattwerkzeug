@@ -1,6 +1,7 @@
 mutation UpdateCodeResource(
   $id: ID!,
   $name: String!,
+  $assignment: String,
   $ast: NodeDescription,
   $blockLanguageId: ID!,
   $programmingLanguageId: ID!,
@@ -8,6 +9,7 @@ mutation UpdateCodeResource(
   updateCodeResource(input: {
     id: $id,
     name: $name,
+    assignment: $assignment,
     ast: $ast,
     blockLanguageId: $blockLanguageId,
     programmingLanguageId: $programmingLanguageId,
@@ -15,6 +17,7 @@ mutation UpdateCodeResource(
     codeResource {
       name,
       ast,
+      assignment,
       blockLanguageId,
       programmingLanguageId,
     }

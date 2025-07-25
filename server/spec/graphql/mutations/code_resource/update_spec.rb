@@ -13,7 +13,7 @@ RSpec.describe Mutations::CodeResource::Update do
     end
 
     attributes = code_resource.attributes.slice(
-      "id", "name", "ast", "block_language_id", "programming_language_id"
+      "id", "name", "assignment", "ast", "block_language_id", "programming_language_id"
     ).transform_keys { |k| k.camelize(:lower) }
 
     {
@@ -37,6 +37,36 @@ RSpec.describe Mutations::CodeResource::Update do
       expect(data['name']).to eq "Changed"
       expect(affected).to eq []
     end
+  end
+
+  it "As admin: changes the assignment" do
+    admin = create(:user, :admin)
+    resource = FactoryBot.create(:code_resource, assignment: "Initial")
+    resource.assignment = "Changed"
+
+    res = execute_query(**execute_args(resource, user: admin))
+    data = res.dig("data", "updateCodeResource", "codeResource")
+    affected = res.dig("data", "updateCodeResource", "affected")
+
+    aggregate_failures do
+      resource.reload
+      expect(resource.assignment).to eq "Changed"
+      expect(data['assignment']).to eq "Changed"
+      expect(affected).to eq []
+    end
+  end
+
+
+  it "As owner: does not change the assignment" do
+    resource = FactoryBot.create(:code_resource, assignment: "Initial")
+    resource.assignment = "Changed"
+
+    expect {
+      execute_query(**execute_args(resource))
+    }.to raise_error(EsqulinoError::Authorization)
+
+    resource.reload
+    expect(resource.assignment).to eq "Initial"
   end
 
   it "changes the programming language" do
