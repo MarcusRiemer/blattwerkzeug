@@ -1,5 +1,5 @@
 trigger:
-- "*"
+- "master"
 
 pool:
   name: Azure Pipelines
