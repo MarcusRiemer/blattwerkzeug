@@ -30,7 +30,7 @@
     "express": "4.17.1",
     "font-awesome": "4.7.0",
     "graphql": "^15.0.0",
-    "immer": "8.0.1",
+    "immer": "9.0.6",
     "jwt-decode": "2.2.0",
     "loader-utils": "2.0.0",
     "nerdamer": "1.1.10",
