@@ -4,7 +4,7 @@ import { CurrentCodeResourceService } from "../current-coderesource.service";
 import { ErrorCodes, SyntaxTree } from "src/app/shared";
 import { first, map, switchMap, withLatestFrom } from "rxjs/operators";
 import { DragService } from "../drag.service";
-import { ReplaySubject, Subscription, interval } from "rxjs";
+import { BehaviorSubject, Subscription, interval } from "rxjs";
 import { DatabaseSchemaService } from "../database-schema.service";
 import { FixedBlocksSidebarDescription } from "src/app/shared/block";
 
@@ -19,19 +19,15 @@ export class AiCoachComponent {
 
   private _subscriptions = new Subscription();
   private _timerSubscription: Subscription;
-  private _replaySubjectLastDraggedBlock = new ReplaySubject<any>(1);
+  private _behaviorSubjectLastDraggedBlock = new BehaviorSubject<any>(null);
   readonly lastDraggedBlock$ =
-    this._replaySubjectLastDraggedBlock.asObservable();
+    this._behaviorSubjectLastDraggedBlock.asObservable();
 
   constructor(
     private _currentCodeResource: CurrentCodeResourceService,
     private _dragService: DragService,
     private _databaseSchemaService: DatabaseSchemaService
   ) {
-    /**
-     * Initialize the last dragged block as null, otherwise the observable has no value
-     */
-    this._replaySubjectLastDraggedBlock.next(null);
     /**
      *  Subscribe to the current drag service to track the currently dragged block
      *  and update the last dragged block when the drag operation ends.
@@ -42,7 +38,7 @@ export class AiCoachComponent {
         .subscribe(([drag, currentlyDraggedBlock]) => {
           // The current drag operation goes on as long as the drag is (not un)defined
           if (drag !== undefined) {
-            this._replaySubjectLastDraggedBlock.next(
+            this._behaviorSubjectLastDraggedBlock.next(
               currentlyDraggedBlock ?? null
             );
             if (this._timerSubscription) {
@@ -194,7 +190,7 @@ export class AiCoachComponent {
     const blocksWithCategoriesJSON =
       await this.getCurrentBlockLanguageBlocksWithCategoriesJSON();
 
-    let prompt = "Ich habe lediglich Zugriff auf die folgenden Code-Blöcke:\n";
+    let prompt = `Ich habe lediglich Zugriff auf die folgenden Code-Blöcke:\n`;
     blocksWithCategoriesJSON.forEach((category) => {
       prompt += `Kategorie: ${category.name}\n`;
       category.blocks.forEach((block) => {
@@ -210,7 +206,7 @@ export class AiCoachComponent {
    * @returns A prompt that lists all available tables for the current task with their fields.
    */
   async getAllTablesWithFieldsPrompt(allTablesWithFieldsJSON: any[]) {
-    let prompt = "In meiner Datenbank befinden sich die folgenden Tabellen:\n";
+    let prompt = `In meiner Datenbank befinden sich die folgenden Tabellen:\n`;
     allTablesWithFieldsJSON.forEach((table) => {
       prompt += `Tabelle: ${table.name}\n`;
       table.fields.forEach((field) => {
@@ -252,44 +248,39 @@ export class AiCoachComponent {
 
       const generatedCode = await this.generatedCode$.pipe(first()).toPromise();
 
-      const task =
-        "Zeige für jeden Charakter die Anzahl der Auftritte an. Die Charaktere mit den meisten Auftritten sollen zuerst genannt werden. Außerdem sollen sie nach Namen sortiert sein.";
+      const task = `Zeige für jeden Charakter die Anzahl der Auftritte an. Die Charaktere mit den meisten Auftritten sollen zuerst genannt werden. Außerdem sollen sie nach Namen sortiert sein.`;
 
-      let prompt =
-        "Meine Aufgabe lautet wie folgt: " +
-        task +
-        ".\n" +
-        "Ich möchte nun dafür diesen Code vervollständigen: " +
-        generatedCode +
-        "\n";
+      let prompt = `Nimm die Rolle eines Lehrers ein und hilf mir bei folgender Aufgabe. Das Ziel ist es am Ende einen fertigen Codeabschnitt zu haben, der die Aufgabe erfüllt. Meine Aufgabe lautet wie folgt: ${task}\nIch möchte nun dafür diesen Code vervollständigen:\n${generatedCode}\n`;
 
       if (lastDraggedBlock) {
         const lastDraggedBlockCode = await this.getCodeForLastDraggedBlock(
           lastDraggedBlock
         );
-        prompt +=
-          "Dafür habe ich zuletzt diesen Codeabschnitt genutzt: " +
-          lastDraggedBlockCode +
-          "\n";
+        prompt += `Dafür habe ich zuletzt diesen Codeabschnitt genutzt: \n${lastDraggedBlockCode}\n`;
       }
-      if (numberOfErrors > 0) {
-        prompt +=
-          " Dabei werden mir " + numberOfErrors + " Fehler angezeigt. \n";
-      }
+      // if (numberOfErrors > 0) {
+      //   prompt += `Dabei werden mir ${numberOfErrors} Fehler angezeigt.\n`;
+      // }
 
       if (countHoles > 0) {
-        prompt +=
-          " Dabei habe ich " +
-          countHoles +
-          " Löcher in meinem Code, die ich noch füllen muss. \n";
+        prompt += `Dabei habe ich ${countHoles} Löcher in meinem Code, die ich noch füllen muss.\n`;
       }
       prompt +=
-        "Hier noch ein paar Infos zu dem Kontext: \n" +
-        availableBlocksPrompt +
-        "\n" +
-        (await this.getAllTablesWithFieldsPrompt(allTablesWithFieldsJSON)) +
-        "\n" +
-        "Falls in dem Code ein COUNT() vorkommt, ignoriere bitte, dass in den Klammern eine Argument stehen muss. Bitte gib mir Feedback zu meinem aktuellen Code und wie ich weitermachen sollte, um meine Aufgabe zu erledigen. Gib mir aber nicht die Lösung vor, sondern nur Hinweise. Halte deine Antwort so kurz wie möglich und konzentriere dich auf den nächsten notwendigen Schritt.";
+        `Hier noch ein paar Infos zu dem Kontext:\n${availableBlocksPrompt}\n${await this.getAllTablesWithFieldsPrompt(
+          allTablesWithFieldsJSON
+        )}
+        Für deine Antworten gelten folgende Regeln:
+        Bei Join Operationen wird der Code-Block INNER JOIN ON präferiert. 
+        Bitte gib mir Feedback zu meinem aktuellen Code und wie ich weitermachen sollte, aber gib mir aber nicht die Lösung vor, sondern nur Hinweise.
+        Halte deine Antwort so kurz wie möglich und konzentriere dich auf den nächsten Code-Block, den ich nutzen sollte.
+        
+        Bitte nenne mir wirklich nur einen einzigen nächsten Code-Block, den ich als Nächstes einsetzen sollte – nicht mehr.
+        Bitte nenne mir nur Code-Blöcke, die ich zur Verfügung habe. Tabellen oder Tabellenspalten zählen auch jeweils als ein Code-Block.
+        Überlege auch bitte gründlich, ob der Code vielleicht sogar schon vollständig ist.
+        WICHTIG: Die COUNT()-Funktionen mit leeren Klammern sind bereits korrekt implementiert und sollen nicht kommentiert werden.`.replace(
+          /^[ \t]+/gm,
+          ""
+        );
 
       await navigator.clipboard.writeText(prompt);
       console.log("Copied the following prompt to the clipboard", prompt);
