@@ -1,6 +1,6 @@
 <h4>AI Coach</h4>
 <div>Timer: {{timerValue}}</div>
-<div *ngIf="timerValue >= 10">
+<div *ngIf="timerValue >= 0">
   <button (click)="copyPromptToClipboard()" class="btn btn-secondary">
     Copy Prompt to Clipboard
   </button>
@@ -12,16 +12,4 @@
 <div *ngIf="countHoles$ | async as countHoles">
   Anzahl Löcher (fehlende Kinder):
   <pre>{{ countHoles }}</pre>
-</div>
-<div *ngIf="generatedCode$ | async as generatedCode">
-  Generierter Code:
-  <pre><code [innerText]="generatedCode$ | async"></code></pre>
-</div>
-<div *ngIf="currentlyDraggedBlock$ | async as currentlyDraggedBlock">
-  Aktuell gezogener Block:
-  <pre> {{ currentlyDraggedBlock | json }}</pre>
-</div>
-<div *ngIf="lastDraggedBlock$ | async as lastDraggedBlock">
-  Zuletzt gezogener Block:
-  <pre> {{ lastDraggedBlock | json }}</pre>
 </div>
