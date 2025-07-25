@@ -21,6 +21,11 @@ import { CodeResourceService } from "../coderesource.service";
 export class CreateCodeResourceComponent {
   public resourceName: string;
   public blockLanguageId: string;
+  public assignment: string;
+
+  readonly educationalPermission$ = this._projectService.activeProject.pipe(
+    map((p) => this._performData.project.educational(p.id))
+  );
 
   constructor(
     private _toolbarService: EditorToolbarService,
@@ -85,6 +90,7 @@ export class CreateCodeResourceComponent {
     const res = await this._codeResourceService.createCodeResource(
       p,
       this.resourceName,
+      this.assignment,
       this.blockLanguageId,
       b.defaultProgrammingLanguageId
     );

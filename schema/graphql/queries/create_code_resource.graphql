@@ -1,11 +1,13 @@
 mutation CreateCodeResource(
   $name: String!,
+  $assignment: String,
   $projectId: ID!,
   $blockLanguageId: ID!,
   $programmingLanguageId: ID!
 ) {
   createCodeResource(input: {
     name: $name,
+    assignment: $assignment,
     projectId: $projectId,
     blockLanguageId: $blockLanguageId,
     programmingLanguageId: $programmingLanguageId,
@@ -13,6 +15,7 @@ mutation CreateCodeResource(
     codeResource {
       id
       name
+      assignment,
       blockLanguageId
       ast
       programmingLanguageId

@@ -43,6 +43,7 @@ export class CodeResourceService {
   createCodeResource(
     project: Project,
     name: string,
+    assignment: string,
     blockLanguageId: string,
     programmingLanguageId: string
   ) {
@@ -50,6 +51,7 @@ export class CodeResourceService {
       .mutate({
         projectId: project.id,
         name: name,
+        assignment: assignment,
         programmingLanguageId: programmingLanguageId,
         blockLanguageId: blockLanguageId,
       })

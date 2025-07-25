@@ -28,6 +28,7 @@ query FullProject($id: ID!) {
     codeResources {
       id
       name
+      assignment
       ast
       blockLanguageId
       programmingLanguageId

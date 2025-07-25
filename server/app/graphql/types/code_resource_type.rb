@@ -9,6 +9,7 @@ module Types
     field :programming_language, Types::ProgrammingLanguageType, null: false
     field :programming_language_id, ID, null: false
     field :compiled, String, null: true
+    field :assignment, String, null: true
 
     field :generated_grammars, [Types::GrammarType], null: true
 
