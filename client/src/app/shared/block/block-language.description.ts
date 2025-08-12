@@ -178,6 +178,14 @@ export interface AiCoachComponentDescription
 }
 
 /**
+ * Displays the assignment
+ */
+export interface AssignmentComponentDescription
+  extends EditorComponentBaseDescription {
+  componentType: "assignment";
+}
+
+/**
  * Displays the compiled program
  */
 export interface CodeGeneratorComponentDescription
@@ -235,6 +243,7 @@ export type EditorComponentDescription =
   | QueryPreviewComponentDescription
   | ValidatorComponentDescription
   | AiCoachComponentDescription
+  | AssignmentComponentDescription
   | CodeGeneratorComponentDescription
   | TruckWorldComponentDescription
   | TruckControllerComponentDescription
