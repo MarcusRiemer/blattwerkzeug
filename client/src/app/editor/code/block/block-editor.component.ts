@@ -244,6 +244,13 @@ export class BlockEditorComponent implements OnInit, OnDestroy {
             columnClasses: ["col-8"],
           });
         }
+        // If the value of the assigment is set, the assignment component is added
+        if (blockEditorIndex >= 0 && this.peekResource.assignment) {
+          components.splice(blockEditorIndex, 0, {
+            componentType: "assignment",
+            columnClasses: ["col-8"],
+          });
+        }
 
         return components;
       }),

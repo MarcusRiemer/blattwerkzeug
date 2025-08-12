@@ -97,6 +97,7 @@ export class CodeResourceService {
       .mutate({
         id: resource.id,
         name: resource.name,
+        assignment: resource.assignment,
         programmingLanguageId: resource.runtimeLanguageId,
         blockLanguageId: resource.blockLanguageIdPeek,
         // Must use `null` instead of `undefined` to send the key if the AST is empty
