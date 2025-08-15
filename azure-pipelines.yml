@@ -226,13 +226,12 @@ jobs:
     workingDirectory: data
     displayName: 'Create Data Folder'
 
-  - bash: "env && make reset-live-data"
+  - bash: "SECRET_KEY_BASE_DUMMY=1 make reset-live-data"
     workingDirectory: server
     displayName: 'make reset-live-data'
     env:
       RAILS_ENV: production
       TEST_SEED_OUTPUT: true
-      SECRET_KEY_BASE_DUMMY: 1
       CLI_PROGRAM: '../client/dist/cli/bundle.cli.js'
 
 - job: code_formatting
