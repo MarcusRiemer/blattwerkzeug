@@ -120,6 +120,13 @@ export class AiCoachComponent {
   );
 
   /**
+   * Receive the current assignment from the code resource.
+   */
+  readonly assignment$ = this.codeResource$.pipe(
+    switchMap((resource) => resource.assignment$)
+  );
+
+  /**
    * Receive all database tables with their fields from the database schema service.
    */
   readonly allDatabaseTablesWithFields$ =
@@ -230,12 +237,13 @@ export class AiCoachComponent {
         .pipe(first())
         .toPromise();
 
-      const numberOfErrors = await this.errors$
-        .pipe(
-          map((errors) => errors.length),
-          first()
-        )
-        .toPromise();
+      // Das hat beim Lösen mit der AI nicht so geholfen, daher auskommentiert
+      // const numberOfErrors = await this.errors$
+      //   .pipe(
+      //     map((errors) => errors.length),
+      //     first()
+      //   )
+      //   .toPromise();
 
       const allTablesWithFieldsJSON = await this.allDatabaseTablesWithFields$
         .pipe(first())
@@ -248,9 +256,14 @@ export class AiCoachComponent {
 
       const generatedCode = await this.generatedCode$.pipe(first()).toPromise();
 
-      const task = `Zeige für jeden Charakter die Anzahl der Auftritte an. Die Charaktere mit den meisten Auftritten sollen zuerst genannt werden. Außerdem sollen sie nach Namen sortiert sein.`;
+      let prompt = `Nimm die Rolle eines Lehrers ein und hilf mir bei folgender Aufgabe. Das Ziel ist es am Ende einen fertigen Codeabschnitt zu haben, der die Aufgabe erfüllt.`;
 
-      let prompt = `Nimm die Rolle eines Lehrers ein und hilf mir bei folgender Aufgabe. Das Ziel ist es am Ende einen fertigen Codeabschnitt zu haben, der die Aufgabe erfüllt. Meine Aufgabe lautet wie folgt: ${task}\nIch möchte nun dafür diesen Code vervollständigen:\n${generatedCode}\n`;
+      if (this.assignment$) {
+        const task = await this.assignment$.pipe(first()).toPromise();
+        prompt += `Meine Aufgabe lautet: ${task}\n`;
+      }
+
+      prompt += `Ich möchte nun dafür diesen Code vervollständigen:\n${generatedCode}\n`;
 
       if (lastDraggedBlock) {
         const lastDraggedBlockCode = await this.getCodeForLastDraggedBlock(
