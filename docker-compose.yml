@@ -3,7 +3,7 @@ services:
   db:
     image: postgres:15-bullseye
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
     environment:
       - POSTGRES_USER=esqulino
       - POSTGRES_HOST_AUTH_METHOD=trust
@@ -22,7 +22,7 @@ services:
       - db
     environment:
       - DATABASE_HOST=db
-      - RAILS_ENV=production
+      - SECRET_KEY_BASE=this-is-not-a-secure-key-base-please-don't-use-in-production
     volumes:
       - data-files-volume:/blattwerkzeug/rails_app/data
     tmpfs:
