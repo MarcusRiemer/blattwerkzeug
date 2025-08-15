@@ -1,0 +1,5 @@
+mutation AiHintCodeResource($id: ID!) {
+  aiHintCodeResource(input: {id: $id}) {
+    answerText
+  }
+}

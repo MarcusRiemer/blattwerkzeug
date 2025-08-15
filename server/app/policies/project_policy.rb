@@ -27,6 +27,10 @@ class ProjectPolicy < ApplicationPolicy
     user.has_role?(:admin)
   end
 
+  def ai_hint?
+    true
+  end
+
   # May the user persist the current state of the project to the seed data?
   # If this is permitted, the stored data may end up in git.
   def store_seed?
