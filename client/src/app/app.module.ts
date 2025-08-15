@@ -99,7 +99,7 @@ if (environment.sentry && environment.sentry.active) {
               fields: {
                 blockLanguage: (_, { toReference, variables }) => {
                   if (variables?.id) {
-                    console.debug("blockLanguage: toReference", variables);
+                    //console.debug("blockLanguage: toReference", variables);
                     return toReference({
                       __typename: "BlockLanguage",
                       id: variables.id,

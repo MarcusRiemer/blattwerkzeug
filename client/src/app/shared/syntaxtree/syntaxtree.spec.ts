@@ -1,3 +1,4 @@
+import { execute } from "graphql";
 import { isChildLocation } from ".";
 import {
   SyntaxNode,
@@ -1108,6 +1109,38 @@ describe("AST: Basic Operations", () => {
     expect(prev).not.toBe(curr);
     expect(curr.rootNode.children["a"].length).toEqual(1);
     expect(curr.rootNode.children["a"][0].typeName).toEqual("new");
+  });
+
+  it("Insterting child node into another child node", () => {
+    const treeDesc: NodeDescription = {
+      language: "lang",
+      name: "r",
+      children: {
+        a: [{ language: "lang", name: "r_a_0" }],
+      },
+    };
+
+    const prev = new SyntaxTree(treeDesc);
+    const curr = prev.insertNode(
+      [
+        ["a", 0],
+        ["a", 0],
+      ],
+      { language: "lang", name: "new" }
+    );
+
+    expect(prev).not.toBe(curr);
+    expect(curr.rootNode.children["a"][0].children["a"].length).toEqual(1);
+    expect(curr.rootNode.children["a"][0].children["a"][0].typeName).toEqual(
+      "new"
+    );
+
+    expect(
+      curr.locate([
+        ["a", 0],
+        ["a", 0],
+      ])
+    ).toBe(curr.rootNode.children["a"][0].children["a"][0]);
   });
 
   it("Inserting something at the root of an empty tree is a replacement", () => {

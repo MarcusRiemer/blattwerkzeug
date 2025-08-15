@@ -148,6 +148,11 @@ export class SidebarService {
   get sidebarModel(): Observable<InternalSidebarModel[]> {
     return this._model;
   }
+
+  /**
+   * Filter the Sidebar for Blocks with a specific Keyword
+   */
+  readonly _filter$ = new BehaviorSubject<InternalSidebarModel[]>([]);
 }
 
 /**
