@@ -27,6 +27,8 @@ import { ExecuteJavaScriptComponent } from "./js/execute-java-script.component";
 import { ExecuteMathComponent } from "./math/execute-math.component";
 
 import { ExecFiniteStateMachineComponent } from "./automaton/exec-finite-state-machine.component";
+import { AiCoachComponent } from "./ai-coach.component";
+import { AssignmentComponent } from "./assignment.component";
 
 type ComponentTypeId = EditorComponentDescription["componentType"];
 
@@ -56,6 +58,8 @@ export class EditorComponentsService {
     "execute-js": ExecuteJavaScriptComponent,
     "execute-math": ExecuteMathComponent,
     "execute-fsm": ExecFiniteStateMachineComponent,
+    "ai-coach": AiCoachComponent,
+    assignment: AssignmentComponent,
   };
 
   constructor(
