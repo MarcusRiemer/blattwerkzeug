@@ -114,7 +114,6 @@ export class CodeResource extends ProjectResource {
    * Sets a new assignment for this resource.
    * @param newAssignment The new assignment to set.
    */
-  //TODO: Frage: Lieber mit setAssignment?
   set assignment(newAssignment: string) {
     this._assignment$.next(newAssignment);
     this.markSaveRequired();

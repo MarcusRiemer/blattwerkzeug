@@ -7,6 +7,7 @@ import { DragService } from "../drag.service";
 import { BehaviorSubject, Subscription, interval } from "rxjs";
 import { DatabaseSchemaService } from "../database-schema.service";
 import { FixedBlocksSidebarDescription } from "src/app/shared/block";
+import { AiHintCodeResourceGQL } from "src/generated/graphql";
 
 /**
  * Assists the user in writing code by providing feedback and tips.
@@ -22,11 +23,13 @@ export class AiCoachComponent {
   private _behaviorSubjectLastDraggedBlock = new BehaviorSubject<any>(null);
   readonly lastDraggedBlock$ =
     this._behaviorSubjectLastDraggedBlock.asObservable();
+  public aiHint: string;
 
   constructor(
     private _currentCodeResource: CurrentCodeResourceService,
     private _dragService: DragService,
-    private _databaseSchemaService: DatabaseSchemaService
+    private _databaseSchemaService: DatabaseSchemaService,
+    private _aiHintCodeResource: AiHintCodeResourceGQL
   ) {
     /**
      *  Subscribe to the current drag service to track the currently dragged block
@@ -221,6 +224,21 @@ export class AiCoachComponent {
       });
     });
     return prompt;
+  }
+
+  /**
+   * Uses the new GraphQL Endpoint to get a hint for the current code resource.
+   * @returns A hint for the current code resource.
+   */
+  async getHintForCurrentCodeResource() {
+    const codeResource = await this.codeResource$.pipe(first()).toPromise();
+    const aiHintMutation = await this._aiHintCodeResource
+      .mutate({ id: codeResource.id })
+      .toPromise();
+
+    return (this.aiHint =
+      aiHintMutation.data?.aiHintCodeResource.answerText ||
+      "No hint available");
   }
 
   /**

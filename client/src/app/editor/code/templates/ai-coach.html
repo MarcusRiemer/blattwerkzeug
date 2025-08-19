@@ -5,6 +5,12 @@
     Copy Prompt to Clipboard
   </button>
 </div>
+<div>
+  <button (click)="getHintForCurrentCodeResource()" class="btn btn-secondary">
+    Get Hint for Current Code Resource
+  </button>
+  <div *ngIf="aiHint">Hint: {{aiHint}}</div>
+</div>
 <div *ngIf="result$ | async as result">
   Anzahl der Fehler:
   <pre> {{ result.errors.length | json }}</pre>
