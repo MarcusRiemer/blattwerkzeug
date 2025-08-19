@@ -45,6 +45,9 @@ gem "rest-client"
 # Used to build a strongly-typed API
 gem 'graphql'
 
+# AI coach runs on the server
+gem "ruby-openai"
+
 ############################
 # Rails dependencies
 ###########################

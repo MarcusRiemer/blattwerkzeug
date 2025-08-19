@@ -111,6 +111,7 @@ GEM
     ecma-re-validator (0.4.0)
       regexp_parser (~> 2.2)
     erubi (1.13.1)
+    event_stream_parser (1.0.0)
     factory_bot (6.2.1)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.2.0)
@@ -119,6 +120,8 @@ GEM
     faraday (2.2.0)
       faraday-net_http (~> 2.0)
       ruby2_keywords (>= 0.0.4)
+    faraday-multipart (1.1.1)
+      multipart-post (~> 2.0)
     faraday-net_http (2.0.2)
     ffi (1.15.5)
     formatador (1.1.0)
@@ -189,6 +192,7 @@ GEM
     msgpack (1.5.1)
     multi_json (1.15.0)
     multi_xml (0.6.0)
+    multipart-post (2.4.1)
     mutex_m (0.3.0)
     nenv (0.3.0)
     net-imap (0.5.9)
@@ -339,6 +343,10 @@ GEM
     ruby-filemagic (0.7.3)
     ruby-graphviz (1.2.5)
       rexml
+    ruby-openai (8.2.0)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
     securerandom (0.4.1)
@@ -422,6 +430,7 @@ DEPENDENCIES
   rspec_junit_formatter
   rubocop (~> 0.92.0)
   ruby-filemagic
+  ruby-openai
   sentry-raven
   simplecov
   simplecov-cobertura
