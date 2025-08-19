@@ -1,3 +1,4 @@
+import { combineLatest, Observable, of } from "rxjs";
 import { NodeDescription, SyntaxTree } from "../syntaxtree";
 
 import {
@@ -8,6 +9,8 @@ import {
   isNodeDerivedPropertyDescription,
 } from "./block.description";
 import { Sidebar } from "./sidebar";
+import { CurrentCodeResourceService } from "src/app/editor/current-coderesource.service";
+import { map, tap } from "rxjs/operators";
 
 /**
  * Resolves all runtime derived values for a tailored node description. The
@@ -74,14 +77,40 @@ export class FixedSidebarBlock {
    */
   public readonly displayName: string;
 
+  /** This controlls the visability in Sidebar */
+  // public isVisibleInSidebar$: Observable<boolean> = of(true);
+  // TODO 3: Build ordentliches observable
+  //public isVisibleInSidebar$: Observable<boolean> = combineLatest(holeLocation, validator).pipe( ... )
+
+  public isVisibleInSidebar$: Observable<boolean> = combineLatest([
+    this._currentCodeResource.validator$,
+    this._currentCodeResource.currentHoleDropStep$,
+    this._currentCodeResource.currentHoleLocationParent$,
+  ]).pipe(
+    tap((l)=>console.log(l)),
+    map(([validator, currentHoleDropStep, currentHoleLocationParent]) => {
+      return this._currentCodeResource.currentHoleMatchesBlock2(
+        this,
+        validator,
+        currentHoleDropStep,
+        currentHoleLocationParent
+      );
+    })
+  );
+
   /**
    * @return The node that should be created when this block
    *         needs to be instanciated.
    */
   public readonly defaultNode: NodeTailoredDescription[];
 
-  constructor(desc: SidebarBlockDescription) {
+  // TODO 3: Alle benötigten Daten für das Observable mit reingeben, vermutlich einfach den current code resource service reingeben
+  constructor(
+    desc: SidebarBlockDescription,
+    private _currentCodeResource: CurrentCodeResourceService
+  ) {
     this.displayName = desc.displayName;
+    //this.isVisibleInSidebar = true;
 
     if (Array.isArray(desc.defaultNode)) {
       this.defaultNode = desc.defaultNode;
@@ -113,11 +142,13 @@ export class FixedBlocksSidebarCategory implements BlocksSidebarCategory {
 
   constructor(
     _parent: FixedBlocksSidebar,
-    desc: FixedBlocksSidebarCategoryDescription
+    desc: FixedBlocksSidebarCategoryDescription,
+    currentCodeResourceService: CurrentCodeResourceService
   ) {
     this.displayName = desc.categoryCaption;
     this.blocks = desc.blocks.map(
-      (blockDesc) => new FixedSidebarBlock(blockDesc)
+      (blockDesc) =>
+        new FixedSidebarBlock(blockDesc, currentCodeResourceService)
     );
   }
 }
@@ -142,10 +173,17 @@ export class FixedBlocksSidebar implements Sidebar {
    */
   public readonly categories: ReadonlyArray<BlocksSidebarCategory>;
 
-  constructor(desc: FixedBlocksSidebarDescription) {
+  constructor(
+    desc: FixedBlocksSidebarDescription,
+    currentCodeResourceService: CurrentCodeResourceService
+  ) {
     this.displayName = desc.caption;
     this.categories = desc.categories.map((catDesc) => {
-      return new FixedBlocksSidebarCategory(this, catDesc);
+      return new FixedBlocksSidebarCategory(
+        this,
+        catDesc,
+        currentCodeResourceService
+      );
     });
   }
 }

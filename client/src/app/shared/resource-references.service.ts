@@ -122,7 +122,7 @@ export class ResourceReferencesService {
         fetchPolicy,
       },
     ];
-    console.debug(...msg);
+    //console.debug(...msg);
 
     const cachedResult = this.explicitApolloCache<
       FullBlockLanguageQuery,
@@ -159,7 +159,7 @@ export class ResourceReferencesService {
       )
       .toPromise();
 
-    console.debug(`DONE:`, ...msg, "=>", result);
+    //console.debug(`DONE:`, ...msg, "=>", result);
     return result ? new BlockLanguage(result) : undefined;
   }
 
@@ -179,7 +179,7 @@ export class ResourceReferencesService {
         fetchPolicy,
       },
     ];
-    console.debug(...msg);
+    //console.debug(...msg);
 
     const cachedResult = this.explicitApolloCache<
       FullGrammarQuery,
@@ -211,7 +211,7 @@ export class ResourceReferencesService {
       )
       .toPromise();
 
-    console.debug(`DONE:`, ...msg, "=>", result);
+    //console.debug(`DONE:`, ...msg, "=>", result);
     return result;
   }
 
@@ -389,19 +389,19 @@ export class ResourceReferencesService {
       // Everything is fine if we have found a value: The
       // mapper must then extract it.
       if (cached) {
-        console.debug("Cache hit: ", cached);
+        //console.debug("Cache hit: ", cached);
         return of(mapFunc(cached));
       } else {
         // If we don't have a value and are the only stop:
         // Indicate that there is no value
         if (fetchPolicy === "cache-only") {
-          console.debug("Cache miss, but only stop for", id);
+          //console.debug("Cache miss, but only stop for", id);
           return of(undefined);
         }
         // If we don't have a value but there is a chance for
         // a hit: Don't produce any value.
         else {
-          console.debug("Cache miss, but network available for", id);
+          //console.debug("Cache miss, but network available for", id);
           return of();
         }
       }

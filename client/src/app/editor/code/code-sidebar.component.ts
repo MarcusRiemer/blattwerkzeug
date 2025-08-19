@@ -113,7 +113,7 @@ export class CodeSidebarComponent {
   readonly fallbackSidebar$: Observable<FixedBlocksSidebar> = combineLatest([
     this.currentBlockLanguage$,
     this._fallbackSidebarDescription$,
-  ]).pipe(map(([_b, desc]) => new FixedBlocksSidebar(desc)));
+  ]).pipe(map(([_b, desc]) => new FixedBlocksSidebar(desc,this._currentCodeResource)));
 
   /**
    * The actual sidebars that need to be spawned for the current language.
