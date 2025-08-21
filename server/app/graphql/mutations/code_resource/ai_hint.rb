@@ -15,7 +15,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
     prompt = generate_ai_prompt(resource)
 
     {
-      answer_text: query_ai("Hallo, schreibe bitte ein SQL Gedicht über folgende Aufgabe: #{resource.name}")
+      answer_text: query_ai(prompt)
     }
   end
 
