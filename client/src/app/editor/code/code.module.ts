@@ -14,6 +14,8 @@ import { LanguageEmittedSelectorComponent } from "./language-emitted-selector.co
 import { CodeSidebarComponent } from "./code-sidebar.component";
 import { CodeSidebarFixedBlocksComponent } from "./code-sidebar-fixed-blocks.component";
 import { ValidationComponent } from "./validation.component";
+import { AiCoachComponent } from "./ai-coach.component";
+import { AssignmentComponent } from "./assignment.component";
 import { UnknownCodeResourceComponent } from "./unknown-code-resource.component";
 import { DraggableBlockListComponent } from "./draggable-block-list.component";
 import { JsonAstComponent } from "./json-ast.component";
@@ -70,6 +72,8 @@ import { NerdamerPipe } from "./math/nerdamer.pipe";
     DatabaseSchemaSidebarComponent,
     DraggableBlockListComponent,
     ValidationComponent,
+    AiCoachComponent,
+    AssignmentComponent,
     CodeSidebarComponent,
     CodeSidebarFixedBlocksComponent,
     LanguageModelSelectorComponent,

@@ -1,0 +1,21 @@
+<h4>AI Coach</h4>
+<div>Timer: {{timerValue}}</div>
+<div *ngIf="timerValue >= 0">
+  <button (click)="copyPromptToClipboard()" class="btn btn-secondary">
+    Copy Prompt to Clipboard
+  </button>
+</div>
+<div>
+  <button (click)="getHintForCurrentCodeResource()" class="btn btn-secondary">
+    Get Hint for Current Code Resource
+  </button>
+  <div *ngIf="aiHint">Hint: {{aiHint}}</div>
+</div>
+<div *ngIf="result$ | async as result">
+  Anzahl der Fehler:
+  <pre> {{ result.errors.length | json }}</pre>
+</div>
+<div *ngIf="countHoles$ | async as countHoles">
+  Anzahl Löcher (fehlende Kinder):
+  <pre>{{ countHoles }}</pre>
+</div>

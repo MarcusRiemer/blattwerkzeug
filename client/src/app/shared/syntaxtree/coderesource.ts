@@ -31,6 +31,8 @@ export class CodeResource extends ProjectResource {
 
   private _blockLanguageId$ = new BehaviorSubject<string>(undefined);
 
+  private _assignment$ = new BehaviorSubject<string>(undefined);
+
   constructor(
     desc: CodeResourceDescription,
     resourceReferences: ResourceReferencesService
@@ -40,6 +42,7 @@ export class CodeResource extends ProjectResource {
     this._tree$.next(new SyntaxTree(desc.ast));
     this._runtimeLanguageId$.next(desc.programmingLanguageId);
     this._blockLanguageId$.next(desc.blockLanguageId);
+    this._assignment$.next(desc.assignment);
   }
 
   /**
@@ -48,6 +51,18 @@ export class CodeResource extends ProjectResource {
   get runtimeLanguageId() {
     return this._runtimeLanguageId$.value;
   }
+
+  /**
+   * @return The assignment of this resource.
+   */
+  get assignment() {
+    return this._assignment$.value;
+  }
+
+  /**
+   * @return An observable value of the assignment this coderesource uses.
+   */
+  readonly assignment$: Observable<string> = this._assignment$.asObservable();
 
   async validatorPeek() {
     const bl = await this.blockLanguagePeek;
@@ -92,6 +107,15 @@ export class CodeResource extends ProjectResource {
    */
   setRuntimeLanguageId(newId: string) {
     this._runtimeLanguageId$.next(newId);
+    this.markSaveRequired();
+  }
+
+  /**
+   * Sets a new assignment for this resource.
+   * @param newAssignment The new assignment to set.
+   */
+  set assignment(newAssignment: string) {
+    this._assignment$.next(newAssignment);
     this.markSaveRequired();
   }
 
@@ -287,6 +311,7 @@ export class CodeResource extends ProjectResource {
       id: this.id,
       name: this.name,
       ast: this.syntaxTreePeek.toModel(),
+      assignment: this.assignment,
       programmingLanguageId: this.runtimeLanguageId,
       blockLanguageId: this.blockLanguageIdPeek,
     };

@@ -16,5 +16,12 @@
         [codeResource]="currentResource"
       ></language-model-selector>
     </div>
+    <div class="col-sm-6">Aufgabenstellung:</div>
+    <div class="col-sm-6">
+      <textarea
+        [(ngModel)]="currentResource.assignment"
+        class="form-control"
+      ></textarea>
+    </div>
   </div>
 </ng-container>

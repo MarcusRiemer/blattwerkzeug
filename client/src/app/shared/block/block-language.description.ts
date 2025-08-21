@@ -170,6 +170,22 @@ export interface ValidatorComponentDescription
 }
 
 /**
+ * Displays an ai-coach
+ */
+export interface AiCoachComponentDescription
+  extends EditorComponentBaseDescription {
+  componentType: "ai-coach";
+}
+
+/**
+ * Displays the assignment
+ */
+export interface AssignmentComponentDescription
+  extends EditorComponentBaseDescription {
+  componentType: "assignment";
+}
+
+/**
  * Displays the compiled program
  */
 export interface CodeGeneratorComponentDescription
@@ -226,6 +242,8 @@ export type EditorComponentDescription =
   | BlocklyComponentDescription
   | QueryPreviewComponentDescription
   | ValidatorComponentDescription
+  | AiCoachComponentDescription
+  | AssignmentComponentDescription
   | CodeGeneratorComponentDescription
   | TruckWorldComponentDescription
   | TruckControllerComponentDescription
