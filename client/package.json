@@ -20,7 +20,7 @@
     "@sentry/browser": "6.2.2",
     "@sentry/integrations": "6.2.2",
     "@types/prettier": "^2.2.3",
-    "angulartics2": "10.0.0",
+    "angulartics2": "10.1.0",
     "apollo-angular": "4.2.1",
     "blockly": "6.20210701.0",
     "bootstrap": "5.0.2",
