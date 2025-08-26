@@ -1,0 +1,50 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'A: Streckenname DE = ENG'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 1f03e599-3aae-4fe7-a756-26d153c88494
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
+    "from", "children": {"tables": [{"name": "tableIntroduction", "language": "sql",
+    "properties": {"name": "track"}}]}, "language": "sql"}], "where": [{"name": "where",
+    "children": {"expressions": [{"name": "binaryExpression", "children": {"lhs":
+    [{"name": "columnName", "language": "sql", "properties": {"columnName": "name_de",
+    "refTableName": "track"}}], "rhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "name_eng", "refTableName": "track"}}], "operator":
+    [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
+    "="}}]}, "language": "sql"}]}, "language": "sql"}], "select": [{"name": "select",
+    "children": {"columns": [{"name": "columnName", "language": "sql", "properties":
+    {"columnName": "name_de", "refTableName": "track"}}, {"name": "columnName", "language":
+    "sql", "properties": {"columnName": "name_eng", "refTableName": "track"}}]}, "language":
+    "sql"}], "groupBy": []}, "language": "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2025-07-22 08:06:07.182903000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2025-08-19 10:30:30.125061000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: |-
+    SELECT track.name_de, track.name_eng
+    FROM track
+    WHERE track.name_de = track.name_eng
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+  value_before_type_cast: Zeige alle Strecken, deren Name auf Deutsch und auf Englisch
+    gleich ist
+new_record: false
+active_record_yaml_version: 2

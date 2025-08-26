@@ -1,0 +1,87 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'B: Spieler Platzierung Bananen Cup'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 6dac0064-5495-4d15-93ee-5a3a0bbec754
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
+    "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
+    "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "id", "refTableName": "player"}}], "rhs": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "player_id", "refTableName":
+    "race"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
+    {"operator": "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction",
+    "language": "sql", "properties": {"name": "player"}}]}, "language": "sql"}, {"name":
+    "innerJoinOn", "children": {"on": [{"name": "binaryExpression", "children": {"lhs":
+    [{"name": "columnName", "language": "sql", "properties": {"columnName": "id",
+    "refTableName": "track"}}], "rhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "track_id", "refTableName": "race"}}], "operator":
+    [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
+    "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction", "language":
+    "sql", "properties": {"name": "track"}}]}, "language": "sql"}, {"name": "innerJoinOn",
+    "children": {"on": [{"name": "binaryExpression", "children": {"lhs": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "track_id", "refTableName":
+    "track_cup"}}], "rhs": [{"name": "columnName", "language": "sql", "properties":
+    {"columnName": "id", "refTableName": "track"}}], "operator": [{"name": "relationalOperator",
+    "language": "sql", "properties": {"operator": "="}}]}, "language": "sql"}], "table":
+    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "track_cup"}}]},
+    "language": "sql"}, {"name": "innerJoinOn", "children": {"on": [{"name": "binaryExpression",
+    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "cup_id", "refTableName": "track_cup"}}], "rhs": [{"name": "columnName", "language":
+    "sql", "properties": {"columnName": "id", "refTableName": "cup"}}], "operator":
+    [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
+    "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction", "language":
+    "sql", "properties": {"name": "cup"}}]}, "language": "sql"}], "tables": [{"name":
+    "tableIntroduction", "language": "sql", "properties": {"name": "race"}}]}, "language":
+    "sql"}], "where": [{"name": "where", "children": {"expressions": [{"name": "binaryExpression",
+    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "name", "refTableName": "cup"}}], "rhs": [{"name": "constant", "language": "sql",
+    "properties": {"value": "''Bananen-Cup''"}}], "operator": [{"name": "relationalOperator",
+    "language": "sql", "properties": {"operator": "="}}]}, "language": "sql"}, {"name":
+    "whereAdditional", "children": {"expression": [{"name": "binaryExpression", "children":
+    {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "ccm", "refTableName": "cup"}}], "rhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "ccm", "refTableName": "race"}}], "operator": [{"name":
+    "relationalOperator", "language": "sql", "properties": {"operator": "="}}]}, "language":
+    "sql"}]}, "language": "sql", "properties": {"operator": "AND"}}]}, "language":
+    "sql"}], "select": [{"name": "select", "children": {"columns": [{"name": "columnName",
+    "language": "sql", "properties": {"columnName": "name_de", "refTableName": "track"}},
+    {"name": "columnName", "language": "sql", "properties": {"columnName": "place",
+    "refTableName": "race"}}, {"name": "columnName", "language": "sql", "properties":
+    {"columnName": "name", "refTableName": "player"}}]}, "language": "sql"}], "groupBy":
+    [], "orderBy": [{"name": "orderBy", "children": {"expressions": [{"name": "columnName",
+    "language": "sql", "properties": {"columnName": "name_de", "refTableName": "track"}},
+    {"name": "columnName", "language": "sql", "properties": {"columnName": "place",
+    "refTableName": "race"}}]}, "language": "sql"}]}, "language": "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2025-07-22 11:41:00.000677000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2025-08-19 10:38:29.759289000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: "SELECT track.name_de, race.place, player.name\nFROM race\n\tINNER
+    JOIN player ON player.id = race.player_id\n\tINNER JOIN track ON track.id = race.track_id\n\tINNER
+    JOIN track_cup ON track_cup.track_id = track.id\n\tINNER JOIN cup ON track_cup.cup_id
+    = cup.id\nWHERE cup.name = 'Bananen-Cup'\n\tAND cup.ccm = race.ccm\nORDER BY track.name_de,
+    race.place"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+  value_before_type_cast: Zeige die Streckennamen, die Platzierung und die Spielernamen
+    bei den Rennen, die im Cup mit dem Namen 'Bananen-Cup' gefahren wurden
+new_record: false
+active_record_yaml_version: 2

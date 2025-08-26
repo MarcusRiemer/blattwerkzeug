@@ -1,0 +1,64 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'C: Anz Fahrer pro Spieler'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 69680db7-4c55-4d03-b2b1-fab1b15098f1
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
+    "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
+    "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "player_id", "refTableName": "race"}}], "rhs": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "id", "refTableName":
+    "player"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
+    {"operator": "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction",
+    "language": "sql", "properties": {"name": "race"}}]}, "language": "sql"}, {"name":
+    "innerJoinOn", "children": {"on": [{"name": "binaryExpression", "children": {"lhs":
+    [{"name": "columnName", "language": "sql", "properties": {"columnName": "id",
+    "refTableName": "driver"}}], "rhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "driver_id", "refTableName": "race"}}], "operator":
+    [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
+    "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction", "language":
+    "sql", "properties": {"name": "driver"}}]}, "language": "sql"}], "tables": [{"name":
+    "tableIntroduction", "language": "sql", "properties": {"name": "player"}}]}, "language":
+    "sql"}], "where": [], "select": [{"name": "select", "children": {"columns": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "name", "refTableName":
+    "driver"}}, {"name": "functionCall", "children": {"distinct": [], "arguments":
+    []}, "language": "sql", "properties": {"name": "COUNT"}}, {"name": "columnName",
+    "language": "sql", "properties": {"columnName": "name", "refTableName": "player"}}],
+    "distinct": []}, "language": "sql"}], "groupBy": [{"name": "groupBy", "children":
+    {"expressions": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "name", "refTableName": "driver"}}, {"name": "columnName", "language": "sql",
+    "properties": {"columnName": "name", "refTableName": "player"}}]}, "language":
+    "sql"}], "orderBy": [{"name": "orderBy", "children": {"expressions": [{"name":
+    "functionCall", "children": {"distinct": [], "arguments": []}, "language": "sql",
+    "properties": {"name": "COUNT"}}]}, "language": "sql"}]}, "language": "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2025-07-22 14:16:16.490487000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2025-08-19 10:41:23.799820000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: "SELECT driver.name, COUNT(), player.name\nFROM player\n\tINNER
+    JOIN race ON race.player_id = player.id\n\tINNER JOIN driver ON driver.id = race.driver_id\nGROUP
+    BY driver.name, player.name\nORDER BY COUNT()"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+  value_before_type_cast: Zeige die Fahrernamen, die Spielernamen und wie oft ein
+    Spieler den jeweiligen Fahrer gefahren ist
+new_record: false
+active_record_yaml_version: 2

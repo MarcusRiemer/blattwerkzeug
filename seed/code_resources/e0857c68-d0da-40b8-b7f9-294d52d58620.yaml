@@ -1,0 +1,69 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'B: Retro Strecken Blitz Cup'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: e0857c68-d0da-40b8-b7f9-294d52d58620
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
+    "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
+    "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "track_id", "refTableName": "track_cup"}}], "rhs":
+    [{"name": "columnName", "language": "sql", "properties": {"columnName": "id",
+    "refTableName": "track"}}], "operator": [{"name": "relationalOperator", "language":
+    "sql", "properties": {"operator": "="}}]}, "language": "sql"}], "table": [{"name":
+    "tableIntroduction", "language": "sql", "properties": {"name": "track_cup"}}]},
+    "language": "sql"}, {"name": "innerJoinOn", "children": {"on": [{"name": "binaryExpression",
+    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "id", "refTableName": "cup"}}], "rhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "cup_id", "refTableName": "track_cup"}}], "operator":
+    [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
+    "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction", "language":
+    "sql", "properties": {"name": "cup"}}]}, "language": "sql"}], "tables": [{"name":
+    "tableIntroduction", "language": "sql", "properties": {"name": "track"}}]}, "language":
+    "sql"}], "where": [{"name": "where", "children": {"expressions": [{"name": "binaryExpression",
+    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "track_origin", "refTableName": "track"}}], "rhs": [{"name": "constant", "language":
+    "sql", "properties": {"value": "''wii''"}}], "operator": [{"name": "relationalOperator",
+    "language": "sql", "properties": {"operator": "NOT LIKE"}}]}, "language": "sql"},
+    {"name": "whereAdditional", "children": {"expression": [{"name": "binaryExpression",
+    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "name", "refTableName": "cup"}}], "rhs": [{"name": "constant", "language": "sql",
+    "properties": {"value": "''Blitz%''"}}], "operator": [{"name": "relationalOperator",
+    "language": "sql", "properties": {"operator": "LIKE"}}]}, "language": "sql"}]},
+    "language": "sql", "properties": {"operator": "AND"}}]}, "language": "sql"}],
+    "select": [{"name": "select", "children": {"columns": [{"name": "columnName",
+    "language": "sql", "properties": {"columnName": "name_de", "refTableName": "track"}},
+    {"name": "columnName", "language": "sql", "properties": {"columnName": "track_origin",
+    "refTableName": "track"}}], "distinct": [{"name": "distinct", "language": "sql"}]},
+    "language": "sql"}], "groupBy": []}, "language": "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2025-07-22 11:13:36.350243000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2025-08-19 11:04:38.238929000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: "SELECT DISTINCT track.name_de, track.track_origin\nFROM
+    track\n\tINNER JOIN track_cup ON track_cup.track_id = track.id\n\tINNER JOIN cup
+    ON cup.id = track_cup.cup_id\nWHERE track.track_origin NOT LIKE 'wii'\n\tAND cup.name
+    LIKE 'Blitz%'"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+  value_before_type_cast: Zeige die Namen aller Retrostrecken im Cup mit dem Namen
+    'Blitz-Cup' und von welcher Konsole sie kommen.
+new_record: false
+active_record_yaml_version: 2
