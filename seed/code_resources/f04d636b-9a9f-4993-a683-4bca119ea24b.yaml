@@ -1,0 +1,60 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'C: Avg Regenbogenpiste vgl. Weltrekord(e)'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: f04d636b-9a9f-4993-a683-4bca119ea24b
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
+    "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
+    "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "track_id", "refTableName": "race"}}], "rhs": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "id", "refTableName":
+    "track"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
+    {"operator": "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction",
+    "language": "sql", "properties": {"name": "race"}}]}, "language": "sql"}], "tables":
+    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "track"}}]},
+    "language": "sql"}], "where": [{"name": "where", "children": {"expressions": [{"name":
+    "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "name_de", "refTableName": "track"}}], "rhs": [{"name":
+    "constant", "language": "sql", "properties": {"value": "''Regenbogen%''"}}], "operator":
+    [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
+    "LIKE"}}]}, "language": "sql"}]}, "language": "sql"}], "select": [{"name": "select",
+    "children": {"columns": [{"name": "columnName", "language": "sql", "properties":
+    {"columnName": "name_de", "refTableName": "track"}}, {"name": "columnName", "language":
+    "sql", "properties": {"columnName": "world_record_shortcuts_allowed_ms", "refTableName":
+    "track"}}, {"name": "columnName", "language": "sql", "properties": {"columnName":
+    "world_record_shortcuts_not_allowed_ms", "refTableName": "track"}}, {"name": "functionCall",
+    "children": {"arguments": [{"name": "columnName", "language": "sql", "properties":
+    {"columnName": "time_ms", "refTableName": "race"}}]}, "language": "sql", "properties":
+    {"name": "AVG"}}]}, "language": "sql"}], "groupBy": []}, "language": "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2025-07-22 12:19:44.688815000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2025-08-19 10:48:54.390511000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: "SELECT track.name_de, track.world_record_shortcuts_allowed_ms,
+    track.world_record_shortcuts_not_allowed_ms, AVG(race.time_ms)\nFROM track\n\tINNER
+    JOIN race ON race.track_id = track.id\nWHERE track.name_de LIKE 'Regenbogen%'"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+  value_before_type_cast: 'Zeige die durchschnittliche Fahrzeit bei den gefahrenen
+    Rennen sowie die Weltrekorde mit und ohne Abkürzungen für die Strecke mit dem
+    deutschen Namen ''Regenbogen-Boulevard'' '
+new_record: false
+active_record_yaml_version: 2

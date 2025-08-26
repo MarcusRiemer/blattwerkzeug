@@ -1,0 +1,61 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'C: Anz. Gewinne pro Fahrer'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 4dd78d61-a1cc-481d-9292-46d3ba7e3063
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
+    "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
+    "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "driver_id", "refTableName": "race"}}], "rhs": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "id", "refTableName":
+    "driver"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
+    {"operator": "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction",
+    "language": "sql", "properties": {"name": "race"}}]}, "language": "sql"}], "tables":
+    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "driver"}}]},
+    "language": "sql"}], "where": [{"name": "where", "children": {"expressions": [{"name":
+    "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "place", "refTableName": "race"}}], "rhs": [{"name":
+    "constant", "language": "sql", "properties": {"value": "''1''"}}], "operator":
+    [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
+    "="}}]}, "language": "sql"}]}, "language": "sql"}], "select": [{"name": "select",
+    "children": {"columns": [{"name": "functionCall", "children": {"arguments": []},
+    "language": "sql", "properties": {"name": "COUNT"}}, {"name": "columnName", "language":
+    "sql", "properties": {"columnName": "name", "refTableName": "driver"}}]}, "language":
+    "sql"}], "groupBy": [{"name": "groupBy", "children": {"expressions": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "name", "refTableName":
+    "driver"}}]}, "language": "sql"}], "orderBy": [{"name": "orderBy", "children":
+    {"expressions": [{"name": "sortOrder", "children": {"expression": [{"name": "functionCall",
+    "children": {"arguments": []}, "language": "sql", "properties": {"name": "COUNT"}}]},
+    "language": "sql", "properties": {"order": "DESC"}}]}, "language": "sql"}]}, "language":
+    "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2025-07-22 14:08:56.596057000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2025-08-19 10:46:03.083467000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: "SELECT COUNT(), driver.name\nFROM driver\n\tINNER JOIN
+    race ON race.driver_id = driver.id\nWHERE race.place = '1'\nGROUP BY driver.name\nORDER
+    BY COUNT() DESC"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+  value_before_type_cast: Zeige in absteigender Reihenfolge die Namen der Fahrer und
+    die Anzahl der Gewinne (1. Platz)
+new_record: false
+active_record_yaml_version: 2

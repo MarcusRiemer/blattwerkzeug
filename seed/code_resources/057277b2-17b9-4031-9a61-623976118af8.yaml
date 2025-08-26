@@ -1,0 +1,45 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'A: Fahrer freischaltbar'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 057277b2-17b9-4031-9a61-623976118af8
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
+    "from", "children": {"tables": [{"name": "tableIntroduction", "language": "sql",
+    "properties": {"name": "driver"}}]}, "language": "sql"}], "where": [{"name": "where",
+    "children": {"expressions": [{"name": "columnName", "language": "sql", "properties":
+    {"columnName": "unlock_necessary", "refTableName": "driver"}}]}, "language": "sql"}],
+    "select": [{"name": "select", "children": {"columns": [{"name": "columnName",
+    "language": "sql", "properties": {"columnName": "name", "refTableName": "driver"}}]},
+    "language": "sql"}], "groupBy": []}, "language": "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2025-07-22 08:15:21.256542000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2025-08-26 11:53:03.912062000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: |-
+    SELECT driver.name
+    FROM driver
+    WHERE driver.unlock_necessary
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+  value_before_type_cast: Zeige die Namen aller Fahrer an, die freigeschaltet werden
+    müssen.
+new_record: false
+active_record_yaml_version: 2
