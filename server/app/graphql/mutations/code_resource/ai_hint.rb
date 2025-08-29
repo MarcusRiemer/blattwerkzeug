@@ -9,9 +9,8 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
 
   field :answer_text, String, null: false
 
-  def resolve(id:, compiled_source:)
+  def resolve(id:, compiled_source:, last_dragged_block: nil) #TODO: Fragen, last_dragged_block = null wird aus dem Frontend eig bereits mitgegeben, daher explizites setzen nicht notw? 
     resource = CodeResource.find_by!(id: id)
-    # last_dragged_block = nil #TODO: Fragen, wird aus dem Frontend eig bereits mitgegeben, daher explizites setzen nicht notw?
 
     authorize resource.project, :ai_hint?
 
