@@ -10,6 +10,7 @@
       *ngFor="let block of category.blocks"
       (mousedown)="startDrag($event, block)"
       class="block rounded"
+      [@background]="getBackgroundState(block.displayName) | async"
     >
       {{ block.displayName }}
     </div>
