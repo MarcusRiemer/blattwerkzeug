@@ -1,6 +1,7 @@
 // Documentation at https://github.com/prettier/prettier/blob/main/commands.md
 // will be helpful when following this code.
 import { builders, printer } from "prettier/doc";
+import { EmittedHole } from "./codegenerator";
 import { OutputSeparator } from "./codegenerator-process";
 import {
   ensureCodeGenType,
@@ -19,6 +20,10 @@ import {
 import { SyntaxNode } from "./syntaxtree";
 
 type Doc = builders.Doc;
+
+type GeneratorState = {
+  holes: EmittedHole[]
+}
 
 function joinPrettierDocuments(docs: Doc[], between: Doc[] | Doc): Doc[] {
   between = Array.isArray(between) ? builders.concat(between) : between;
@@ -106,7 +111,8 @@ function processBlock(
   attributes: NodeAttributeDescription[],
   types: NamedLanguages | VisualisedLanguages,
   node: SyntaxNode,
-  parentOrientation: Orientation
+  parentOrientation: Orientation,
+  state: GeneratorState
 ): Doc[] {
   const toReturn: Doc[] = [];
 
@@ -148,7 +154,7 @@ function processBlock(
         const childDocs = children.flatMap((childNode) => {
           const t = ensureCodeGenType(types, childNode);
           // A block is always considered to work horizontally
-          return processBlock(t.attributes, types, childNode, "horizontal");
+          return processBlock(t.attributes, types, childNode, "horizontal", state);
         });
 
         // Only actually build the subtree if there are any children inside
@@ -167,7 +173,7 @@ function processBlock(
       // therefore handled in a separate case although it looks sort
       // of similar to syntax tree recursion.
       case "container": {
-        const childDocs = processBlock(a.children, types, node, a.orientation);
+        const childDocs = processBlock(a.children, types, node, a.orientation, state);
 
         // Did we add more than possibly newlines?
         if (hasAnyNonWhitespace(childDocs)) {
@@ -219,14 +225,13 @@ function processBlock(
  *
  * @param types The types that are the basis for code generation
  * @param node  The node to process
- * @param process The current code generation process
  */
 export function prettierCodeGeneratorFromGrammar(
   types: NamedLanguages | VisualisedLanguages,
   node: SyntaxNode
 ): string {
   const t = ensureCodeGenType(types, node);
-  const prettierTree = processBlock(t.attributes, types, node, "horizontal");
+  const prettierTree = processBlock(t.attributes, types, node, "horizontal", { holes: [] });
   const printed = printer.printDocToString(
     // Don't leave last lines with nothing but whitespace
     builders.concat([...prettierTree, builders.trim]),

@@ -137,6 +137,10 @@ export function printableError(e: ValidationError) {
   return toReturn;
 }
 
+export function isHole(e: ValidationError) {
+  return e.code === ErrorCodes.MissingChild
+}
+
 type ReferencedResources = {
   [id: string]: Desc.NodePropertyReferenceDescription["base"];
 };
