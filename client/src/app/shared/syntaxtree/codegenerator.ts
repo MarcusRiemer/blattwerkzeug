@@ -4,6 +4,8 @@ import { prettierCodeGeneratorFromGrammar } from "./codegenerator-prettier";
 import { CodeGeneratorProcess, NodeConverter } from "./codegenerator-process";
 import { NamedLanguages, VisualisedLanguages } from "./grammar.description";
 import { SyntaxNode, SyntaxTree, QualifiedTypeName } from "./syntaxtree";
+import { isHole, ValidationResult } from "./validation-result";
+import { Validator } from "./validator";
 
 /**
  * Used to register a NodeConverter for a certain type.
@@ -19,6 +21,17 @@ export interface NodeConverterRegistration {
 export type RegisteredCodeGenerators = {
   [langName: string]: { [typeName: string]: NodeConverter<any> };
 };
+
+/**
+ * Marks a hole that should be explitly emitted as part of
+ * code generation. Used for e.g. the AI assistant to have
+ * a possibility to explicitly point to holes in the tree.
+ */
+export type EmittedHole = {
+  node: SyntaxNode,
+  categoryName: string,
+  holeText: string,
+}
 
 /**
  * Transforms an AST into its compiled string representation.
@@ -68,6 +81,18 @@ export class CodeGenerator {
       }
       this._callbacks[t.languageName][t.typeName] = converter;
     }
+  }
+
+  emitWithHoles(ast: SyntaxNode | SyntaxTree, validator: Validator): string {
+    let rootNode: SyntaxNode = undefined;
+
+    if (ast instanceof SyntaxTree && !ast.isEmpty) {
+      rootNode = ast.rootNode;
+    } else if (ast instanceof SyntaxNode) {
+      rootNode = ast;
+    }
+
+    return this.emit(rootNode);
   }
 
   /**
@@ -154,5 +179,16 @@ export class CodeGenerator {
     } else {
       return this._callbacks[t.languageName][t.typeName];
     }
+  }
+
+  _computeHolesFromValidation(result: ValidationResult): EmittedHole[] {
+    return (
+      result.errors
+        .filter(e => isHole(e))
+        .map((e, index) => {
+        let categoryName = e.data["category"] ?? "__unknown__"
+        return { node: e.node, categoryName, holeText: `$${index}$` }
+      })
+    )
   }
 }
