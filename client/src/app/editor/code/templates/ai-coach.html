@@ -12,8 +12,12 @@
   <div *ngIf="aiHint">Hint: {{aiHint}}</div>
 </div>
 <div>
-  <button (click)="provideHighlightInformation()" class="btn btn-secondary">
-    Highlight selected Sidebar Block
+  <input type="text" [(ngModel)]="highlightValue" />
+  <button
+    (click)="provideHighlightInformation(highlightValue)"
+    class="btn btn-secondary"
+  >
+    Highlight selected Sidebar Block for {{highlightValue}}
   </button>
 </div>
 <div *ngIf="result$ | async as result">
