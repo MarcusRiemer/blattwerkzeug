@@ -6,9 +6,8 @@ import { first, map, switchMap, withLatestFrom } from "rxjs/operators";
 import { DragService } from "../drag.service";
 import { BehaviorSubject, Subscription, interval } from "rxjs";
 import { DatabaseSchemaService } from "../database-schema.service";
-import { FixedBlocksSidebarDescription } from "src/app/shared/block";
 import { AiHintCodeResourceGQL } from "src/generated/graphql";
-import { CodeSidebarHighlightService } from "./code-sidebar-highlight.service";
+import { CodeHighlightService } from "./code-highlight.service";
 
 /**
  * Assists the user in writing code by providing feedback and tips.
@@ -25,13 +24,14 @@ export class AiCoachComponent {
   readonly lastDraggedBlock$ =
     this._behaviorSubjectLastDraggedBlock.asObservable();
   public aiHint: string;
+  public highlightValue = "";
 
   constructor(
     private _currentCodeResource: CurrentCodeResourceService,
     private _dragService: DragService,
     private _databaseSchemaService: DatabaseSchemaService,
     private _aiHintCodeResource: AiHintCodeResourceGQL,
-    private _highlightService: CodeSidebarHighlightService
+    private _highlightService: CodeHighlightService
   ) {
     /**
      *  Subscribe to the current drag service to track the currently dragged block
@@ -261,8 +261,9 @@ export class AiCoachComponent {
   /**
    * Provides the information about which sidebar block to highlight
    */
-  provideHighlightInformation() {
-    this._highlightService.setHighlightedBlock("SELECT"); //alternativ dann den gesamten Hint erstmal zurechtschneiden und nach passenden Worten suchen
+  provideHighlightInformation(value: string) {
+    this._highlightService.clearHighlight();
+    this._highlightService.setHighlightedBlock(value); //alternativ dann den gesamten Hint erstmal zurechtschneiden und nach passenden Worten suchen
   }
 
   /**

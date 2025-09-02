@@ -5,7 +5,7 @@ import { FixedSidebarBlock, FixedBlocksSidebar } from "../../shared/block";
 
 import { DragService } from "../drag.service";
 import { state, style, trigger } from "@angular/animations";
-import { CodeSidebarHighlightService } from "./code-sidebar-highlight.service";
+import { CodeHighlightService } from "./code-highlight.service";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
@@ -28,17 +28,17 @@ export class DraggableBlockListComponent {
   @Input()
   codeResource: CodeResource;
 
-  blockStates: Record<string, SidebarBackgroundState>;
-
   constructor(
     private _dragService: DragService,
-    private _highlightService: CodeSidebarHighlightService
+    private _codeHighlightService: CodeHighlightService
   ) {}
 
   /**
    * The user has decided to start dragging something from the sidebar.
    */
   startDrag(evt: DragEvent, block: FixedSidebarBlock) {
+    this._codeHighlightService.clearHighlight();
+
     try {
       const tailoredNode = block.tailoredBlockDescription(
         this.codeResource.syntaxTreePeek
@@ -49,19 +49,5 @@ export class DraggableBlockListComponent {
     } catch (e) {
       alert(e);
     }
-  }
-
-  /**
-   * Gets the current background state for a draggable block
-   *
-   * @param displayName name of the draggable block
-   * @returns state of the background (neutral or highlighted)
-   */
-  getBackgroundState(displayName: string): Observable<string> {
-    return this._highlightService
-      .isHighlighted(displayName)
-      .pipe(
-        map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral"))
-      );
   }
 }

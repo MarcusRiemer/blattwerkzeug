@@ -10,12 +10,16 @@ import {
   TruckWorldTilesSidebar,
 } from "../shared/block";
 import { DatabaseSchemaService } from "./database-schema.service";
+import { CodeHighlightService } from "./code/code-highlight.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class SidebarDataService {
-  constructor(private _databaseSchema: DatabaseSchemaService) {}
+  constructor(
+    private _databaseSchema: DatabaseSchemaService,
+    private _codeHighlightService: CodeHighlightService
+  ) {}
 
   /**
    * Creates proper Sidebar instances from various descriptions.
@@ -27,7 +31,10 @@ export class SidebarDataService {
     return desc.map((sidebarDesc) => {
       switch (sidebarDesc.type) {
         case "fixedBlocks":
-          return new FixedBlocksSidebar(sidebarDesc);
+          return new FixedBlocksSidebar(
+            sidebarDesc,
+            this._codeHighlightService
+          );
         case "databaseSchema":
           return new DatabaseSchemaSidebar(this._databaseSchema.currentSchema);
         case "truckProgramUserFunctions":

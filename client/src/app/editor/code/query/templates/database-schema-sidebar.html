@@ -4,7 +4,10 @@
 </h5>
 <div class="schema-tables">
   <details *ngFor="let table of possibleTables;" class="ast">
-    <summary class="block rounded">
+    <summary
+      class="block rounded"
+      [@background]="highlights[table.name] | async"
+    >
       <span (dragstart)="startTableDrag($event, table)" draggable="true">
         {{ table.name }}
       </span>
@@ -15,6 +18,7 @@
         (dragstart)="startColumnDrag($event, table, tableColumn)"
         draggable="true"
         class="block rounded"
+        [@background]="highlights[table.name + '.' + tableColumn.name] | async"
       >
         {{ tableColumn.name }}
       </li>

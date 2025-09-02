@@ -8,6 +8,9 @@ import {
   isNodeDerivedPropertyDescription,
 } from "./block.description";
 import { Sidebar } from "./sidebar";
+import { Observable } from "rxjs";
+import { map, shareReplay } from "rxjs/operators";
+import { CodeHighlightService } from "../../editor/code/code-highlight.service";
 
 /**
  * Resolves all runtime derived values for a tailored node description. The
@@ -80,8 +83,26 @@ export class FixedSidebarBlock {
    */
   public readonly defaultNode: NodeTailoredDescription[];
 
-  constructor(desc: SidebarBlockDescription) {
+  public readonly isHighlighted$: Observable<boolean>;
+
+  public readonly highlightState$: Observable<string>;
+
+  constructor(
+    desc: SidebarBlockDescription,
+    codeHighlightService: CodeHighlightService
+  ) {
     this.displayName = desc.displayName;
+
+    //TODO: Do I really have to separate both and use shareReplay twice?
+    this.isHighlighted$ = codeHighlightService.highlightedBlock$.pipe(
+      map((highlighted) => highlighted === this.displayName),
+      shareReplay(1)
+    );
+
+    this.highlightState$ = this.isHighlighted$.pipe(
+      map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
+      shareReplay(1)
+    );
 
     if (Array.isArray(desc.defaultNode)) {
       this.defaultNode = desc.defaultNode;
@@ -113,11 +134,12 @@ export class FixedBlocksSidebarCategory implements BlocksSidebarCategory {
 
   constructor(
     _parent: FixedBlocksSidebar,
-    desc: FixedBlocksSidebarCategoryDescription
+    desc: FixedBlocksSidebarCategoryDescription,
+    codeHighlightService: CodeHighlightService
   ) {
     this.displayName = desc.categoryCaption;
     this.blocks = desc.blocks.map(
-      (blockDesc) => new FixedSidebarBlock(blockDesc)
+      (blockDesc) => new FixedSidebarBlock(blockDesc, codeHighlightService)
     );
   }
 }
@@ -142,10 +164,17 @@ export class FixedBlocksSidebar implements Sidebar {
    */
   public readonly categories: ReadonlyArray<BlocksSidebarCategory>;
 
-  constructor(desc: FixedBlocksSidebarDescription) {
+  constructor(
+    desc: FixedBlocksSidebarDescription,
+    codeHighlightService: CodeHighlightService
+  ) {
     this.displayName = desc.caption;
     this.categories = desc.categories.map((catDesc) => {
-      return new FixedBlocksSidebarCategory(this, catDesc);
+      return new FixedBlocksSidebarCategory(
+        this,
+        catDesc,
+        codeHighlightService
+      );
     });
   }
 }

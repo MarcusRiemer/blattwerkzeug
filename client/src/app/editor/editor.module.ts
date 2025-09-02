@@ -31,7 +31,7 @@ import { EditorDebugMenuComponent } from "./debug-menu.component";
 
 import { SettingsComponent } from "./project-settings/settings.component";
 import { MembersComponent } from "./project-settings/members.component";
-import { CodeSidebarHighlightService } from "./code/code-sidebar-highlight.service";
+import { CodeHighlightService } from "./code/code-highlight.service";
 
 @NgModule({
   imports: [
@@ -66,7 +66,7 @@ import { CodeSidebarHighlightService } from "./code/code-sidebar-highlight.servi
     SidebarService,
     SidebarDataService,
     DragService,
-    CodeSidebarHighlightService,
+    CodeHighlightService,
   ],
   exports: [
     EditorComponent,

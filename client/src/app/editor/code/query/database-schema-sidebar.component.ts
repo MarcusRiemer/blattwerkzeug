@@ -7,17 +7,53 @@ import { SIDEBAR_MODEL_TOKEN } from "../../editor.token";
 
 import { DragService } from "../../drag.service";
 import { EditDatabaseSchemaService } from "../../edit-database-schema.service";
+import { Observable } from "rxjs";
+import { CodeHighlightService } from "../code-highlight.service";
+import { map, shareReplay } from "rxjs/operators";
+import { state, style, trigger } from "@angular/animations";
 
 @Component({
   templateUrl: "templates/database-schema-sidebar.html",
+  animations: [
+    trigger("background", [
+      state("neutral", style({ background: "white" })),
+      state("highlighted", style({ background: "#d63384" })),
+    ]),
+  ],
 })
 export class DatabaseSchemaSidebarComponent {
+  readonly highlights: Record<string, Observable<string>> = {};
+
   constructor(
     @Inject(SIDEBAR_MODEL_TOKEN)
     private _codeResource: CodeResource,
     private _dragService: DragService,
-    private _schemaService: EditDatabaseSchemaService
-  ) {}
+    private _schemaService: EditDatabaseSchemaService,
+    private codeHighlightService: CodeHighlightService
+  ) {
+    this.possibleTables.forEach((table) => {
+      this.highlights[table.name] = codeHighlightService.highlightedBlock$.pipe(
+        map((highlighted) =>
+          highlighted === table.name || highlighted.startsWith(`${table.name}.`)
+            ? "highlighted"
+            : "neutral"
+        ),
+        shareReplay(1)
+      );
+
+      table.columns.forEach((column) => {
+        this.highlights[`${table.name}.${column.name}`] =
+          codeHighlightService.highlightedBlock$.pipe(
+            map((highlighted) =>
+              highlighted === `${table.name}.${column.name}`
+                ? "highlighted"
+                : "neutral"
+            ),
+            shareReplay(1)
+          );
+      });
+    });
+  }
 
   /**
    * @return The tables that should be shown.
@@ -37,6 +73,8 @@ export class DatabaseSchemaSidebarComponent {
    * The user has decided to start dragging something from the sidebar.
    */
   startTableDrag(evt: DragEvent, table: Table) {
+    this.codeHighlightService.clearHighlight();
+
     try {
       this._dragService.dragStart(evt, [
         {
@@ -56,6 +94,8 @@ export class DatabaseSchemaSidebarComponent {
    * The user has decided to start dragging something from the sidebar.
    */
   startColumnDrag(evt: DragEvent, table: Table, column: Column) {
+    this.codeHighlightService.clearHighlight();
+
     try {
       this._dragService.dragStart(evt, [
         {
