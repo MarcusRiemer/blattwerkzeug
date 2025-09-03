@@ -24,7 +24,6 @@ export class AiCoachComponent {
   readonly lastDraggedBlock$ =
     this._behaviorSubjectLastDraggedBlock.asObservable();
   public aiHint: string;
-  public highlightValue = "";
 
   constructor(
     private _currentCodeResource: CurrentCodeResourceService,
@@ -124,26 +123,6 @@ export class AiCoachComponent {
     switchMap((resource) => resource.emittedLanguage$)
   );
 
-  // /**
-  //  * Receive the current assignment from the code resource.
-  //  */
-  // readonly assignment$ = this.codeResource$.pipe(
-  //   switchMap((resource) => resource.assignment$)
-  // );
-
-  // /**
-  //  * Receive all database tables with their fields from the database schema service.
-  //  */
-  // readonly allDatabaseTablesWithFields$ =
-  //   this._databaseSchemaService.currentSchema.pipe(
-  //     map((tables) =>
-  //       tables.map((table) => ({
-  //         name: table.name,
-  //         fields: table.columns.map((column) => column.name),
-  //       }))
-  //     )
-  //   );
-
   /**
    * Translates the last dragged block from json format into code.
    * @param lastDraggedBlock The last dragged block in json format.
@@ -159,74 +138,6 @@ export class AiCoachComponent {
     const blockTree = new SyntaxTree(lastDraggedBlock[0] ?? lastDraggedBlock);
     return lang.emitTree(blockTree);
   }
-
-  // /**
-  //  * @returns The current block language's blocks with the category names as shown in the sidebar in JSON format.
-  //  */
-  // async getCurrentBlockLanguageBlocksWithCategoriesJSON() {
-  //   const currentBlockLanguage = await this.currentBlockLanguage$
-  //     .pipe(first())
-  //     .toPromise();
-
-  //   const currentBlockLanguageIndex =
-  //     currentBlockLanguage.sidebarDesriptions.findIndex(
-  //       (c) => c.type === "fixedBlocks"
-  //     );
-
-  //   if (currentBlockLanguageIndex < 0) {
-  //     console.warn(
-  //       "No fixed blocks found in the current block language",
-  //       currentBlockLanguage
-  //     );
-  //     return [];
-  //   }
-
-  //   const blocksWithCategories = (
-  //     currentBlockLanguage.sidebarDesriptions[
-  //       currentBlockLanguageIndex
-  //     ] as FixedBlocksSidebarDescription
-  //   ).categories.map((category) => ({
-  //     name: category.categoryCaption,
-  //     blocks: category.blocks.map((block) => ({
-  //       name: block.displayName,
-  //     })),
-  //   }));
-
-  //   return blocksWithCategories;
-  // }
-
-  // /**
-  //  * @returns A prompt that lists all available blocks in the current block language with their categories.
-  //  */
-  // async getCurrentBlockLanguageBlocksWithCategoriesPrompt() {
-  //   const blocksWithCategoriesJSON =
-  //     await this.getCurrentBlockLanguageBlocksWithCategoriesJSON();
-
-  //   let prompt = `Ich habe lediglich Zugriff auf die folgenden Code-Blöcke:\n`;
-  //   blocksWithCategoriesJSON.forEach((category) => {
-  //     prompt += `Kategorie: ${category.name}\n`;
-  //     category.blocks.forEach((block) => {
-  //       prompt += `- ${block.name}\n`;
-  //     });
-  //   });
-
-  //   return prompt;
-  // }
-
-  // /**
-  //  * @param allTablesWithFieldsJSON An array of all tables with their fields in JSON format.
-  //  * @returns A prompt that lists all available tables for the current task with their fields.
-  //  */
-  // async getAllTablesWithFieldsPrompt(allTablesWithFieldsJSON: any[]) {
-  //   let prompt = `In meiner Datenbank befinden sich die folgenden Tabellen:\n`;
-  //   allTablesWithFieldsJSON.forEach((table) => {
-  //     prompt += `Tabelle: ${table.name}\n`;
-  //     table.fields.forEach((field) => {
-  //       prompt += `- ${field}\n`;
-  //     });
-  //   });
-  //   return prompt;
-  // }
 
   /**
    * Uses the new GraphQL Endpoint to get a hint for the current code resource.
@@ -253,6 +164,14 @@ export class AiCoachComponent {
       })
       .toPromise();
 
+    if (aiHintMutation.data?.aiHintCodeResource.nextBlock) {
+      this.provideHighlightInformation(
+        aiHintMutation.data?.aiHintCodeResource.nextBlock
+      );
+    } else {
+      this.provideHighlightInformation("");
+    }
+
     return (this.aiHint =
       aiHintMutation.data?.aiHintCodeResource.answerText ||
       "No hint available");
@@ -263,7 +182,7 @@ export class AiCoachComponent {
    */
   provideHighlightInformation(value: string) {
     this._highlightService.clearHighlight();
-    this._highlightService.setHighlightedBlock(value); //alternativ dann den gesamten Hint erstmal zurechtschneiden und nach passenden Worten suchen
+    this._highlightService.setHighlightedBlock(value);
   }
 
   /**
