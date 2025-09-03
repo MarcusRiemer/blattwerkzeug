@@ -11,15 +11,6 @@
   </button>
   <div *ngIf="aiHint">Hint: {{aiHint}}</div>
 </div>
-<div>
-  <input type="text" [(ngModel)]="highlightValue" />
-  <button
-    (click)="provideHighlightInformation(highlightValue)"
-    class="btn btn-secondary"
-  >
-    Highlight selected Sidebar Block for {{highlightValue}}
-  </button>
-</div>
 <div *ngIf="result$ | async as result">
   Anzahl der Fehler:
   <pre> {{ result.errors.length | json }}</pre>

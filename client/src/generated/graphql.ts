@@ -197,6 +197,7 @@ export type CodeResourceAiHintPayload = {
   answerText: Scalars["String"];
   /** A unique identifier for the client performing the mutation. */
   clientMutationId?: Maybe<Scalars["String"]>;
+  nextBlock: Scalars["String"];
 };
 
 /** The connection type for CodeResource. */
@@ -1542,7 +1543,7 @@ export type AiHintCodeResourceMutation = { __typename?: "Mutation" } & {
   aiHintCodeResource?: Maybe<
     { __typename?: "CodeResourceAiHintPayload" } & Pick<
       CodeResourceAiHintPayload,
-      "answerText"
+      "answerText" | "nextBlock"
     >
   >;
 };
@@ -2897,6 +2898,7 @@ export const AiHintCodeResourceDocument = gql`
       }
     ) {
       answerText
+      nextBlock
     }
   }
 `;

@@ -33,22 +33,22 @@ export class DatabaseSchemaSidebarComponent {
   ) {
     this.possibleTables.forEach((table) => {
       this.highlights[table.name] = codeHighlightService.highlightedBlock$.pipe(
-        map((highlighted) =>
-          highlighted === table.name || highlighted.startsWith(`${table.name}.`)
-            ? "highlighted"
-            : "neutral"
+        map(
+          (highlighted) =>
+            highlighted === table.name ||
+            highlighted.startsWith(`${table.name}.`)
         ),
+        map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
         shareReplay(1)
       );
 
       table.columns.forEach((column) => {
         this.highlights[`${table.name}.${column.name}`] =
           codeHighlightService.highlightedBlock$.pipe(
-            map((highlighted) =>
-              highlighted === `${table.name}.${column.name}`
-                ? "highlighted"
-                : "neutral"
+            map(
+              (highlighted) => highlighted === `${table.name}.${column.name}`
             ),
+            map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
             shareReplay(1)
           );
       });

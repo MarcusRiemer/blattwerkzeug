@@ -8,17 +8,20 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
   argument :last_dragged_block, String, required: false
 
   field :answer_text, String, null: false
+  field :next_block, String, null: false
 
-  def resolve(id:, compiled_source:, last_dragged_block: nil) #TODO: Fragen, last_dragged_block = null wird aus dem Frontend eig bereits mitgegeben, daher explizites setzen nicht notw? 
+  def resolve(id:, compiled_source:, last_dragged_block: nil)
     resource = CodeResource.find_by!(id: id)
 
     authorize resource.project, :ai_hint?
 
-    prompt_dev = generate_dev_prompt(resource)
+    prompt_dev = generate_dev_prompt(resource, compiled_source)
     prompt_user = generate_user_prompt(resource, compiled_source, last_dragged_block)
 
+    ai_hint = query_ai(prompt_dev, prompt_user)
+
     {
-      answer_text: query_ai(prompt_dev, prompt_user)
+      answer_text: "#{ai_hint[:explanation]}\n", next_block: "#{ai_hint[:next_block]}"
     }
   end
 
@@ -38,8 +41,15 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
         temperature: 0.7,
       }
     )
+    begin
+      content= response.dig("choices", 0, "message", "content")
+      clean = content.gsub(/```(?:json)?/, "").strip
+      JSON.parse(clean, symbolize_names: true) # => {:explanation=>"…", :next_block=>"…"}
 
-    response.dig("choices", 0, "message", "content")
+    rescue JSON::ParserError => e
+      Rails.logger.error("AI lieferte kein valides JSON: #{e.message}, content=#{content.inspect}")
+      { explanation: "Konnte Hinweis nicht verarbeiten.", next_block: "" }
+    end
   end
 
 
@@ -54,7 +64,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
 
     prompt += "Dafür habe ich zuletzt den folgenden Code-Block verwendet: \"#{last_dragged_block}\"" if last_dragged_block
 
-    # TODO: Sowas fehlt mir noch, das generiere ich eigentlich im Frontend selbst, daher müsste das vrmtl auch mit übergeben werden?
+    # TODO: Still missing, have to receive this from client
     # prompt += "Dabei habe ich ... Löcher in meinem Code, die ich noch füllen muss.\n"
     # prompt += "Außerdem habe ich ... Fehler dabei.\n"
 
@@ -62,9 +72,11 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
   end
 
   # Generates the dev prompt for the AI
-  def generate_dev_prompt(resource)
+  def generate_dev_prompt(resource, compiled_source)
     prompt = "Nimm die Rolle eines Lehrers ein und hilf bei folgender Aufgabe. Das Ziel ist es am Ende einen fertigen Codeabschnitt zu haben, der die Aufgabe erfüllt.\n"
-
+    
+    generated_code = compiled_source
+    prompt += "Das ist der aktuelle Code, den der User erstellt hat: \n#{generated_code}\n. Wenn dieser leer ist, dann hat der User noch nichts geschrieben und du solltest mit einem SELECT anfangen."
     available_tables = find_available_tables(resource.project)
 
     available_blocks = find_available_blocks(resource.block_language)
@@ -85,9 +97,9 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
     # TODO: Prompt bzgl. komplexer Ausdrücke (und allg noch) verfeinern, insbesondere mit dem Binären Ausdruck bisher Schwierigkeiten
     prompt += <<~RULES
       Für deine Antworten gelten folgende Regeln:
+      Antwort ohne Markdown, ohne Codefences, nur reines JSON mit den Feldern explanation (string) und next_block (string). Keine weiteren Texte.
       Bei Join Operationen wird der Code-Block INNER JOIN ON präferiert.
       Gib nur Hinweise für das weitere Vorgehen und keine kompletten Lösungen.
-      Als Antwort gibst du nur den nächsten Code-Block aus, den der User setzen sollte.
       Falls der User etwas falsches eingesetzt hat oder etwas, was zu viel für die eigentliche Aufgabe ist, weise darauf hin und sage, ihm, dass er den betroffenen Block entfernen sollte.
       Nenne nur Code-Blöcke, die zur Verfügung stehen. Tabellennamen oder Tabellenspalten zählen auch jeweils als ein Code-Block. 
       Komplexere Statements müssen auf den kleinsten Code-Block runtergebrochen werden. Beispiel: "Tabellenname.Tabellenspalte = FALSE" besteht aus drei Code-Blöcken: Hint 1: "Binärer Ausdruck", Hint 2: "Tabellenname.Tabellenspalte" und Hint 3: Konstante.

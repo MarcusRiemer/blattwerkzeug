@@ -83,8 +83,6 @@ export class FixedSidebarBlock {
    */
   public readonly defaultNode: NodeTailoredDescription[];
 
-  public readonly isHighlighted$: Observable<boolean>;
-
   public readonly highlightState$: Observable<string>;
 
   constructor(
@@ -93,13 +91,8 @@ export class FixedSidebarBlock {
   ) {
     this.displayName = desc.displayName;
 
-    //TODO: Do I really have to separate both and use shareReplay twice?
-    this.isHighlighted$ = codeHighlightService.highlightedBlock$.pipe(
+    this.highlightState$ = codeHighlightService.highlightedBlock$.pipe(
       map((highlighted) => highlighted === this.displayName),
-      shareReplay(1)
-    );
-
-    this.highlightState$ = this.isHighlighted$.pipe(
       map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
       shareReplay(1)
     );
