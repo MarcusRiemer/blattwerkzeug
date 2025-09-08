@@ -7,6 +7,7 @@
     <summary
       class="block rounded"
       [@background]="highlights[table.name] | async"
+      [@visibility]="visbilities[table.name] | async"
     >
       <span (dragstart)="startTableDrag($event, table)" draggable="true">
         {{ table.name }}
@@ -19,6 +20,7 @@
         draggable="true"
         class="block rounded"
         [@background]="highlights[table.name + '.' + tableColumn.name] | async"
+        [@visibility]="visbilities[table.name + '.' + tableColumn.name] | async"
       >
         {{ tableColumn.name }}
       </li>

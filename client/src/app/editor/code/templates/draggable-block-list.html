@@ -11,6 +11,7 @@
       (mousedown)="startDrag($event, block)"
       class="block rounded"
       [@background]="block.highlightState$ | async"
+      [@visibility]="block.visibilityState$ | async"
     >
       {{ block.displayName }}
     </div>

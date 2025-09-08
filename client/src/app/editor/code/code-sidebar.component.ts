@@ -24,6 +24,8 @@ import { DatabaseSchemaSidebarComponent } from "./query/database-schema-sidebar.
 import { UserFunctionsSidebarComponent } from "./truck/user-functions-sidebar.component";
 import { TruckWorldTilesSidebarComponent } from "./truck/world-editor/truck-world-tiles-sidebar.component";
 import { CodeHighlightService } from "./code-highlight.service";
+import { CurrentHoleLocationService } from "../current-hole-location.service";
+import { RenderedCodeResourceService } from "./block/rendered-coderesource.service";
 
 /**
  * Maps ids of sidebar components to their actual components.
@@ -65,7 +67,9 @@ export class CodeSidebarComponent {
     private _resourceReferences: ResourceReferencesService,
     private _grammarData: FullGrammarGQL,
     private _sidebarDataService: SidebarDataService,
-    private _codeHighlightService: CodeHighlightService
+    private _codeHighlightService: CodeHighlightService,
+    private _currentHoleLocationService: CurrentHoleLocationService,
+    private _renderDataService: CurrentCodeResourceService
   ) {}
 
   readonly currentCodeResource$ = this._currentCodeResource.currentResource;
@@ -117,7 +121,13 @@ export class CodeSidebarComponent {
     this._fallbackSidebarDescription$,
   ]).pipe(
     map(
-      ([_b, desc]) => new FixedBlocksSidebar(desc, this._codeHighlightService)
+      ([_b, desc]) =>
+        new FixedBlocksSidebar(
+          desc,
+          this._codeHighlightService,
+          this._currentHoleLocationService,
+          this._renderDataService
+        )
     )
   );
 

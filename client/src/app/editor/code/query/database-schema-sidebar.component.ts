@@ -7,10 +7,14 @@ import { SIDEBAR_MODEL_TOKEN } from "../../editor.token";
 
 import { DragService } from "../../drag.service";
 import { EditDatabaseSchemaService } from "../../edit-database-schema.service";
-import { Observable } from "rxjs";
+import { combineLatest, Observable, of } from "rxjs";
 import { CodeHighlightService } from "../code-highlight.service";
 import { map, shareReplay } from "rxjs/operators";
 import { state, style, trigger } from "@angular/animations";
+import { elementIsVisible } from "selenium-webdriver/lib/until";
+import { CurrentCodeResourceService } from "../../current-coderesource.service";
+import { CurrentHoleLocationService } from "../../current-hole-location.service";
+import { BlockState, isLegalChild } from "../block-state";
 
 @Component({
   templateUrl: "templates/database-schema-sidebar.html",
@@ -19,17 +23,27 @@ import { state, style, trigger } from "@angular/animations";
       state("neutral", style({ background: "white" })),
       state("highlighted", style({ background: "#d63384" })),
     ]),
+    trigger("visibility", [
+      state("visible", style({ opacity: 1.0, transform: "scale(1.0)" })),
+      state(
+        "invisible",
+        style({ opacity: 0, transform: "scale(0)", display: "none" })
+      ),
+    ]),
   ],
 })
 export class DatabaseSchemaSidebarComponent {
   readonly highlights: Record<string, Observable<string>> = {};
+  readonly visbilities: Record<string, Observable<string>> = {};
 
   constructor(
     @Inject(SIDEBAR_MODEL_TOKEN)
     private _codeResource: CodeResource,
     private _dragService: DragService,
     private _schemaService: EditDatabaseSchemaService,
-    private codeHighlightService: CodeHighlightService
+    private codeHighlightService: CodeHighlightService,
+    private currentHoleLocationService: CurrentHoleLocationService,
+    private currentCodeResourceService: CurrentCodeResourceService
   ) {
     this.possibleTables.forEach((table) => {
       this.highlights[table.name] = codeHighlightService.highlightedBlock$.pipe(
@@ -42,6 +56,20 @@ export class DatabaseSchemaSidebarComponent {
         shareReplay(1)
       );
 
+      this.visbilities[table.name] = of("visible");
+      // combineLatest(
+      //   of(this),
+      //   this.currentCodeResourceService.validator$,
+      //   this.currentCodeResourceService.currentTree,
+      //   this.currentHoleLocationService.currentHoleLocation$
+      // ).pipe(
+      //   map(([table, val, tree, holeLocation]): BlockState => {
+      //     const toReturn = isLegalChild(table, val, tree, holeLocation);
+      //     return toReturn ? "visible" : "invisible";
+      //   }),
+      //   shareReplay(1)
+      // );
+
       table.columns.forEach((column) => {
         this.highlights[`${table.name}.${column.name}`] =
           codeHighlightService.highlightedBlock$.pipe(
@@ -51,6 +79,7 @@ export class DatabaseSchemaSidebarComponent {
             map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
             shareReplay(1)
           );
+        this.visbilities[`${table.name}.${column.name}`] = of("visible");
       });
     });
   }
@@ -74,6 +103,10 @@ export class DatabaseSchemaSidebarComponent {
    */
   startTableDrag(evt: DragEvent, table: Table) {
     this.codeHighlightService.clearHighlight();
+
+    this.currentHoleLocationService.clearCurrentHoleLocation();
+
+    console.log("Table", table);
 
     try {
       this._dragService.dragStart(evt, [
