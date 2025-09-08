@@ -21,6 +21,8 @@ export class JsonEditor implements OnInit, OnChanges {
 
   public isSynchronised = true;
 
+  public errorText : string | null = null;
+
   // This string is bound to the editor. It is initialized once, any further
   // updates requires explicit consent from the user as that would mean to
   // overwrite the current state of the editor.
@@ -28,7 +30,7 @@ export class JsonEditor implements OnInit, OnChanges {
 
   // This is the "live" version of the text. It should always be exactly
   // as represented in the editor.
-  private _currentText: string;
+  public currentText: string;
 
   ngOnInit(): void {
     this.onUiOverwriteEditor();
@@ -47,8 +49,11 @@ export class JsonEditor implements OnInit, OnChanges {
    * The user has changed the text. We emit it if it appears to be valid
    * JSON data.
    */
-  onTextChanged(newText: string) {
-    this._currentText = newText;
+  onTextChanged(event: InputEvent) {
+    const newText = (event.target as HTMLTextAreaElement).value
+    this.currentText = newText;
+
+    console.log(newText)
 
     // An empty string trumps everything else: No matter how identical
     // the new state is, we want the empty state.
@@ -62,7 +67,7 @@ export class JsonEditor implements OnInit, OnChanges {
    */
   onUiOverwriteEditor() {
     this.jsonString = JSON.stringify(this.jsonValue, undefined, 4);
-    this._currentText = this.jsonString;
+    this.currentText = this.jsonString;
     this.checkSynchronisation();
   }
 
@@ -73,10 +78,14 @@ export class JsonEditor implements OnInit, OnChanges {
     try {
       // JSON.parse("") or JSON.parse(undefined) results in an exception
       this.jsonValue =
-        this._currentText !== "" ? JSON.parse(this._currentText) : undefined;
+        this.currentText !== "" ? JSON.parse(this.currentText) : undefined;
       this.jsonValueChange.emit(this.jsonValue);
       this.checkSynchronisation();
-    } catch {
+      console.log("New Json Value", this.jsonValue)
+      this.errorText = null
+    } catch (e) {
+      this.errorText = e.message
+      console.log("Error")
       // This is (hopefully) something that happened during JSON.parse. We do
       // not react to it because we only want to bother the user with valid documents.
     }
@@ -86,10 +95,10 @@ export class JsonEditor implements OnInit, OnChanges {
    *
    */
   private checkSynchronisation() {
-    if (!this._currentText && this.jsonValue === undefined) {
+    if (!this.currentText && this.jsonValue === undefined) {
       this.isSynchronised = true;
     } else {
-      const ourValue = JSON.stringify(JSON.parse(this._currentText || null));
+      const ourValue = JSON.stringify(JSON.parse(this.currentText || null));
       const theirValue = JSON.stringify(this.jsonValue);
       this.isSynchronised = ourValue === theirValue;
     }

@@ -116,6 +116,7 @@ export class CodeGenerator {
         const stateCopy = JSON.parse(JSON.stringify(this._state));
         const process = new CodeGeneratorProcess(this, stateCopy);
         process.generateNode(rootNode);
+        console.log("Hallo CodegeneratorProcess")
 
         return process.emit();
       } else {

@@ -28,7 +28,7 @@ type GeneratorState = {
 function joinPrettierDocuments(docs: Doc[], between: Doc[] | Doc): Doc[] {
   between = Array.isArray(between) ? builders.concat(between) : between;
 
-  return builders.join(between, docs).parts;
+  return [builders.join(between, docs)];
 }
 
 function isPrettierGroup(obj: unknown): obj is builders.Group {
@@ -37,6 +37,10 @@ function isPrettierGroup(obj: unknown): obj is builders.Group {
 
 function isPrettierConcat(obj: unknown): obj is builders.Concat {
   return obj instanceof Object && obj["type"] === "concat";
+}
+
+function isPrettierIndent(obj: unknown): obj is builders.Indent {
+  return obj instanceof Object && obj["type"] === "indent";
 }
 
 export function isPrettierLine(obj: unknown): obj is builders.Concat {
@@ -55,7 +59,9 @@ export function hasAnyNonWhitespace(obj: Doc[]): boolean {
       if (typeof d === "string") {
         // Must be something other than whitespace
         return d.trim().length > 0;
-      } else if (isPrettierGroup(d)) {
+      } else if (Array.isArray(d)) {
+        return hasAnyNonWhitespace(d);
+      } else if (isPrettierGroup(d) || isPrettierIndent(d)) {
         return hasAnyNonWhitespace([d.contents]);
       } else if (isPrettierConcat(d)) {
         return hasAnyNonWhitespace(d.parts);
@@ -77,7 +83,7 @@ function convertTerminal(
     | NodeInterpolatePropertyDescription
     | NodePropertyTypeDescription,
   node: SyntaxNode
-): Doc[] {
+): Doc {
   const toReturn: Doc[] = [];
   const val = t.type === "terminal" ? t.symbol : node.properties[t.name];
   const sep = tagToSeparator(node, t.tags);
@@ -99,7 +105,12 @@ function convertTerminal(
     toReturn.push(builders.hardline);
   }
 
-  return toReturn;
+  if (toReturn.length === 1) {
+    return toReturn[0];
+  } else {
+    return builders.concat(toReturn)
+  }
+
 }
 
 /**
@@ -124,14 +135,7 @@ function processBlock(
       case "terminal":
       case "property":
       case "interpolate": {
-        toReturn.push(...convertTerminal(a, node));
-
-        // #### HANDLING VERTICALS ####
-        // Possibly break after terminals, but not if this is the last attribute
-        // because in that case the break is handled by the vertical container
-        if (parentOrientation === "vertical" && !lastAttributeOfBlock) {
-          toReturn.push(builders.hardline);
-        }
+        toReturn.push(convertTerminal(a, node));
         break;
       }
 
@@ -143,13 +147,7 @@ function processBlock(
       case "each": {
         const children = node.getChildrenInCategory(a.name);
         const between =
-          "between" in a ? convertTerminal(a.between, node) : [""];
-
-        // #### HANDLING VERTICALS ####
-        // Add breaks between enumerated items if parent is vertical
-        if (parentOrientation === "vertical") {
-          between.push(builders.hardline);
-        }
+          "between" in a ? convertTerminal(a.between, node) : null;
 
         const childDocs = children.flatMap((childNode) => {
           const t = ensureCodeGenType(types, childNode);
@@ -161,7 +159,11 @@ function processBlock(
         // it. Otherwise we possibly introduce a hardline without having any
         // content
         if (hasAnyNonWhitespace(childDocs)) {
-          toReturn.push(...joinPrettierDocuments(childDocs, between));
+          if (between != null) {
+            toReturn.push(...joinPrettierDocuments(childDocs, between));
+          } else {
+            toReturn.push(...childDocs);
+          }
         }
 
         break;
@@ -173,42 +175,32 @@ function processBlock(
       // therefore handled in a separate case although it looks sort
       // of similar to syntax tree recursion.
       case "container": {
-        const childDocs = processBlock(a.children, types, node, a.orientation, state);
+        let childDocs : Doc[] = processBlock(a.children, types, node, a.orientation, state);
+        console.log("childDocs",  JSON.stringify(childDocs, undefined, " "))
 
         // Did we add more than possibly newlines?
         if (hasAnyNonWhitespace(childDocs)) {
-          // Vertical containers must start and end on their own line
-          const indentSurround =
-            a.orientation === "vertical" ? [builders.hardline] : [];
-          const doIndent = a.tags?.includes("indent");
+          if (a.orientation === "vertical") {
+            childDocs = childDocs
+              .filter(c => hasAnyNonWhitespace([c]))
+              .map((c, i) => i > 0 ? builders.concat([builders.hardline,c]): c)
 
-          // If we are indenting, a possibly existing newline that was
-          // added by a previous step must go inside the indentation
-          const lastOverallAdded = toReturn[toReturn.length - 1];
-          if (isPrettierLine(lastOverallAdded) && doIndent) {
-            toReturn.pop();
+            console.log("Filtered and broken child docs",  JSON.stringify(childDocs, undefined, " "))
           }
 
-          const groupedChildDocs = doIndent
-            ? // Leading break inside the indent to have a proper level
-              // of indentation for the first line
-              builders.indent(
-                builders.concat([...indentSurround, ...childDocs])
-              )
-            : builders.group(builders.concat(childDocs));
-          toReturn.push(groupedChildDocs);
+          // Vertical containers must start and end on their own line
+          const doIndent = a.tags?.includes("indent");
+          if (doIndent) {
+            childDocs = [builders.indent(builders.concat([builders.hardline, ...childDocs]))]
+          }
 
-          // Containers may be nested and must therefore play by the same
-          // rules as iterations and terminals: There is possibly a newline
-          // that follows this container.
-          const lastAdded = toReturn[toReturn.length - 1];
-          if (
-            parentOrientation === "vertical" &&
-            !isPrettierLine(lastAdded) &&
-            hasAnyNonWhitespace(toReturn) &&
-            !lastAttributeOfBlock
-          ) {
-            toReturn.push(builders.hardline);
+          switch (a.orientation) {
+            case "horizontal":
+              toReturn.push(builders.group(builders.concat(childDocs)))
+              break;
+            case "vertical":
+              toReturn.push(...childDocs)
+              break;
           }
         }
         break;
@@ -230,8 +222,12 @@ export function prettierCodeGeneratorFromGrammar(
   types: NamedLanguages | VisualisedLanguages,
   node: SyntaxNode
 ): string {
+  console.log("Hallo Welt: prettierCodeGeneratorFromGrammar")
   const t = ensureCodeGenType(types, node);
   const prettierTree = processBlock(t.attributes, types, node, "horizontal", { holes: [] });
+
+  console.log("Prettier Tree", JSON.stringify(prettierTree, undefined, " "))
+
   const printed = printer.printDocToString(
     // Don't leave last lines with nothing but whitespace
     builders.concat([...prettierTree, builders.trim]),
