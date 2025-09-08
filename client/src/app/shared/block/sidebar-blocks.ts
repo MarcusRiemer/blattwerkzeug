@@ -1,4 +1,4 @@
-import { NodeDescription, SyntaxTree } from "../syntaxtree";
+import { _exactMatches, NodeDescription, SyntaxTree } from "../syntaxtree";
 
 import {
   FixedBlocksSidebarDescription,
@@ -8,9 +8,12 @@ import {
   isNodeDerivedPropertyDescription,
 } from "./block.description";
 import { Sidebar } from "./sidebar";
-import { Observable } from "rxjs";
+import { combineLatest, Observable, of } from "rxjs";
 import { map, shareReplay } from "rxjs/operators";
 import { CodeHighlightService } from "../../editor/code/code-highlight.service";
+import { CurrentHoleLocationService } from "../../editor/current-hole-location.service";
+import { BlockState, isLegalChild } from "../../editor/code/block-state";
+import { CurrentCodeResourceService } from "../../editor/current-coderesource.service";
 
 /**
  * Resolves all runtime derived values for a tailored node description. The
@@ -87,7 +90,9 @@ export class FixedSidebarBlock {
 
   constructor(
     desc: SidebarBlockDescription,
-    codeHighlightService: CodeHighlightService
+    codeHighlightService: CodeHighlightService,
+    private _currentHoleLocationService: CurrentHoleLocationService,
+    private _currentCodeService: CurrentCodeResourceService
   ) {
     this.displayName = desc.displayName;
 
@@ -107,6 +112,24 @@ export class FixedSidebarBlock {
   tailoredBlockDescription(ast: SyntaxTree) {
     return this.defaultNode.map((b) => tailorBlockDescription(ast, b));
   }
+
+  /**
+   * Sets the current blockState based on its location
+   *
+   * @return The current block state of this block
+   */
+  readonly visibilityState$: Observable<BlockState> = combineLatest(
+    of(this),
+    this._currentCodeService.validator$,
+    this._currentCodeService.currentTree,
+    this._currentHoleLocationService.currentHoleLocation$
+  ).pipe(
+    map(([block, val, tree, holeLocation]): BlockState => {
+      const toReturn = isLegalChild(block, val, tree, holeLocation);
+      return toReturn ? "visible" : "invisible";
+    }),
+    shareReplay(1)
+  );
 }
 
 /**
@@ -128,11 +151,19 @@ export class FixedBlocksSidebarCategory implements BlocksSidebarCategory {
   constructor(
     _parent: FixedBlocksSidebar,
     desc: FixedBlocksSidebarCategoryDescription,
-    codeHighlightService: CodeHighlightService
+    codeHighlightService: CodeHighlightService,
+    currentHoleLocationService: CurrentHoleLocationService,
+    renderDataService: CurrentCodeResourceService
   ) {
     this.displayName = desc.categoryCaption;
     this.blocks = desc.blocks.map(
-      (blockDesc) => new FixedSidebarBlock(blockDesc, codeHighlightService)
+      (blockDesc) =>
+        new FixedSidebarBlock(
+          blockDesc,
+          codeHighlightService,
+          currentHoleLocationService,
+          renderDataService
+        )
     );
   }
 }
@@ -159,14 +190,18 @@ export class FixedBlocksSidebar implements Sidebar {
 
   constructor(
     desc: FixedBlocksSidebarDescription,
-    codeHighlightService: CodeHighlightService
+    codeHighlightService: CodeHighlightService,
+    currentHoleLocationService: CurrentHoleLocationService,
+    renderDataService: CurrentCodeResourceService
   ) {
     this.displayName = desc.caption;
     this.categories = desc.categories.map((catDesc) => {
       return new FixedBlocksSidebarCategory(
         this,
         catDesc,
-        codeHighlightService
+        codeHighlightService,
+        currentHoleLocationService,
+        renderDataService
       );
     });
   }

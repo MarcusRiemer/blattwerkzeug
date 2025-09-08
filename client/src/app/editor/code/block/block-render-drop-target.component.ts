@@ -28,6 +28,7 @@ import {
   dropLocationHasChildren,
 } from "./drop-target-state";
 import { RenderedCodeResourceService } from "./rendered-coderesource.service";
+import { CurrentHoleLocationService } from "../../current-hole-location.service";
 
 const CSS_WHITE = "255, 255, 255";
 const CSS_YELLOW = "255, 255, 0";
@@ -172,7 +173,8 @@ export class BlockRenderDropTargetComponent {
 
   constructor(
     private _dragService: DragService,
-    private _renderData: RenderedCodeResourceService
+    private _renderData: RenderedCodeResourceService,
+    private _currentHoleLocationService: CurrentHoleLocationService
   ) {}
 
   /**
@@ -316,6 +318,10 @@ export class BlockRenderDropTargetComponent {
   onMouseOut(evt: MouseEvent) {
     this._currentMouseTarget.next(false);
     evt.stopPropagation();
+  }
+
+  onClick() {
+    this._currentHoleLocationService.setCurrentHoleLocation(this.dropLocation);
   }
 
   readonly displayText = this._isCurrentDropCandidate.pipe(

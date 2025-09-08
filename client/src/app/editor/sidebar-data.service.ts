@@ -11,6 +11,9 @@ import {
 } from "../shared/block";
 import { DatabaseSchemaService } from "./database-schema.service";
 import { CodeHighlightService } from "./code/code-highlight.service";
+import { CurrentHoleLocationService } from "./current-hole-location.service";
+import { RenderedCodeResourceService } from "./code/block/rendered-coderesource.service";
+import { CurrentCodeResourceService } from "./current-coderesource.service";
 
 @Injectable({
   providedIn: "root",
@@ -18,7 +21,9 @@ import { CodeHighlightService } from "./code/code-highlight.service";
 export class SidebarDataService {
   constructor(
     private _databaseSchema: DatabaseSchemaService,
-    private _codeHighlightService: CodeHighlightService
+    private _codeHighlightService: CodeHighlightService,
+    private _currenHoleLocationService: CurrentHoleLocationService,
+    private _renderedDataService: CurrentCodeResourceService
   ) {}
 
   /**
@@ -33,7 +38,9 @@ export class SidebarDataService {
         case "fixedBlocks":
           return new FixedBlocksSidebar(
             sidebarDesc,
-            this._codeHighlightService
+            this._codeHighlightService,
+            this._currenHoleLocationService,
+            this._renderedDataService
           );
         case "databaseSchema":
           return new DatabaseSchemaSidebar(this._databaseSchema.currentSchema);

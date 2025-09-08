@@ -6,10 +6,7 @@ import { FixedSidebarBlock, FixedBlocksSidebar } from "../../shared/block";
 import { DragService } from "../drag.service";
 import { state, style, trigger } from "@angular/animations";
 import { CodeHighlightService } from "./code-highlight.service";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-
-export type SidebarBackgroundState = "neutral" | "highlighted";
+import { CurrentHoleLocationService } from "../current-hole-location.service";
 
 @Component({
   templateUrl: "templates/draggable-block-list.html",
@@ -18,6 +15,13 @@ export type SidebarBackgroundState = "neutral" | "highlighted";
     trigger("background", [
       state("neutral", style({ background: "white" })),
       state("highlighted", style({ background: "#d63384" })),
+    ]),
+    trigger("visibility", [
+      state("visible", style({ opacity: 1.0, transform: "scale(1.0)" })),
+      state(
+        "invisible",
+        style({ opacity: 0, transform: "scale(0)", display: "none" })
+      ),
     ]),
   ],
 })
@@ -30,7 +34,8 @@ export class DraggableBlockListComponent {
 
   constructor(
     private _dragService: DragService,
-    private _codeHighlightService: CodeHighlightService
+    private _codeHighlightService: CodeHighlightService,
+    private _currentHoleLocationService: CurrentHoleLocationService
   ) {}
 
   /**
@@ -38,6 +43,8 @@ export class DraggableBlockListComponent {
    */
   startDrag(evt: DragEvent, block: FixedSidebarBlock) {
     this._codeHighlightService.clearHighlight();
+
+    this._currentHoleLocationService.clearCurrentHoleLocation();
 
     try {
       const tailoredNode = block.tailoredBlockDescription(
