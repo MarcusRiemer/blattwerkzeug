@@ -60,7 +60,7 @@ export class EditGrammarComponent implements OnInit, OnDestroy {
     private _destroyGrammarGQL: DestroyGrammarGQL,
     private _editGrammarGQL: FullGrammarGQL,
     private _regenerateGrammar: RegenerateForeignTypesGQL
-  ) {}
+  ) { }
 
   //TODO: Related Blocklanguages are still in cache after they were deleted.
 
@@ -82,7 +82,7 @@ export class EditGrammarComponent implements OnInit, OnDestroy {
       .subscribe((g) => {
         // The response object contains additional properties that
         // we don't expect.
-        this.grammar = Object.assign({}, g);
+        this.grammar = JSON.parse(JSON.stringify(g))
         delete this.grammar["blockLanguages"];
 
         this.availableTypes = getTypeList(allConcreteTypes(this.grammar));
@@ -126,6 +126,7 @@ export class EditGrammarComponent implements OnInit, OnDestroy {
    * User has decided to save.
    */
   onSave() {
+    debugger;
     const mutationSubscription = this._updateGrammarGQL
       .mutate(this.grammar)
       .subscribe();
@@ -158,9 +159,12 @@ export class EditGrammarComponent implements OnInit, OnDestroy {
    * Updates the types that are available when set.
    */
   set grammarTypes(types) {
+    console.log("set Grammar types param", types)
     this.grammar.types = types;
     this.availableTypes = getTypeList(allConcreteTypes(this.grammar));
     this.grammarRoot = this.grammar.root;
+
+    console.log("set Grammar types stored", this.grammar.types)
   }
 
   /**

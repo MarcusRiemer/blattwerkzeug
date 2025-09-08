@@ -26,10 +26,9 @@
     </div>
   </div>
 </div>
+<div *ngIf="errorText">{{ errorText }}</div>
 <textarea
-  [ngModel]="jsonString"
-  (ngModel)="onTextChanged($event)"
+    name="json-editor"
+  (input)="onTextChanged($event)"
   class="full-height full-width"
-  theme="sqlserver"
-  mode="json"
-></textarea>
+>{{ currentText }}</textarea>
