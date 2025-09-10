@@ -119,7 +119,7 @@ export class FixedSidebarBlock {
    * @return The current block state of this block
    */
   readonly visibilityState$: Observable<BlockState> = combineLatest(
-    of(this),
+    of(this), // cleaner if I would use this.defaultNode but then I use defaultNode before it's initialisation
     this._currentCodeService.validator$,
     this._currentCodeService.currentTree,
     this._currentHoleLocationService.currentHoleLocation$
@@ -138,6 +138,7 @@ export class FixedSidebarBlock {
 export interface BlocksSidebarCategory {
   readonly blocks: ReadonlyArray<FixedSidebarBlock>;
   readonly displayName: string;
+  readonly visibility$: Observable<BlockState>;
 }
 
 export class FixedBlocksSidebarCategory implements BlocksSidebarCategory {
@@ -147,6 +148,8 @@ export class FixedBlocksSidebarCategory implements BlocksSidebarCategory {
   public readonly displayName: string;
 
   public readonly blocks: ReadonlyArray<FixedSidebarBlock>;
+
+  public readonly visibility$: Observable<BlockState>;
 
   constructor(
     _parent: FixedBlocksSidebar,
@@ -164,6 +167,13 @@ export class FixedBlocksSidebarCategory implements BlocksSidebarCategory {
           currentHoleLocationService,
           renderDataService
         )
+    );
+    this.visibility$ = combineLatest(
+      this.blocks.map((block) => block.visibilityState$)
+    ).pipe(
+      map((states) =>
+        states.some((state) => state === "visible") ? "visible" : "invisible"
+      )
     );
   }
 }
@@ -188,6 +198,8 @@ export class FixedBlocksSidebar implements Sidebar {
    */
   public readonly categories: ReadonlyArray<BlocksSidebarCategory>;
 
+  public readonly visibility$: Observable<BlockState>;
+
   constructor(
     desc: FixedBlocksSidebarDescription,
     codeHighlightService: CodeHighlightService,
@@ -204,5 +216,12 @@ export class FixedBlocksSidebar implements Sidebar {
         renderDataService
       );
     });
+    this.visibility$ = combineLatest(
+      this.categories.map((category) => category.visibility$)
+    ).pipe(
+      map((states) =>
+        states.some((state) => state === "visible") ? "visible" : "invisible"
+      )
+    );
   }
 }
