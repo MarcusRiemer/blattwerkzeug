@@ -4,7 +4,13 @@ import { CodeResource } from "../../shared/syntaxtree";
 import { FixedSidebarBlock, FixedBlocksSidebar } from "../../shared/block";
 
 import { DragService } from "../drag.service";
-import { state, style, trigger } from "@angular/animations";
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from "@angular/animations";
 import { CodeHighlightService } from "./code-highlight.service";
 import { CurrentHoleLocationService } from "../current-hole-location.service";
 
@@ -15,6 +21,8 @@ import { CurrentHoleLocationService } from "../current-hole-location.service";
     trigger("background", [
       state("neutral", style({ background: "white" })),
       state("highlighted", style({ background: "#d63384" })),
+      transition("neutral => highlighted", animate("500ms ease-out")),
+      transition("highlighted => neutral", animate("500ms ease-out")),
     ]),
     trigger("visibility", [
       state("visible", style({ opacity: 1.0, transform: "scale(1.0)" })),
@@ -22,6 +30,8 @@ import { CurrentHoleLocationService } from "../current-hole-location.service";
         "invisible",
         style({ opacity: 0, transform: "scale(0)", display: "none" })
       ),
+      transition("visible => invisible", animate("500ms ease-out")),
+      transition("invisible => visible", animate("500ms ease-out")),
     ]),
   ],
 })

@@ -1,8 +1,17 @@
-<details *ngIf="blockSidebar" class="ast" open>
+<details
+  *ngIf="blockSidebar"
+  class="ast"
+  [@visibility]="blockSidebar.visibility$ | async"
+  open
+>
   <summary>
     <h5>{{ blockSidebar.displayName }}</h5>
   </summary>
-  <details *ngFor="let category of blockSidebar.categories" open>
+  <details
+    *ngFor="let category of blockSidebar.categories"
+    [@visibility]="category.visibility$ | async"
+    open
+  >
     <summary>
       <h6>{{ category.displayName }}</h6>
     </summary>

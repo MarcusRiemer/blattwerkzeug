@@ -1,29 +1,40 @@
-<h5>
-  Datenbank
-  <code>{{ databaseName }}</code>
-</h5>
-<div class="schema-tables">
-  <details *ngFor="let table of possibleTables;" class="ast">
-    <summary
-      class="block rounded"
-      [@background]="highlights[table.name] | async"
-      [@visibility]="visbilities[table.name] | async"
+<div
+  *ngIf="(visbilities[possibleTables[0]?.name] | async) === 'visible' || 
+           (visbilities[possibleTables[0]?.name + '.' + possibleTables[0]?.columns[0]?.name] | async) === 'visible'"
+>
+  <h5>
+    Datenbank
+    <code>{{ databaseName }}</code>
+  </h5>
+  <div class="schema-tables">
+    <!--TODO: Since the table columns are visible in the beginning, the tables are now rendered as open at the beginning.
+    Looks a bit cluttered now. Also I have to find a way to open only the table with a highlighted column-->
+    <details
+      *ngFor="let table of possibleTables;"
+      class="ast"
+      [open]="(visbilities[possibleTables[0]?.name + '.' + possibleTables[0]?.columns[0]?.name] | async) === 'visible'"
     >
-      <span (dragstart)="startTableDrag($event, table)" draggable="true">
-        {{ table.name }}
-      </span>
-    </summary>
-    <ul class="ast">
-      <li
-        *ngFor="let tableColumn of table.columns;"
-        (dragstart)="startColumnDrag($event, table, tableColumn)"
-        draggable="true"
+      <summary
         class="block rounded"
-        [@background]="highlights[table.name + '.' + tableColumn.name] | async"
-        [@visibility]="visbilities[table.name + '.' + tableColumn.name] | async"
+        [@background]="highlights[table.name] | async"
+        [@visibility]="visbilities[table.name] | async"
       >
-        {{ tableColumn.name }}
-      </li>
-    </ul>
-  </details>
+        <span (dragstart)="startTableDrag($event, table)" draggable="true">
+          {{ table.name }}
+        </span>
+      </summary>
+      <ul class="ast">
+        <li
+          *ngFor="let tableColumn of table.columns;"
+          (dragstart)="startColumnDrag($event, table, tableColumn)"
+          draggable="true"
+          class="block rounded"
+          [@background]="highlights[table.name + '.' + tableColumn.name] | async"
+          [@visibility]="visbilities[table.name + '.' + tableColumn.name] | async"
+        >
+          {{ tableColumn.name }}
+        </li>
+      </ul>
+    </details>
+  </div>
 </div>

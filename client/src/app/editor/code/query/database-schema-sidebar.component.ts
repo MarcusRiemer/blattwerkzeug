@@ -10,7 +10,13 @@ import { EditDatabaseSchemaService } from "../../edit-database-schema.service";
 import { combineLatest, Observable, of } from "rxjs";
 import { CodeHighlightService } from "../code-highlight.service";
 import { map, shareReplay } from "rxjs/operators";
-import { state, style, trigger } from "@angular/animations";
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from "@angular/animations";
 import { elementIsVisible } from "selenium-webdriver/lib/until";
 import { CurrentCodeResourceService } from "../../current-coderesource.service";
 import { CurrentHoleLocationService } from "../../current-hole-location.service";
@@ -22,6 +28,8 @@ import { BlockState, isLegalChild } from "../block-state";
     trigger("background", [
       state("neutral", style({ background: "white" })),
       state("highlighted", style({ background: "#d63384" })),
+      transition("neutral => highlighted", animate("500ms ease-out")),
+      transition("highlighted => neutral", animate("500ms ease-out")),
     ]),
     trigger("visibility", [
       state("visible", style({ opacity: 1.0, transform: "scale(1.0)" })),
@@ -29,12 +37,14 @@ import { BlockState, isLegalChild } from "../block-state";
         "invisible",
         style({ opacity: 0, transform: "scale(0)", display: "none" })
       ),
+      transition("visible => invisible", animate("500ms ease-out")),
+      transition("invisible => visible", animate("500ms ease-out")),
     ]),
   ],
 })
 export class DatabaseSchemaSidebarComponent {
   readonly highlights: Record<string, Observable<string>> = {};
-  readonly visbilities: Record<string, Observable<string>> = {};
+  readonly visbilities: Record<string, Observable<BlockState>> = {};
 
   constructor(
     @Inject(SIDEBAR_MODEL_TOKEN)
@@ -56,19 +66,31 @@ export class DatabaseSchemaSidebarComponent {
         shareReplay(1)
       );
 
-      this.visbilities[table.name] = of("visible");
-      // combineLatest(
-      //   of(this),
-      //   this.currentCodeResourceService.validator$,
-      //   this.currentCodeResourceService.currentTree,
-      //   this.currentHoleLocationService.currentHoleLocation$
-      // ).pipe(
-      //   map(([table, val, tree, holeLocation]): BlockState => {
-      //     const toReturn = isLegalChild(table, val, tree, holeLocation);
-      //     return toReturn ? "visible" : "invisible";
-      //   }),
-      //   shareReplay(1)
-      // );
+      this.visbilities[table.name] = combineLatest(
+        of([
+          {
+            language: "sql",
+            name: "tableIntroduction",
+          },
+        ]),
+        this.currentCodeResourceService.validator$,
+        this.currentCodeResourceService.currentTree,
+        this.currentHoleLocationService.currentHoleLocation$,
+        of([
+          {
+            language: "sql",
+            name: "columnName",
+          },
+        ])
+      ).pipe(
+        map(([table, val, tree, holeLocation, tableFakeColumn]): BlockState => {
+          const toReturn =
+            isLegalChild(table, val, tree, holeLocation) ||
+            isLegalChild(tableFakeColumn, val, tree, holeLocation); // table should also be visible, if a column is allowed in the holeLocation
+          return toReturn ? "visible" : "invisible";
+        }),
+        shareReplay(1)
+      );
 
       table.columns.forEach((column) => {
         this.highlights[`${table.name}.${column.name}`] =
@@ -79,7 +101,24 @@ export class DatabaseSchemaSidebarComponent {
             map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
             shareReplay(1)
           );
-        this.visbilities[`${table.name}.${column.name}`] = of("visible");
+
+        this.visbilities[`${table.name}.${column.name}`] = combineLatest(
+          of([
+            {
+              language: "sql",
+              name: "columnName",
+            },
+          ]),
+          this.currentCodeResourceService.validator$,
+          this.currentCodeResourceService.currentTree,
+          this.currentHoleLocationService.currentHoleLocation$
+        ).pipe(
+          map(([tableColumn, val, tree, holeLocation]): BlockState => {
+            const toReturn = isLegalChild(tableColumn, val, tree, holeLocation);
+            return toReturn ? "visible" : "invisible";
+          }),
+          shareReplay(1)
+        );
       });
     });
   }

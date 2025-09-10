@@ -8,6 +8,7 @@ import {
 import {
   FixedSidebarBlock,
   NodeDerivedPropertiesDescription,
+  NodeTailoredDescription,
 } from "../../shared/block";
 import { _cardinalityAllowsInsertion } from "../../shared/syntaxtree/drop-util";
 
@@ -24,7 +25,7 @@ export type BlockState = "visible" | "invisible";
  * @returns
  */
 export function isLegalChild(
-  block: FixedSidebarBlock,
+  block: FixedSidebarBlock | NodeDescription[] | NodeTailoredDescription[],
   validator: Validator,
   tree: SyntaxTree,
   loc: NodeLocation
@@ -33,38 +34,27 @@ export function isLegalChild(
     return true; // at the beginning everything should be visible
   }
 
-  return block.defaultNode.some((block) => {
+  // Get the NodeTailoredDescription so the following logic can also be applied to databases and their comlumns
+  if (isFixedSidebarBlock(block)) {
+    block = block.defaultNode;
+  }
+
+  return block.some((block) => {
     try {
       const newNodeType: QualifiedTypeName = {
         languageName: block.language,
         typeName: block.name,
       };
 
-      const locArray = Object.values(loc);
-
-      console.log("Loc", loc);
-      console.log("LocArray", locArray);
       // If the tree is empty, the drop is always forbidden.
       // This happens if some block is rendered in the sidebar or as a dragged
       // block and the current tree is empty.
       if (!tree.isEmpty && isNodeDescription(block)) {
-        const parentNode = tree.locate(locArray.slice(0, -1));
+        const parentNode = tree.locate(loc.slice(0, -1));
         const parentNodeType = validator.getType(parentNode.qualifiedName);
-        const [category, index] = locArray[locArray.length - 1];
+        const [category, _index] = loc[loc.length - 1];
 
-        return (
-          parentNodeType.allowsChildType(
-            newNodeType,
-            dropLocationChildGroupName(locArray)
-          ) &&
-          _cardinalityAllowsInsertion(
-            validator,
-            parentNode,
-            block,
-            category,
-            index
-          )
-        );
+        return parentNodeType.allowsChildType(newNodeType, category);
       } else {
         console.debug(
           "Empty tree or block.defaultNode is not of type NodeDescription"
@@ -79,13 +69,6 @@ export function isLegalChild(
 }
 
 /**
- * @return The name of the referenced child group (if there is any)
- */
-function dropLocationChildGroupName(loc: NodeLocation): string {
-  return loc[loc.length - 1][0];
-}
-
-/**
  * Checks if the given node is of type NodeDescription
  * @param node
  * @returns true if of type node description or false if of type NodeDerivedPropertiesDescription (TODO: Really?)
@@ -94,4 +77,10 @@ function isNodeDescription(
   node: NodeDescription | NodeDerivedPropertiesDescription
 ): node is NodeDescription {
   return "name" in node && "language" in node;
+}
+
+function isFixedSidebarBlock(
+  block: FixedSidebarBlock | NodeDescription[] | NodeTailoredDescription[]
+): block is FixedSidebarBlock {
+  return "defaultNode" in block;
 }
