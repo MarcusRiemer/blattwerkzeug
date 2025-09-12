@@ -40,10 +40,8 @@ fdescribe(`Prettier code generator`, () => {
       });
 
       it(`{ "type": "concat", "parts": [""] },`, () => {
-        expect(
-          hasAnyNonWhitespace([doc.builders.concat([""])])
-        ).toBeFalse()
-      })
+        expect(hasAnyNonWhitespace([doc.builders.concat([""])])).toBeFalse();
+      });
     });
   });
 
@@ -521,11 +519,9 @@ fdescribe(`Prettier code generator`, () => {
         language: "l",
         name: "r",
         children: {
-          "a1": [
-            { language: "l", name: "t1" }
-          ],
-          "a2": []
-        }
+          a1: [{ language: "l", name: "t1" }],
+          a2: [],
+        },
       });
 
       const res = prettierCodeGeneratorFromGrammar(types, t.rootNode);
@@ -537,18 +533,18 @@ fdescribe(`Prettier code generator`, () => {
         language: "l",
         name: "r",
         children: {
-          "a1": [
+          a1: [
             { language: "l", name: "t1" },
-            { language: "l", name: "t1" }
+            { language: "l", name: "t1" },
           ],
-          "a2": []
-        }
+          a2: [],
+        },
       });
 
       const res = prettierCodeGeneratorFromGrammar(types, t.rootNode);
       expect(res).toEqual("t1;t1");
     });
-  })
+  });
 
   describe(`vertical container with sequence with between`, () => {
     const types: NamedLanguages = {

@@ -997,9 +997,17 @@ class NodeComplexTypeChildrenParentheses extends NodeComplexTypeChildrenValidato
 
       // Did we find enough children?
       if (numIterations < this._cardinality.minOccurs) {
-        c.addError(ErrorCodes.InvalidMinOccurences, p);
+        c.addError(ErrorCodes.InvalidMinOccurences, p, {
+          category: this._group.categoryName,
+          minOccurs: this._cardinality.minOccurs,
+          actual: numIterations,
+        });
       } else if (numIterations > this._cardinality.maxOccurs) {
-        c.addError(ErrorCodes.InvalidMaxOccurences, p);
+        c.addError(ErrorCodes.InvalidMaxOccurences, p, {
+          category: this._group.categoryName,
+          maxOccurs: this._cardinality.maxOccurs,
+          actual: numIterations,
+        });
       }
     } else {
       // None of these children was expected (because no type was expected at all)

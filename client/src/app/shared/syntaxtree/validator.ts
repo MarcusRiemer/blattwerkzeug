@@ -93,7 +93,7 @@ export class Validator {
   validateFromRoot(
     ast: AST.SyntaxNode | AST.SyntaxTree,
     additionalContext: any = {}
-  ) : ValidationResult {
+  ): ValidationResult {
     // Grab the actual root
     let astRoot: AST.SyntaxNode = undefined;
     if (ast instanceof AST.SyntaxTree && !ast.isEmpty) {

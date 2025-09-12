@@ -22,8 +22,8 @@ import { SyntaxNode } from "./syntaxtree";
 type Doc = builders.Doc;
 
 type GeneratorState = {
-  holes: EmittedHole[]
-}
+  holes: EmittedHole[];
+};
 
 function joinPrettierDocuments(docs: Doc[], between: Doc[] | Doc): Doc[] {
   between = Array.isArray(between) ? builders.concat(between) : between;
@@ -108,9 +108,8 @@ function convertTerminal(
   if (toReturn.length === 1) {
     return toReturn[0];
   } else {
-    return builders.concat(toReturn)
+    return builders.concat(toReturn);
   }
-
 }
 
 /**
@@ -127,9 +126,7 @@ function processBlock(
 ): Doc[] {
   const toReturn: Doc[] = [];
 
-  attributes.forEach((a, idx) => {
-    const lastAttributeOfBlock = idx === attributes.length - 1;
-
+  attributes.forEach((a, _idx) => {
     switch (a.type) {
       // Are converted by directly printing out some strings
       case "terminal":
@@ -145,24 +142,37 @@ function processBlock(
       case "sequence":
       case "parentheses":
       case "each": {
-        const children = node.getChildrenInCategory(a.name);
-        const between =
-          "between" in a ? convertTerminal(a.between, node) : null;
+        const hole = state.holes.find(
+          (h) => h.node === node && h.categoryName === a.name
+        );
+        if (hole) {
+          toReturn.push(hole.holeText);
+        } else {
+          const children = node.getChildrenInCategory(a.name);
+          const between =
+            "between" in a ? convertTerminal(a.between, node) : null;
 
-        const childDocs = children.flatMap((childNode) => {
-          const t = ensureCodeGenType(types, childNode);
-          // A block is always considered to work horizontally
-          return processBlock(t.attributes, types, childNode, "horizontal", state);
-        });
+          const childDocs = children.flatMap((childNode) => {
+            const t = ensureCodeGenType(types, childNode);
+            // A block is always considered to work horizontally
+            return processBlock(
+              t.attributes,
+              types,
+              childNode,
+              "horizontal",
+              state
+            );
+          });
 
-        // Only actually build the subtree if there are any children inside
-        // it. Otherwise we possibly introduce a hardline without having any
-        // content
-        if (hasAnyNonWhitespace(childDocs)) {
-          if (between != null) {
-            toReturn.push(...joinPrettierDocuments(childDocs, between));
-          } else {
-            toReturn.push(...childDocs);
+          // Only actually build the subtree if there are any children inside
+          // it. Otherwise we possibly introduce a hardline without having any
+          // content
+          if (hasAnyNonWhitespace(childDocs)) {
+            if (between != null) {
+              toReturn.push(...joinPrettierDocuments(childDocs, between));
+            } else {
+              toReturn.push(...childDocs);
+            }
           }
         }
 
@@ -175,31 +185,40 @@ function processBlock(
       // therefore handled in a separate case although it looks sort
       // of similar to syntax tree recursion.
       case "container": {
-        let childDocs : Doc[] = processBlock(a.children, types, node, a.orientation, state);
-        console.log("childDocs",  JSON.stringify(childDocs, undefined, " "))
+        let childDocs: Doc[] = processBlock(
+          a.children,
+          types,
+          node,
+          a.orientation,
+          state
+        );
 
         // Did we add more than possibly newlines?
         if (hasAnyNonWhitespace(childDocs)) {
           if (a.orientation === "vertical") {
             childDocs = childDocs
-              .filter(c => hasAnyNonWhitespace([c]))
-              .map((c, i) => i > 0 ? builders.concat([builders.hardline,c]): c)
-
-            console.log("Filtered and broken child docs",  JSON.stringify(childDocs, undefined, " "))
+              .filter((c) => hasAnyNonWhitespace([c]))
+              .map((c, i) =>
+                i > 0 ? builders.concat([builders.hardline, c]) : c
+              );
           }
 
           // Vertical containers must start and end on their own line
           const doIndent = a.tags?.includes("indent");
           if (doIndent) {
-            childDocs = [builders.indent(builders.concat([builders.hardline, ...childDocs]))]
+            childDocs = [
+              builders.indent(
+                builders.concat([builders.hardline, ...childDocs])
+              ),
+            ];
           }
 
           switch (a.orientation) {
             case "horizontal":
-              toReturn.push(builders.group(builders.concat(childDocs)))
+              toReturn.push(builders.group(builders.concat(childDocs)));
               break;
             case "vertical":
-              toReturn.push(...childDocs)
+              toReturn.push(...childDocs);
               break;
           }
         }
@@ -220,13 +239,13 @@ function processBlock(
  */
 export function prettierCodeGeneratorFromGrammar(
   types: NamedLanguages | VisualisedLanguages,
-  node: SyntaxNode
+  node: SyntaxNode,
+  holes: EmittedHole[] = []
 ): string {
-  console.log("Hallo Welt: prettierCodeGeneratorFromGrammar")
   const t = ensureCodeGenType(types, node);
-  const prettierTree = processBlock(t.attributes, types, node, "horizontal", { holes: [] });
-
-  console.log("Prettier Tree", JSON.stringify(prettierTree, undefined, " "))
+  const prettierTree = processBlock(t.attributes, types, node, "horizontal", {
+    holes,
+  });
 
   const printed = printer.printDocToString(
     // Don't leave last lines with nothing but whitespace

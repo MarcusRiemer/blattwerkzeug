@@ -21,7 +21,7 @@ export class JsonEditor implements OnInit, OnChanges {
 
   public isSynchronised = true;
 
-  public errorText : string | null = null;
+  public errorText: string | null = null;
 
   // This string is bound to the editor. It is initialized once, any further
   // updates requires explicit consent from the user as that would mean to
@@ -50,10 +50,8 @@ export class JsonEditor implements OnInit, OnChanges {
    * JSON data.
    */
   onTextChanged(event: InputEvent) {
-    const newText = (event.target as HTMLTextAreaElement).value
+    const newText = (event.target as HTMLTextAreaElement).value;
     this.currentText = newText;
-
-    console.log(newText)
 
     // An empty string trumps everything else: No matter how identical
     // the new state is, we want the empty state.
@@ -81,19 +79,13 @@ export class JsonEditor implements OnInit, OnChanges {
         this.currentText !== "" ? JSON.parse(this.currentText) : undefined;
       this.jsonValueChange.emit(this.jsonValue);
       this.checkSynchronisation();
-      console.log("New Json Value", this.jsonValue)
-      this.errorText = null
+      this.errorText = null;
     } catch (e) {
-      this.errorText = e.message
-      console.log("Error")
-      // This is (hopefully) something that happened during JSON.parse. We do
-      // not react to it because we only want to bother the user with valid documents.
+      // This is (hopefully) something that happened during JSON.parse.
+      this.errorText = e.message;
     }
   }
 
-  /**
-   *
-   */
   private checkSynchronisation() {
     if (!this.currentText && this.jsonValue === undefined) {
       this.isSynchronised = true;
