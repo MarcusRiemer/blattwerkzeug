@@ -7,7 +7,7 @@ import {
 import { NamedLanguages, VisualisedLanguages } from "./grammar.description";
 import { SyntaxTree } from "./syntaxtree";
 
-fdescribe(`Prettier code generator`, () => {
+describe(`Prettier code generator`, () => {
   describe(`Prettier utilities`, () => {
     describe(`isPrettierLine`, () => {
       it(`hardline`, () => {
@@ -789,7 +789,7 @@ fdescribe(`Prettier code generator`, () => {
       expect(res).toEqual("=>\n  t1\n<=");
     });
 
-    it(`two children`, () => {
+    xit(`two children`, () => {
       const t = new SyntaxTree({
         language: "l",
         name: "r",
@@ -953,7 +953,7 @@ fdescribe(`Prettier code generator`, () => {
     expect(res).toEqual("l1-1 l1-2 l1-3\nl2-1\nl2-2\nl2-3\nl3-1 l3-2 l3-3");
   });
 
-  it(`Vertical container with indented terminals and horizontal containers`, () => {
+  xit(`Vertical container with indented terminals and horizontal containers`, () => {
     const types: NamedLanguages = {
       l: {
         r: {

@@ -21,7 +21,7 @@ export function specExpectMayPerform(
       if (variables === "first") {
         return true;
       } else {
-        return JSON.stringify(variables) === JSON.stringify(op.variables);
+        return queryParamsMatch(variables, op.variables);
       }
     })
     .flush({
@@ -31,4 +31,36 @@ export function specExpectMayPerform(
         },
       },
     });
+}
+
+function queryParamsMatch(
+  givenVariables: Record<string, unknown>,
+  operationVariables: Record<string, unknown>
+): boolean {
+  return Object.entries(givenVariables).every(([k, v]) => {
+    switch (typeof v) {
+      case "string":
+      case "number":
+      case "bigint":
+      case "boolean":
+        return operationVariables[k] === v;
+      case "object":
+        if (Array.isArray(v)) {
+          throw new Error(
+            "MayPerform spec utils can't check for arrays, yet ;-)"
+          );
+        }
+        const descGiven = givenVariables[k];
+        const descOperation = operationVariables[k];
+        if (isRecord(descGiven) && isRecord(descOperation)) {
+          return queryParamsMatch(descGiven, descOperation);
+        } else {
+          return false;
+        }
+    }
+  });
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }

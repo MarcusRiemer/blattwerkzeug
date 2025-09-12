@@ -110,8 +110,29 @@ describe(`CreateCodeResourceComponent`, () => {
     const component = fixture.componentInstance;
     fixture.detectChanges();
 
-    // Allow or deny operation
-    specExpectMayPerform("first", permissionToCreate);
+    // Allow or deny creation operation
+    specExpectMayPerform(
+      {
+        input: {
+          policyAction: "update",
+          resourceType: "Project",
+          resourceId: projectId,
+        },
+      },
+      permissionToCreate
+    );
+
+    // Don't allow educational aspects
+    specExpectMayPerform(
+      {
+        input: {
+          policyAction: "educational",
+          resourceType: "Project",
+          resourceId: projectId,
+        },
+      },
+      false
+    );
 
     fixture.detectChanges();
     await fixture.whenStable();
