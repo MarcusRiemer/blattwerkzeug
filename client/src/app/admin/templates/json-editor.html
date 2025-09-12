@@ -28,7 +28,9 @@
 </div>
 <div *ngIf="errorText">{{ errorText }}</div>
 <textarea
-    name="json-editor"
+  name="json-editor"
   (input)="onTextChanged($event)"
   class="full-height full-width"
->{{ currentText }}</textarea>
+>
+{{ currentText }}</textarea
+>

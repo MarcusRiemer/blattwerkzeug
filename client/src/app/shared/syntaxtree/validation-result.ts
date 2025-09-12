@@ -138,7 +138,10 @@ export function printableError(e: ValidationError) {
 }
 
 export function isHole(e: ValidationError) {
-  return e.code === ErrorCodes.MissingChild
+  return (
+    e.code === ErrorCodes.MissingChild ||
+    e.code === ErrorCodes.InvalidMinOccurences
+  );
 }
 
 type ReferencedResources = {
@@ -207,5 +210,9 @@ export class ValidationResult {
 
   get isValid() {
     return this.errors.length === 0;
+  }
+
+  get holes() {
+    return this.errors.filter(isHole);
   }
 }

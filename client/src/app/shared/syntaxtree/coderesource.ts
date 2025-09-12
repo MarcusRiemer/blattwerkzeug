@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, combineLatest } from "rxjs";
-import { map, shareReplay, switchMap, tap } from "rxjs/operators";
+import { filter, map, shareReplay, switchMap, tap } from "rxjs/operators";
 
 import { ProjectResource } from "../resource";
 import { ResourceReferencesService } from "../resource-references.service";
@@ -265,15 +265,27 @@ export class CodeResource extends ProjectResource {
     this.syntaxTree$,
     this.emittedLanguage$,
   ]).pipe(
+    filter(([tree, lang]): boolean => !!tree && !tree.isEmpty && !!lang),
     map(([tree, lang]) => {
-      if (tree && !tree.isEmpty && lang) {
-        try {
-          return lang.emitTree(tree);
-        } catch (e) {
-          return e.toString();
-        }
-      } else {
-        return "";
+      try {
+        return lang.emitTree(tree);
+      } catch (e) {
+        return e.toString();
+      }
+    }),
+    shareReplay(1)
+  );
+
+  readonly generatedCodeWithHoles$: Observable<string> = combineLatest([
+    this.syntaxTree$,
+    this.emittedLanguage$,
+  ]).pipe(
+    filter(([tree, lang]): boolean => !!tree && !tree.isEmpty && !!lang),
+    map(([tree, lang]) => {
+      try {
+        return lang.emitTreeWithHoles(tree);
+      } catch (e) {
+        return e.toString();
       }
     }),
     shareReplay(1)

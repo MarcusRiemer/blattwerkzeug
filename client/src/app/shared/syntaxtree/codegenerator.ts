@@ -28,10 +28,10 @@ export type RegisteredCodeGenerators = {
  * a possibility to explicitly point to holes in the tree.
  */
 export type EmittedHole = {
-  node: SyntaxNode,
-  categoryName: string,
-  holeText: string,
-}
+  node: SyntaxNode;
+  categoryName: string;
+  holeText: string;
+};
 
 /**
  * Transforms an AST into its compiled string representation.
@@ -84,15 +84,22 @@ export class CodeGenerator {
   }
 
   emitWithHoles(ast: SyntaxNode | SyntaxTree, validator: Validator): string {
-    let rootNode: SyntaxNode = undefined;
+    const result = validator.validateFromRoot(ast);
+    const mode: "numeric" | "path" = "numeric";
 
-    if (ast instanceof SyntaxTree && !ast.isEmpty) {
-      rootNode = ast.rootNode;
-    } else if (ast instanceof SyntaxNode) {
-      rootNode = ast;
-    }
+    const emittedHoles = result.holes.map((err, idx): EmittedHole => {
+      const holeText =
+        mode === "numeric"
+          ? `$${idx}$`
+          : `$${err.node.location},${err.data.category},0$`;
+      return { categoryName: err.data.category, holeText, node: err.node };
+    });
 
-    return this.emit(rootNode);
+    return prettierCodeGeneratorFromGrammar(
+      this.types,
+      this.ensureRootNode(ast),
+      emittedHoles
+    );
   }
 
   /**
@@ -116,7 +123,6 @@ export class CodeGenerator {
         const stateCopy = JSON.parse(JSON.stringify(this._state));
         const process = new CodeGeneratorProcess(this, stateCopy);
         process.generateNode(rootNode);
-        console.log("Hallo CodegeneratorProcess")
 
         return process.emit();
       } else {
@@ -183,13 +189,21 @@ export class CodeGenerator {
   }
 
   _computeHolesFromValidation(result: ValidationResult): EmittedHole[] {
-    return (
-      result.errors
-        .filter(e => isHole(e))
-        .map((e, index) => {
-        let categoryName = e.data["category"] ?? "__unknown__"
-        return { node: e.node, categoryName, holeText: `$${index}$` }
-      })
-    )
+    return result.errors
+      .filter((e) => isHole(e))
+      .map((e, index) => {
+        let categoryName = e.data["category"] ?? "__unknown__";
+        return { node: e.node, categoryName, holeText: `$${index}$` };
+      });
+  }
+
+  ensureRootNode(ast: SyntaxNode | SyntaxTree): SyntaxNode {
+    if (ast instanceof SyntaxTree) {
+      return ast.rootNode;
+    } else if (ast instanceof SyntaxNode) {
+      return ast;
+    } else {
+      throw new Error(`Given value is ${(ast as unknown)?.constructor?.name}`);
+    }
   }
 }

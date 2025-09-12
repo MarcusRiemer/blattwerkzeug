@@ -42,7 +42,7 @@ export class Language {
    */
   readonly validator: Validator;
 
-  private readonly codeGenerator: CodeGenerator;
+  readonly codeGenerator: CodeGenerator;
 
   readonly codeEmitters: NodeConverterRegistration[];
 
@@ -116,6 +116,17 @@ export class Language {
    */
   emitTree(ast: SyntaxTree): string {
     return this.codeGenerator.emit(ast);
+  }
+
+  /**
+   * Emits the "stringified" version of the given tree, but with special
+   * consideration to represent missing blocks.
+   *
+   * @param ast The root of the tree to generate
+   * @return A string representation of the tree.
+   */
+  emitTreeWithHoles(ast: SyntaxTree): string {
+    return this.codeGenerator.emitWithHoles(ast, this.validator);
   }
 
   /**
