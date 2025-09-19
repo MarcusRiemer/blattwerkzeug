@@ -2,12 +2,16 @@ import { Component } from "@angular/core";
 
 import { switchMap } from "rxjs/operators";
 import { CurrentCodeResourceService } from "../current-coderesource.service";
+import { AiCoachService } from "./ai-coach.service";
 
 @Component({
   templateUrl: "templates/assignment.html",
 })
 export class AssignmentComponent {
-  constructor(private _currentCodeResource: CurrentCodeResourceService) {}
+  constructor(
+    private _currentCodeResource: CurrentCodeResourceService,
+    private _aiCoachService: AiCoachService
+  ) {}
 
   /**
    * To get the current code resource that is being edited.
@@ -21,4 +25,10 @@ export class AssignmentComponent {
   readonly assignment$ = this.codeResource$.pipe(
     switchMap((resource) => resource.assignment$)
   );
+
+  /**
+   * Receive the assignment with accentuation from the ai coach
+   */
+  readonly assignmentWithAccentuation$ =
+    this._aiCoachService.assignmentWithAccentuation$;
 }

@@ -13,7 +13,6 @@ import {
 import { _cardinalityAllowsInsertion } from "../../shared/syntaxtree/drop-util";
 
 export type BlockState = "visible" | "invisible";
-// TODO: Expand for DatabaseSchema
 
 /**
  * Validates if the given block is a valid input for the given location
@@ -69,6 +68,17 @@ export function isLegalChild(
 }
 
 /**
+ * Checks it the given block is of type FixedSidebarBlock
+ * @param block
+ * @returns
+ */
+function isFixedSidebarBlock(
+  block: FixedSidebarBlock | NodeDescription[] | NodeTailoredDescription[]
+): block is FixedSidebarBlock {
+  return "defaultNode" in block;
+}
+
+/**
  * Checks if the given node is of type NodeDescription
  * @param node
  * @returns true if of type node description or false if of type NodeDerivedPropertiesDescription (TODO: Really?)
@@ -77,10 +87,4 @@ function isNodeDescription(
   node: NodeDescription | NodeDerivedPropertiesDescription
 ): node is NodeDescription {
   return "name" in node && "language" in node;
-}
-
-function isFixedSidebarBlock(
-  block: FixedSidebarBlock | NodeDescription[] | NodeTailoredDescription[]
-): block is FixedSidebarBlock {
-  return "defaultNode" in block;
 }

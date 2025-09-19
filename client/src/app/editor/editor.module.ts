@@ -33,6 +33,7 @@ import { SettingsComponent } from "./project-settings/settings.component";
 import { MembersComponent } from "./project-settings/members.component";
 import { CodeHighlightService } from "./code/code-highlight.service";
 import { CurrentHoleLocationService } from "./current-hole-location.service";
+import { AiCoachService } from "./code/ai-coach.service";
 
 @NgModule({
   imports: [
@@ -69,6 +70,7 @@ import { CurrentHoleLocationService } from "./current-hole-location.service";
     DragService,
     CodeHighlightService,
     CurrentHoleLocationService,
+    AiCoachService,
   ],
   exports: [
     EditorComponent,

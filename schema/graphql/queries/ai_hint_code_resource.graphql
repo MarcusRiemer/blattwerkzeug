@@ -12,5 +12,6 @@ mutation AiHintCodeResource(
   ) {
     answerText
     nextBlock
+    assignmentWithAccentuation
   }
 }

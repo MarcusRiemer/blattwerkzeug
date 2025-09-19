@@ -1,15 +1,15 @@
 <h4>AI Coach</h4>
 <div>Timer: {{timerValue}}</div>
-<div *ngIf="timerValue >= 0">
+<!-- <div *ngIf="timerValue >= 0">
   <button (click)="copyPromptToClipboard()" class="btn btn-secondary">
     Copy Prompt to Clipboard
   </button>
-</div>
+</div> -->
 <div>
-  <button (click)="getHintForCurrentCodeResource()" class="btn btn-secondary">
+  <button (click)="onClick()" class="btn btn-secondary">
     Get Hint for Current Code Resource
   </button>
-  <div *ngIf="aiHint">Hint: {{aiHint}}</div>
+  <div *ngIf="aiHint$ | async as aiHint">Hint: {{aiHint}}</div>
 </div>
 <div *ngIf="result$ | async as result">
   Anzahl der Fehler:

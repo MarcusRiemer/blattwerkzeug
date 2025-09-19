@@ -1,4 +1,11 @@
 <h4>Aufgabenstellung</h4>
-<div *ngIf="assignment$ | async as assignment">
-  <p>{{assignment}}</p>
+<div
+  *ngIf="assignmentWithAccentuation$ | async as assignment; else plainAssignment"
+>
+  <p [innerHTML]="assignment"></p>
 </div>
+<ng-template #plainAssignment>
+  <div *ngIf="assignment$ | async as assignment">
+    <p>{{assignment}}</p>
+  </div>
+</ng-template>
