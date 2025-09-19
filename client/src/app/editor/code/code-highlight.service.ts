@@ -1,15 +1,11 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Subscription, timer } from "rxjs";
-import { take } from "rxjs/operators";
+import { BehaviorSubject } from "rxjs";
 
-//TODO: Im Verzeichnis richtig eingeordnet?
 @Injectable()
 export class CodeHighlightService {
   //TODO: for now not nullable because of possible null pointer exceptions in database-schema-sidebar.component.ts.
   // Maybe change this, if it makes trouble when working with the ai hint
   readonly highlightedBlock$ = new BehaviorSubject<string>("");
-
-  private highlightTimerSub?: Subscription;
 
   constructor() {}
   /**
@@ -18,14 +14,6 @@ export class CodeHighlightService {
    */
   setHighlightedBlock(value: string) {
     this.highlightedBlock$.next(value);
-
-    this.highlightTimerSub?.unsubscribe();
-
-    this.highlightTimerSub = timer(10000)
-      .pipe(take(1))
-      .subscribe(() => {
-        this.clearHighlight();
-      });
   }
   /**
    * Sets the highlightedBlock to an empty string, which results in a cleared background state

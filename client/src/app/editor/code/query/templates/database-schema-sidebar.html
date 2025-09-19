@@ -7,12 +7,10 @@
     <code>{{ databaseName }}</code>
   </h5>
   <div class="schema-tables">
-    <!--TODO: Since the table columns are visible in the beginning, the tables are now rendered as open at the beginning.
-    Looks a bit cluttered now. Also I have to find a way to open only the table with a highlighted column-->
     <details
       *ngFor="let table of possibleTables;"
       class="ast"
-      [open]="(visbilities[possibleTables[0]?.name + '.' + possibleTables[0]?.columns[0]?.name] | async) === 'visible'"
+      [open]="((visbilities[possibleTables[0]?.name + '.' + possibleTables[0]?.columns[0]?.name] | async) === 'visible')&&(currentHoleLocation$ | async)"
     >
       <summary
         class="block rounded"

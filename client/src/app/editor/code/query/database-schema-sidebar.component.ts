@@ -17,7 +17,6 @@ import {
   transition,
   trigger,
 } from "@angular/animations";
-import { elementIsVisible } from "selenium-webdriver/lib/until";
 import { CurrentCodeResourceService } from "../../current-coderesource.service";
 import { CurrentHoleLocationService } from "../../current-hole-location.service";
 import { BlockState, isLegalChild } from "../block-state";
@@ -124,6 +123,12 @@ export class DatabaseSchemaSidebarComponent {
   }
 
   /**
+   * Receives the currentHoleLocation, if this is null, no hole is selected
+   */
+  readonly currentHoleLocation$ =
+    this.currentHoleLocationService.currentHoleLocation$;
+
+  /**
    * @return The tables that should be shown.
    */
   get possibleTables(): Table[] {
@@ -167,6 +172,8 @@ export class DatabaseSchemaSidebarComponent {
    */
   startColumnDrag(evt: DragEvent, table: Table, column: Column) {
     this.codeHighlightService.clearHighlight();
+
+    this.currentHoleLocationService.clearCurrentHoleLocation();
 
     try {
       this._dragService.dragStart(evt, [

@@ -9,6 +9,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
 
   field :answer_text, String, null: false
   field :next_block, String, null: false
+  field :assignment_with_accentuation, String, null: false
 
   def resolve(id:, compiled_source:, last_dragged_block: nil)
     resource = CodeResource.find_by!(id: id)
@@ -21,7 +22,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
     ai_hint = query_ai(prompt_dev, prompt_user)
 
     {
-      answer_text: "#{ai_hint[:explanation]}\n", next_block: "#{ai_hint[:next_block]}"
+      answer_text: "#{ai_hint[:explanation]}\n", next_block: "#{ai_hint[:next_block]}", assignment_with_accentuation: "#{ai_hint[:assignment_with_accentuation]}"
     }
   end
 
@@ -47,7 +48,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
       JSON.parse(clean, symbolize_names: true) # => {:explanation=>"…", :next_block=>"…"}
 
     rescue JSON::ParserError => e
-      Rails.logger.error("AI lieferte kein valides JSON: #{e.message}, content=#{content.inspect}")
+      Rails.logger.error("no valid json from ai: #{e.message}, content=#{content.inspect}")
       { explanation: "Konnte Hinweis nicht verarbeiten.", next_block: "" }
     end
   end
@@ -59,7 +60,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
    
     generated_code = compiled_source # Received from client, to make sure it is the current compiled code and not the last saved code
 
-    prompt = "Meine Aufgabe lautet: #{assignment}\n" if assignment.present?
+    prompt = "Meine Aufgabe (assignment) lautet: #{assignment}\n" if assignment.present?
     prompt += "Ich möchte nun dafür diesen Code vervollständigen:\n#{generated_code}\n"
 
     prompt += "Dafür habe ich zuletzt den folgenden Code-Block verwendet: \"#{last_dragged_block}\"" if last_dragged_block
@@ -73,10 +74,11 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
 
   # Generates the dev prompt for the AI
   def generate_dev_prompt(resource, compiled_source)
-    prompt = "Nimm die Rolle eines Lehrers ein und hilf bei folgender Aufgabe. Das Ziel ist es am Ende einen fertigen Codeabschnitt zu haben, der die Aufgabe erfüllt.\n"
+    assignment = resource.assignment
+    prompt = "Nimm die Rolle eines Lehrers ein und hilf bei folgender Aufgabe (assignment): #{assignment}\n"
     
     generated_code = compiled_source
-    prompt += "Das ist der aktuelle Code, den der User erstellt hat: \n#{generated_code}\n. Wenn dieser leer ist, dann hat der User noch nichts geschrieben und du solltest mit einem SELECT anfangen."
+    prompt += "Das ist der aktuelle Code, den der User erstellt hat: \n#{generated_code}\n. Wenn dieser leer ist, dann hat der User noch nichts geschrieben und du solltest mit einem FROM anfangen. Orientiere dich bei der Reihenfolge der Codeblöcke an der SQL Verarbeitungsreihenfolge."
     available_tables = find_available_tables(resource.project)
 
     available_blocks = find_available_blocks(resource.block_language)
@@ -94,12 +96,16 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
         prompt += "- Kategorie: #{block[:category]}, Blöcke: #{block[:blocks].join(', ')}\n"
       end
     end
-    # TODO: Prompt bzgl. komplexer Ausdrücke (und allg noch) verfeinern, insbesondere mit dem Binären Ausdruck bisher Schwierigkeiten
+    # TODO: refine prompt, especially regarding complex expressions (binary expression is a huge problem for ai) 
+    # TODO: ai doesn't understand that no accentuation of assignment is needed, if the code is complete
+    # TODO: maybe prompting in english is the better way to go
     prompt += <<~RULES
       Für deine Antworten gelten folgende Regeln:
-      Antwort ohne Markdown, ohne Codefences, nur reines JSON mit den Feldern explanation (string) und next_block (string). Keine weiteren Texte.
+      Antwort ohne Markdown, ohne Codefences, nur reines JSON mit den Feldern explanation (string), next_block (string) und assignment_with_accentuation (string). Keine weiteren Texte.
       Bei Join Operationen wird der Code-Block INNER JOIN ON präferiert.
-      Gib nur Hinweise für das weitere Vorgehen und keine kompletten Lösungen.
+      Gib nur Hinweise für das weitere Vorgehen und keine kompletten Lösungen. 
+      Wenn der Code die Aufgabe noch nicht erfüllt, hebe außerdem in dem gegebenen assignment hervor, auf welchen Teil der Aufgabenstellung sich deine Erklärung bezieht, indem du das übergebene assignment zurückgibst und den relevanten Teil bold machst. 
+      Verändere den Wortlaut des Assignments nicht und füge auch nichts hinzu.
       Falls der User etwas falsches eingesetzt hat oder etwas, was zu viel für die eigentliche Aufgabe ist, weise darauf hin und sage, ihm, dass er den betroffenen Block entfernen sollte.
       Nenne nur Code-Blöcke, die zur Verfügung stehen. Tabellennamen oder Tabellenspalten zählen auch jeweils als ein Code-Block. 
       Komplexere Statements müssen auf den kleinsten Code-Block runtergebrochen werden. Beispiel: "Tabellenname.Tabellenspalte = FALSE" besteht aus drei Code-Blöcken: Hint 1: "Binärer Ausdruck", Hint 2: "Tabellenname.Tabellenspalte" und Hint 3: Konstante.
@@ -115,6 +121,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
       Wenn es noch weitere Möglichkeiten gäbe, der Code aber die Aufgabe im Grunde bereits erfüllt, dann teile das ebenfalls dem User mit, wie folgt:
       "Der Code erfüllt die Aufgabe bereits, du könntest ihn noch verändern, indem …"
       WICHTIG: Die COUNT()-Funktionen mit leeren Klammern sind bereits korrekt implementiert und sollen nicht kommentiert werden.
+      Das Ziel ist es am Ende einen fertigen Codeabschnitt zu haben, der die Aufgabe erfüllt.\n    
     RULES
     prompt.strip
   end

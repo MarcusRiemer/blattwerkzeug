@@ -195,6 +195,7 @@ export type CodeResourceAiHintInput = {
 export type CodeResourceAiHintPayload = {
   __typename?: "CodeResourceAiHintPayload";
   answerText: Scalars["String"];
+  assignmentWithAccentuation: Scalars["String"];
   /** A unique identifier for the client performing the mutation. */
   clientMutationId?: Maybe<Scalars["String"]>;
   nextBlock: Scalars["String"];
@@ -1543,7 +1544,7 @@ export type AiHintCodeResourceMutation = { __typename?: "Mutation" } & {
   aiHintCodeResource?: Maybe<
     { __typename?: "CodeResourceAiHintPayload" } & Pick<
       CodeResourceAiHintPayload,
-      "answerText" | "nextBlock"
+      "answerText" | "nextBlock" | "assignmentWithAccentuation"
     >
   >;
 };
@@ -2899,6 +2900,7 @@ export const AiHintCodeResourceDocument = gql`
     ) {
       answerText
       nextBlock
+      assignmentWithAccentuation
     }
   }
 `;
