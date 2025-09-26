@@ -13,6 +13,7 @@ export class CodeHighlightService {
    * Fields of a database follow the schema tableName.columnName, which is thy it is not necessary to set multiple blocks at once
    */
   setHighlightedBlock(value: string) {
+    this.clearHighlight();
     this.highlightedBlock$.next(value);
   }
   /**

@@ -31,4 +31,9 @@ export class AssignmentComponent {
    */
   readonly assignmentWithAccentuation$ =
     this._aiCoachService.assignmentWithAccentuation$;
+
+  ngOnDestroy() {
+    //otherwise the assignment appears also in other tasks
+    this._aiCoachService.assignmentWithAccentuation$.next(null);
+  }
 }

@@ -83,7 +83,7 @@ function isFixedSidebarBlock(
  * @param node
  * @returns true if of type node description or false if of type NodeDerivedPropertiesDescription (TODO: Really?)
  */
-function isNodeDescription(
+export function isNodeDescription(
   node: NodeDescription | NodeDerivedPropertiesDescription
 ): node is NodeDescription {
   return "name" in node && "language" in node;
