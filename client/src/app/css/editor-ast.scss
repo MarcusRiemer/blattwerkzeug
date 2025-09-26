@@ -23,7 +23,8 @@
 }
 
 /* An icon of a trashbin that hovers over anything and may be used to remove blocks */
-trash {
+// Hier abgucken (immer das spezifischere Element (spezifität/ specificity gewinnt), hier dann auch 
+#trash-delete-block{
     font-size: 6rem;
     position: fixed;
     padding: 5px;

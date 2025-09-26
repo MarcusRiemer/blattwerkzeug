@@ -6,23 +6,25 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
   argument :id, ID, required: true
   argument :compiled_source, String, required: true
   argument :last_dragged_block, String, required: false
+  argument :clicked_hole_text, String, required: false
 
   field :answer_text, String, null: false
   field :next_block, String, null: false
   field :assignment_with_accentuation, String, null: false
+  field :suggested_hole_text, String
 
-  def resolve(id:, compiled_source:, last_dragged_block: nil)
+  def resolve(id:, compiled_source:, last_dragged_block: nil, clicked_hole_text: nil)
     resource = CodeResource.find_by!(id: id)
 
     authorize resource.project, :ai_hint?
 
     prompt_dev = generate_dev_prompt(resource, compiled_source)
-    prompt_user = generate_user_prompt(resource, compiled_source, last_dragged_block)
+    prompt_user = generate_user_prompt(resource, compiled_source, last_dragged_block, clicked_hole_text)
 
     ai_hint = query_ai(prompt_dev, prompt_user)
 
     {
-      answer_text: "#{ai_hint[:explanation]}\n", next_block: "#{ai_hint[:next_block]}", assignment_with_accentuation: "#{ai_hint[:assignment_with_accentuation]}"
+      answer_text: "#{ai_hint[:explanation]}\n", next_block: "#{ai_hint[:next_block]}", assignment_with_accentuation: "#{ai_hint[:assignment_with_accentuation]}", suggested_hole_text: "#{ai_hint[:suggested_hole_text]}"
     }
   end
 
@@ -37,7 +39,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
 
     response = client.chat(
       parameters: {
-        model: "gpt-4o",
+        model: "gpt-4.1",
         messages: [{role: "developer",content: message_dev},{ role: "user", content: message_user}],
         temperature: 0.7,
       }
@@ -45,7 +47,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
     begin
       content= response.dig("choices", 0, "message", "content")
       clean = content.gsub(/```(?:json)?/, "").strip
-      JSON.parse(clean, symbolize_names: true) # => {:explanation=>"…", :next_block=>"…"}
+      JSON.parse(content, symbolize_names: true) # => {:explanation=>"…", :next_block=>"…", :assignment_with_accentuation=>"…"}
 
     rescue JSON::ParserError => e
       Rails.logger.error("no valid json from ai: #{e.message}, content=#{content.inspect}")
@@ -55,19 +57,17 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
 
 
   # Generates a user prompt for the AI to help with the code resource.
-  def generate_user_prompt(resource, compiled_source, last_dragged_block)
+  def generate_user_prompt(resource, compiled_source, last_dragged_block, clicked_hole_text)
     assignment = resource.assignment
    
     generated_code = compiled_source # Received from client, to make sure it is the current compiled code and not the last saved code
 
     prompt = "Meine Aufgabe (assignment) lautet: #{assignment}\n" if assignment.present?
-    prompt += "Ich möchte nun dafür diesen Code vervollständigen:\n#{generated_code}\n"
+    prompt += "Mein Code sieht aktuell so aus und ich möchte diesen vervollständigen:\n#{generated_code}\n"
+    prompt += "Ich möchte als nächstes den Code-Block für das hole mit diesem Platzhalter wissen #{clicked_hole_text}\n" if clicked_hole_text
 
-    prompt += "Dafür habe ich zuletzt den folgenden Code-Block verwendet: \"#{last_dragged_block}\"" if last_dragged_block
-
-    # TODO: Still missing, have to receive this from client
-    # prompt += "Dabei habe ich ... Löcher in meinem Code, die ich noch füllen muss.\n"
-    # prompt += "Außerdem habe ich ... Fehler dabei.\n"
+    # if I don't use this, ai gets stuck on Binärer Ausdruck
+    prompt += "Dafür habe ich zuletzt den folgenden Code-Block verwendet: \"#{last_dragged_block}\" der Code sieht danach so aus: \n#{generated_code}\n" if last_dragged_block
 
     prompt.strip
   end
@@ -78,7 +78,8 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
     prompt = "Nimm die Rolle eines Lehrers ein und hilf bei folgender Aufgabe (assignment): #{assignment}\n"
     
     generated_code = compiled_source
-    prompt += "Das ist der aktuelle Code, den der User erstellt hat: \n#{generated_code}\n. Wenn dieser leer ist, dann hat der User noch nichts geschrieben und du solltest mit einem FROM anfangen. Orientiere dich bei der Reihenfolge der Codeblöcke an der SQL Verarbeitungsreihenfolge."
+    print generated_code
+    prompt += "Das ist der aktuelle Code, den der User erstellt hat und der die Grundlage deiner Antworten ist, er ändert sich nach jeder Aktion des Users: \n#{generated_code}\n. Wenn dieser leer ist, dann hat der User noch nichts geschrieben und du solltest mit einem FROM anfangen. Orientiere dich bei der Reihenfolge der Codeblöcke an der SQL Verarbeitungsreihenfolge."
     available_tables = find_available_tables(resource.project)
 
     available_blocks = find_available_blocks(resource.block_language)
@@ -97,30 +98,63 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
       end
     end
     # TODO: refine prompt, especially regarding complex expressions (binary expression is a huge problem for ai) 
-    # TODO: ai doesn't understand that no accentuation of assignment is needed, if the code is complete
     # TODO: maybe prompting in english is the better way to go
+    # TODO: ai doesn't understand suggested_holes and doesn't fill the JSON field 
     prompt += <<~RULES
       Für deine Antworten gelten folgende Regeln:
-      Antwort ohne Markdown, ohne Codefences, nur reines JSON mit den Feldern explanation (string), next_block (string) und assignment_with_accentuation (string). Keine weiteren Texte.
-      Bei Join Operationen wird der Code-Block INNER JOIN ON präferiert.
-      Gib nur Hinweise für das weitere Vorgehen und keine kompletten Lösungen. 
-      Wenn der Code die Aufgabe noch nicht erfüllt, hebe außerdem in dem gegebenen assignment hervor, auf welchen Teil der Aufgabenstellung sich deine Erklärung bezieht, indem du das übergebene assignment zurückgibst und den relevanten Teil bold machst. 
-      Verändere den Wortlaut des Assignments nicht und füge auch nichts hinzu.
-      Falls der User etwas falsches eingesetzt hat oder etwas, was zu viel für die eigentliche Aufgabe ist, weise darauf hin und sage, ihm, dass er den betroffenen Block entfernen sollte.
-      Nenne nur Code-Blöcke, die zur Verfügung stehen. Tabellennamen oder Tabellenspalten zählen auch jeweils als ein Code-Block. 
-      Komplexere Statements müssen auf den kleinsten Code-Block runtergebrochen werden. Beispiel: "Tabellenname.Tabellenspalte = FALSE" besteht aus drei Code-Blöcken: Hint 1: "Binärer Ausdruck", Hint 2: "Tabellenname.Tabellenspalte" und Hint 3: Konstante.
-      Wichtig: Wenn komplexe Statements den Block "Binärer Ausdruck" beinhalten, nenne diesen zuerst. 
-      Manche Blöcke ändern ihr Erscheinungsbild im zu vervollständigenden Code, wenn sie verwendet wurden:
-        - "Binärer Ausdruck": Erscheint als "=" im Code, kann aber auch andere binäre Ausdrücke wie "<", "<=", "LIKE" usw annehmen
+      Allgemein:
+      - Antwort ohne Markdown, ohne Codefences, nur reines JSON mit den Feldern explanation (string), next_block (string), assignment_with_accentuation (string) und suggested_hole_text(string). Keine weiteren Texte.
+      - Bei Join Operationen wird der Code-Block INNER JOIN ON präferiert.
+      - Schaue dir nicht nur den zuletzt gezogenen Block an, der aktuelle Code ist wichtiger.
+      - Wenn der User angibt, bei welchem hole er weitermachen möchte, dann mache dort weiter, auch wenn es anderen Vorgaben widerspricht. 
+      - WICHTIG: Die COUNT()-Funktionen mit leeren Klammern sind bereits korrekt implementiert und sollen nicht kommentiert werden.
+
+      Für explanation (string):
+      - Gib nur Hinweise für das weitere Vorgehen und keine kompletten Lösungen. 
+      - Falls der User etwas falsches eingesetzt hat oder etwas, was zu viel für die eigentliche Aufgabe ist, weise darauf hin und sage, ihm, dass er den betroffenen Block entfernen sollte.
+      - Nenne nur Code-Blöcke, die zur Verfügung stehen. Tabellennamen oder Tabellenspalten zählen auch jeweils als ein Code-Block. 
+      - Wichtig: Wenn komplexe Statements den Block "Binärer Ausdruck" beinhalten, nenne diesen zuerst. 
+      - Nach dem Einsetzen einer Konstante gib dann als nächsten Hint, was für einen Wert die Konstante haben soll mit "Anstatt wert schreibst du nun …".
+      - Bei den Tabellenspalten sollte deine Antwort dem gängigen Schema "Tabellenname.Tabellenspalte" entsprechen.
+
+      Für suggested_hole_text(string):
+      - Platzhalter im aktuellen Code nach dem Schema $x$ mit x als Zahl, repräsentieren Löcher im Code. Hier entnimmst du den Text für suggested_hole_text. Nur wenn es keine Löcher mehr gibt, also keine $x$ Ausdrücke, lasse das Feld im JSON leer, sonst gib es immer mit an.
+      - Wenn der Code leer ist, also nur aus $0$ $1$ besteht, dann gibst du $1$ zurück.
+      
+      Für assignment_with_accentuation (string):
+      - Wenn der Code die Aufgabe noch nicht erfüllt, hebe außerdem in dem gegebenen assignment hervor, auf welchen Teil der Aufgabenstellung sich deine Erklärung bezieht, indem du das übergebene assignment zurückgibst und den relevanten Teil bold machst. 
+      - Verändere den Wortlaut des Assignments nicht und füge auch nichts hinzu.
+      - Hier ein Beispiel mit Bezug zu dem Inhalt den du in next_block packst:
+        - FROM:  Zeige die Namen aller ** Strecken **, die eine Kanone haben
+        - Tabellenname:  Zeige die Namen aller ** Strecken **, die eine Kanone haben
+        - SELECT: Zeige die ** Namen aller Strecken **, die eine Kanone haben
+        - Tabellenname.Tabellenspalte (für das SELECT): Zeige die ** Namen aller Strecken **, die eine Kanone haben
+        - WHERE: Zeige die Namen aller Strecken, ** die eine Kanone haben **
+        - Binärer Ausdruck: Zeige die Namen aller Strecken, ** die eine Kanone haben **
+        - Konstante: Zeige die Namen aller Strecken, ** die eine Kanone haben **
+        - Tabellenname.Tabellenspalte (für den Binären Ausdruck): Zeige die Namen aller Strecken, ** die eine Kanone haben **
+        
+      Für next_block (string):
+      - Nenne nur Code-Blöcke, die zur Verfügung stehen. Tabellennamen oder Tabellenspalten zählen auch jeweils als ein Code-Block. 
+      - Komplexere Statements müssen auf den kleinsten Code-Block runtergebrochen werden. 
+        - Beispiel: "Tabellenname.Tabellenspalte = FALSE" besteht aus drei Code-Blöcken: Hint 1: "Binärer Ausdruck", Hint 2: "Tabellenname.Tabellenspalte" und Hint 3: Konstante.
+      - Wichtig: Wenn komplexe Statements den Block "Binärer Ausdruck" beinhalten, nenne diesen zuerst. 
+      - Manche Blöcke ändern ihr Erscheinungsbild im zu vervollständigenden Code, wenn sie verwendet wurden:
+        - "Binärer Ausdruck": Erscheint als "=" im Code, kann aber auch andere binäre Ausdrücke wie "<", "<=", "LIKE" usw annehmen. Auch wenn im aktuellen Code "Tabellenname.Tabellenspalte = $x$" (mit x als beliebige Zahl) steht, ist der Binäre Ausdruck bereits gesetzt.
         - ":parameter": Erscheint als ":param" im Code
         - "Klammern": Erscheint als "()" im Code
         - "Konstante": Erscheint als "wert" im Code
-      Nach dem Einsetzen einer Konstante gib dann als nächsten Hint, was für einen Wert die Konstante haben soll mit "Anstatt wert schreibst du nun …".
-      Bei den Tabellenspalten sollte deine Antwort dem gängigen Schema "Tabellenname.Tabellenspalte" entsprechen.
-      Es kann sein, dass der Code bereits vollständig ist. Evaluiere das vorher und teile es dem User mit, wenn der Code bereits vollständig ist.
-      Wenn es noch weitere Möglichkeiten gäbe, der Code aber die Aufgabe im Grunde bereits erfüllt, dann teile das ebenfalls dem User mit, wie folgt:
-      "Der Code erfüllt die Aufgabe bereits, du könntest ihn noch verändern, indem …"
-      WICHTIG: Die COUNT()-Funktionen mit leeren Klammern sind bereits korrekt implementiert und sollen nicht kommentiert werden.
+          - Nach dem Einsetzen einer Konstante gib dann als nächsten Hint, was für einen Wert die Konstante haben soll mit "Anstatt wert schreibst du nun …".
+      - Bei den Tabellenspalten sollte deine Antwort dem gängigen Schema "Tabellenname.Tabellenspalte" entsprechen.
+      
+      Allgemein zu vollständigem Code:
+      Es kann sein, dass der Code bereits vollständig ist. Evaluiere das vorher und handle dann gemäß diesen Punkten.
+      Code ist vollständig, wenn
+        - SELECT und FROM sind enthalten UND die Aufgabenstellung ist erfüllt
+      Handlungspunkte:
+      - Für explanation (string): teile es dem User mit, wenn der Code bereits vollständig ist. Wenn es noch weitere Möglichkeiten gäbe, der Code aber die Aufgabe im Grunde bereits erfüllt, dann teile das ebenfalls dem User mit, wie folgt: "Der Code erfüllt die Aufgabe bereits, du könntest ihn noch verändern, indem …"
+      - Für next_block (string): übergebe einen leeren string.
+      - Für assignment_with_accentuation (string): übergebe das Feld leer (null oder nil)
       Das Ziel ist es am Ende einen fertigen Codeabschnitt zu haben, der die Aufgabe erfüllt.\n    
     RULES
     prompt.strip

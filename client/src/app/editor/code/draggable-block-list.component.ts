@@ -1,4 +1,10 @@
-import { Component, Input } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  Input,
+  QueryList,
+  ViewChildren,
+} from "@angular/core";
 
 import { CodeResource } from "../../shared/syntaxtree";
 import { FixedSidebarBlock, FixedBlocksSidebar } from "../../shared/block";
@@ -36,6 +42,8 @@ import { CurrentHoleLocationService } from "../current-hole-location.service";
   ],
 })
 export class DraggableBlockListComponent {
+  @ViewChildren("draggableBlock") draggableBlock: QueryList<ElementRef>;
+
   @Input()
   blockSidebar: FixedBlocksSidebar;
 
@@ -48,6 +56,21 @@ export class DraggableBlockListComponent {
     private _currentHoleLocationService: CurrentHoleLocationService
   ) {}
 
+  //TODO: I want to use the scrollIntoView, after a highlight happened, not after intialization
+  // Mit subscribe dann "weiterleiten" an sidebar-blocks.ts, unsubscribe nicht vergessen
+  ngAfterViewInit() {
+    //I have to add a timeout here, because of the animations, otherwise I get an undefined error
+    setTimeout(() => {
+      this.draggableBlock?.forEach((block) => {
+        if (block?.nativeElement) {
+          block.nativeElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      });
+    }, 100);
+  }
   /**
    * The user has decided to start dragging something from the sidebar.
    */

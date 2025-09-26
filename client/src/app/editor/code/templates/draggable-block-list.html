@@ -15,12 +15,14 @@
     <summary>
       <h6>{{ category.displayName }}</h6>
     </summary>
+    <!--TODO: The element ref is not working 100% correct, maybe bc of the *ngFor?-->
     <div
       *ngFor="let block of category.blocks"
       (mousedown)="startDrag($event, block)"
       class="block rounded"
       [@background]="block.highlightState$ | async"
       [@visibility]="block.visibilityState$ | async"
+      #draggableBlock
     >
       {{ block.displayName }}
     </div>
