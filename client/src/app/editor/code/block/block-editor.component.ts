@@ -20,6 +20,7 @@ import { SidebarService } from "../../sidebar.service";
 
 import { CodeSidebarComponent } from "../code-sidebar.component";
 import { EditorComponentsService } from "../editor-components.service";
+import { AiCoachService } from "../ai-coach.service";
 
 interface PlacedEditorComponent {
   portal: Promise<ComponentPortal<{}>>;
@@ -238,12 +239,13 @@ export class BlockEditorComponent implements OnInit, OnDestroy {
           (c) => c.componentType === "block-root"
         );
 
-        if (blockEditorIndex >= 0 && aiCoachActive) {
-          components.splice(blockEditorIndex + 1, 0, {
-            componentType: "ai-coach",
-            columnClasses: ["col-8"],
-          });
-        }
+        // position absolute, relativ zum nächsten Element, brauche einen position relative Anker,  beim trash abgucken
+        // if (blockEditorIndex >= 0 && aiCoachActive) {
+        //   components.splice(blockEditorIndex + 1, 0, {
+        //     componentType: "ai-coach",
+        //     columnClasses: ["col-8"],
+        //   });
+        // }
         // If the value of the assigment is set, the assignment component is added
         if (blockEditorIndex >= 0 && this.peekResource.assignment) {
           components.splice(blockEditorIndex, 0, {

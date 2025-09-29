@@ -1,25 +1,51 @@
-<h4>AI Coach</h4>
-<div>Timer: {{timerValue}}</div>
+<!-- <h4>AI Coach</h4> -->
+<!-- <div>Timer: {{timerValue}}</div> -->
 <!-- <div *ngIf="timerValue >= 0">
   <button (click)="copyPromptToClipboard()" class="btn btn-secondary">
     Copy Prompt to Clipboard
   </button>
 </div> -->
-<button (click)="applyAiSuggestion()" class="btn btn-secondary">
-  Apply Ai Suggestion
-</button>
-<div>
-  <button (click)="onClick()" class="btn btn-secondary">
-    Get Hint for Current Code Resource
-  </button>
-  <div *ngIf="aiHint$ | async as aiHint">Hint: {{aiHint}}</div>
-</div>
+<!-- <div>
+    <button (click)="onClick()" class="btn btn-secondary">
+      Get Hint for Current Code Resource
+    </button> -->
+<div id="ai-coach-container">
+  <div id="ai-coach-hint" *ngIf="aiHint$ | async as hint">
+    <div class="speech-bubble">
+      {{hint}}
+      <button (click)="applyAiSuggestion()" class="btn btn-secondary">
+        Apply Ai Suggestion
+      </button>
+    </div>
+  </div>
 
-<div *ngIf="result$ | async as result">
-  Anzahl der Fehler:
-  <pre> {{ result.errors.length | json }}</pre>
+  <div
+    (click)="onClick()"
+    *ngIf="aiCoachState$ | async as state"
+    id="ai-coach-image"
+  >
+    <img
+      src="vendor/ai-coach/coach-neutral.svg"
+      [@coachState]="state === 'neutral' ? 'visible' : 'hidden'"
+      class="coach-image"
+    />
+    <img
+      src="vendor/ai-coach/coach-thinking.svg"
+      [@coachState]="state === 'thinking' ? 'visible' : 'hidden'"
+      class="coach-image"
+    />
+    <img
+      src="vendor/ai-coach/coach-idea.svg"
+      [@coachState]="state === 'idea' ? 'visible' : 'hidden'"
+      class="coach-image"
+    />
+  </div>
 </div>
-<div *ngIf="countHoles$ | async as countHoles">
-  Anzahl Löcher (fehlende Kinder):
-  <pre>{{ countHoles }}</pre>
-</div>
+<!-- <div *ngIf="result$ | async as result">
+    Anzahl der Fehler:
+    <pre> {{ result.errors.length | json }}</pre>
+  </div>
+  <div *ngIf="countHoles$ | async as countHoles">
+    Anzahl Löcher (fehlende Kinder):
+    <pre>{{ countHoles }}</pre>
+  </div> -->

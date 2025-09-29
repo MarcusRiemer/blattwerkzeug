@@ -4,7 +4,13 @@ import { CurrentCodeResourceService } from "../current-coderesource.service";
 import { DragService } from "../drag.service";
 import { AiHintCodeResourceGQL } from "src/generated/graphql";
 import { CodeHighlightService } from "./code-highlight.service";
-import { first, map, switchMap, withLatestFrom } from "rxjs/operators";
+import {
+  distinctUntilChanged,
+  first,
+  map,
+  switchMap,
+  withLatestFrom,
+} from "rxjs/operators";
 import {
   CodeResource,
   NodeDescription,
@@ -19,12 +25,15 @@ import { isLegalChild, isNodeDescription } from "./block-state";
 import { DatabaseSchemaService } from "../database-schema.service";
 import { CurrentHoleLocationService } from "../current-hole-location.service";
 
+export type AiCoachState = "neutral" | "thinking" | "idea";
+
 @Injectable()
 export class AiCoachService {
   readonly aiHint$ = new BehaviorSubject<string>(null);
   readonly assignmentWithAccentuation$ = new BehaviorSubject<string>(null);
   readonly nextBlock$ = new BehaviorSubject<string>("");
   readonly suggestedHole$ = new BehaviorSubject<EmittedHole>(null);
+  readonly aiCoachState$ = new BehaviorSubject<AiCoachState>("neutral");
 
   public timerValue = 0;
   private _subscriptions = new Subscription();
@@ -67,6 +76,14 @@ export class AiCoachService {
             });
             this._subscriptions.add(this._timerSubscription);
           }
+        })
+    );
+
+    this._subscriptions.add(
+      this._currentCodeResource.currentResource
+        .pipe(distinctUntilChanged())
+        .subscribe(() => {
+          this.reset();
         })
     );
   }
@@ -135,12 +152,6 @@ export class AiCoachService {
   readonly clickedHoleCategoryName$ =
     this._currentClickedHoleService.currentHoleLocation$;
 
-  //will diese Node Location matchen auf alle emitted holes und damit den holeText herausfinden
-  // .pipe(
-  //   map((hole) => {
-  //     const clickedHoleCategory = hole[hole.length - 1][0];
-  //   })
-  // );
   /**
    * Translates the last dragged block from json format into code.
    * @param lastDraggedBlock The last dragged block in json format.
@@ -191,7 +202,8 @@ export class AiCoachService {
    * Uses the new GraphQL Endpoint to get a hint for the current code resource.
    * @returns A hint for the current code resource.
    */
-  async getHintForCurrentCodeResource(withAppliedSuggestion: boolean = false) {
+  async getHintForCurrentCodeResource() {
+    this.aiCoachState$.next("thinking");
     const codeResource = await this.codeResource$.pipe(first()).toPromise();
     const generatedCode = await this.generatedCodeWithHoles$
       .pipe(first())
@@ -227,6 +239,8 @@ export class AiCoachService {
       })
       .toPromise();
 
+    this.aiCoachState$.next("idea");
+
     if (aiHintMutation.data?.aiHintCodeResource.nextBlock) {
       this.nextBlock$.next(aiHintMutation.data?.aiHintCodeResource.nextBlock);
     } else {
@@ -252,29 +266,22 @@ export class AiCoachService {
           aiHintMutation.data?.aiHintCodeResource.suggestedHoleText
         )
       );
-
-      if (withAppliedSuggestion && this.suggestedHole$.value) {
-        this.applyProposedBlock(
-          this.suggestedHole$.value,
-          codeResource,
-          this.nextBlock$.value
-        );
-      }
     } else {
       this.suggestedHole$.next(null);
       console.log("No hole suggested");
     }
 
     this.aiHint$.next(
-      aiHintMutation.data?.aiHintCodeResource.answerText || "No hint available"
+      aiHintMutation.data?.aiHintCodeResource.answerText ||
+        "Es gibt gerade ein internes Problem. Deswegen kann ich dir gerade keinen Hinweis geben."
     );
   }
 
-  async applyProposedBlock(
-    hole: EmittedHole,
-    codeResource: CodeResource,
-    blockDisplayName: string
-  ) {
+  async applyProposedBlock() {
+    const hole = this.suggestedHole$.value;
+    const codeResource = await this.codeResource$.pipe(first()).toPromise();
+    const blockDisplayName = this.nextBlock$.value;
+
     const insertionLocation: NodeLocation = [
       ...hole.node.location,
       [hole.categoryName, 0],
@@ -411,8 +418,19 @@ export class AiCoachService {
     this._highlightService.clearHighlight();
     this._highlightService.setHighlightedBlock(value);
   }
+
+  /**
+   * When the currentCodeResource changes, the values from the aiCoach need a reset
+   */
+  reset() {
+    this.aiHint$.next(null);
+    this._highlightService.clearHighlight();
+    this.aiCoachState$.next("neutral");
+    this.suggestedHole$.next;
+  }
   /**
    * Unsubscribe when the component is destroyed
+   * TODO: Does this ever happen in case of a service?
    */
   ngOnDestroy() {
     this._subscriptions.unsubscribe();

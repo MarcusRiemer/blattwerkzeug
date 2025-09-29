@@ -72,7 +72,6 @@ import { NerdamerPipe } from "./math/nerdamer.pipe";
     DatabaseSchemaSidebarComponent,
     DraggableBlockListComponent,
     ValidationComponent,
-    AiCoachComponent,
     AssignmentComponent,
     CodeSidebarComponent,
     CodeSidebarFixedBlocksComponent,

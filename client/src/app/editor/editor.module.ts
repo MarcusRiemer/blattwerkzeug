@@ -34,6 +34,7 @@ import { MembersComponent } from "./project-settings/members.component";
 import { CodeHighlightService } from "./code/code-highlight.service";
 import { CurrentHoleLocationService } from "./current-hole-location.service";
 import { AiCoachService } from "./code/ai-coach.service";
+import { AiCoachComponent } from "./code/ai-coach.component";
 
 @NgModule({
   imports: [
@@ -58,6 +59,7 @@ import { AiCoachService } from "./code/ai-coach.service";
     TrashComponent,
     SourceIconComponent,
     MembersComponent,
+    AiCoachComponent,
   ],
   providers: [
     TrashService,
@@ -80,6 +82,7 @@ import { AiCoachService } from "./code/ai-coach.service";
     TrashComponent,
     ContenteditableModel,
     SourceIconComponent,
+    AiCoachComponent,
   ],
 })
 export class EditorModule {}
