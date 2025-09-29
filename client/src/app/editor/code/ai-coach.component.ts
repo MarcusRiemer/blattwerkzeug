@@ -5,12 +5,26 @@ import { map, withLatestFrom } from "rxjs/operators";
 import { DragService } from "../drag.service";
 import { BehaviorSubject, Subscription, interval } from "rxjs";
 import { AiCoachService } from "./ai-coach.service";
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from "@angular/animations";
 
 /**
- * Assists the user in writing code by providing feedback and tips.
+ * Assists the user in writing code by providing hints.
  */
 @Component({
   templateUrl: "templates/ai-coach.html",
+  selector: "ai-coach",
+  animations: [
+    trigger("coachState", [
+      state("visible", style({ opacity: 1 })),
+      state("hidden", style({ opacity: 0, display: "none" })),
+    ]),
+  ],
 })
 export class AiCoachComponent {
   public timerValue = 0;
@@ -21,7 +35,6 @@ export class AiCoachComponent {
   readonly lastDraggedBlock$ =
     this._behaviorSubjectLastDraggedBlock.asObservable();
 
-  public aiHint: string;
   public assignmentWithAccentuation: string;
 
   constructor(
@@ -86,11 +99,13 @@ export class AiCoachComponent {
 
   readonly aiHint$ = this._aiService.aiHint$;
 
+  readonly aiCoachState$ = this._aiService.aiCoachState$;
+
   readonly assignmentWithAccentuation$ =
     this._aiService.assignmentWithAccentuation$;
 
   applyAiSuggestion() {
-    this._aiService.getHintForCurrentCodeResource(true);
+    this._aiService.applyProposedBlock();
   }
 
   /**
@@ -106,5 +121,8 @@ export class AiCoachComponent {
    */
   ngOnDestroy() {
     this._subscriptions.unsubscribe();
+    //when I switch tasks, the hint should be reset and the coach should look neutral
+    this.aiHint$.next(null);
+    // this.aiCoachState$.next("neutral");
   }
 }

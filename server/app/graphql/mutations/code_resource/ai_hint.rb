@@ -47,7 +47,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
     begin
       content= response.dig("choices", 0, "message", "content")
       clean = content.gsub(/```(?:json)?/, "").strip
-      JSON.parse(content, symbolize_names: true) # => {:explanation=>"…", :next_block=>"…", :assignment_with_accentuation=>"…"}
+      JSON.parse(content, symbolize_names: true) # => {:explanation=>"…", :next_block=>"…", :assignment_with_accentuation=>"…", :suggested_hole_text=>"…"}
 
     rescue JSON::ParserError => e
       Rails.logger.error("no valid json from ai: #{e.message}, content=#{content.inspect}")
