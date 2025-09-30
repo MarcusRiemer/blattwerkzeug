@@ -233,24 +233,15 @@ export class BlockEditorComponent implements OnInit, OnDestroy {
     this.editorComponentDescriptions.pipe(
       map((components): EditorComponentDescription[] => {
         console.log("Komponenten:", components);
-        // To possibly deactivate the AI Coach
-        const aiCoachActive: boolean = true;
         const blockEditorIndex = components.findIndex(
           (c) => c.componentType === "block-root"
         );
 
-        // position absolute, relativ zum nächsten Element, brauche einen position relative Anker,  beim trash abgucken
-        // if (blockEditorIndex >= 0 && aiCoachActive) {
-        //   components.splice(blockEditorIndex + 1, 0, {
-        //     componentType: "ai-coach",
-        //     columnClasses: ["col-8"],
-        //   });
-        // }
         // If the value of the assigment is set, the assignment component is added
         if (blockEditorIndex >= 0 && this.peekResource.assignment) {
           components.splice(blockEditorIndex, 0, {
             componentType: "assignment",
-            columnClasses: ["col-8"],
+            columnClasses: ["col-12"],
           });
         }
 
@@ -261,7 +252,7 @@ export class BlockEditorComponent implements OnInit, OnDestroy {
           // Resolved component and sane defaults for components that are displayed
           return {
             portal: this.createEditorComponentPortal(c),
-            columnClasses: c.columnClasses || ["col-8"],
+            columnClasses: c.columnClasses || ["col-12"],
           };
         })
       )
