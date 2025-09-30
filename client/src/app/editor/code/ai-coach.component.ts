@@ -5,13 +5,7 @@ import { map, withLatestFrom } from "rxjs/operators";
 import { DragService } from "../drag.service";
 import { BehaviorSubject, Subscription, interval } from "rxjs";
 import { AiCoachService } from "./ai-coach.service";
-import {
-  animate,
-  state,
-  style,
-  transition,
-  trigger,
-} from "@angular/animations";
+import { state, style, trigger } from "@angular/animations";
 
 /**
  * Assists the user in writing code by providing hints.
@@ -121,8 +115,5 @@ export class AiCoachComponent {
    */
   ngOnDestroy() {
     this._subscriptions.unsubscribe();
-    //when I switch tasks, the hint should be reset and the coach should look neutral
-    this.aiHint$.next(null);
-    // this.aiCoachState$.next("neutral");
   }
 }

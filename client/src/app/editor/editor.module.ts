@@ -59,7 +59,6 @@ import { AiCoachComponent } from "./code/ai-coach.component";
     TrashComponent,
     SourceIconComponent,
     MembersComponent,
-    AiCoachComponent,
   ],
   providers: [
     TrashService,
@@ -82,7 +81,6 @@ import { AiCoachComponent } from "./code/ai-coach.component";
     TrashComponent,
     ContenteditableModel,
     SourceIconComponent,
-    AiCoachComponent,
   ],
 })
 export class EditorModule {}

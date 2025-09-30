@@ -32,17 +32,18 @@
     z-index: 2; /* 1 is not elevated enough, it conflicts with the material sidebar */
 }
 
+/* Container for the ai coach elements */
 #ai-coach-container {
    position: fixed;
    bottom: 45px;  
-   right: 220px;  
-   z-index: 9999;
+   right: 230px;  
+   z-index: 2;
    display: flex;
    flex-direction: column;
    align-items: center;
-   gap: 10px;  // Space between hint and image
 }
 
+/* Displays the hint from the ai coach*/
 #ai-coach-hint {
 margin-bottom: 110px;
   .speech-bubble {
@@ -83,6 +84,7 @@ margin-bottom: 110px;
   }
 }
 
+/* The visualisation of the ai coach */
 #ai-coach-image {
     width: 100px;
     height: 100px;
