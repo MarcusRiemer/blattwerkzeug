@@ -14,34 +14,27 @@ concise_attributes:
   value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
     "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
     "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
-    "properties": {"columnName": "track_id", "refTableName": "track_cup"}}], "rhs":
-    [{"name": "columnName", "language": "sql", "properties": {"columnName": "id",
-    "refTableName": "track"}}], "operator": [{"name": "relationalOperator", "language":
-    "sql", "properties": {"operator": "="}}]}, "language": "sql"}], "table": [{"name":
-    "tableIntroduction", "language": "sql", "properties": {"name": "track_cup"}}]},
-    "language": "sql"}, {"name": "innerJoinOn", "children": {"on": [{"name": "binaryExpression",
-    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
-    "id", "refTableName": "cup"}}], "rhs": [{"name": "columnName", "language": "sql",
-    "properties": {"columnName": "cup_id", "refTableName": "track_cup"}}], "operator":
+    "properties": {"columnName": "id", "refTableName": "cup"}}], "rhs": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "cup_id", "refTableName":
+    "track"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
+    {"operator": "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction",
+    "language": "sql", "properties": {"name": "cup"}}]}, "language": "sql"}], "tables":
+    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "track"}}]},
+    "language": "sql"}], "where": [{"name": "where", "children": {"expressions": [{"name":
+    "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "name", "refTableName": "cup"}}], "rhs": [{"name":
+    "constant", "language": "sql", "properties": {"value": "''Spezial-Cup''"}}], "operator":
     [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
-    "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction", "language":
-    "sql", "properties": {"name": "cup"}}]}, "language": "sql"}], "tables": [{"name":
-    "tableIntroduction", "language": "sql", "properties": {"name": "track"}}]}, "language":
-    "sql"}], "where": [{"name": "where", "children": {"expressions": [{"name": "binaryExpression",
-    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
-    "name", "refTableName": "cup"}}], "rhs": [{"name": "constant", "language": "sql",
-    "properties": {"value": "''Spezial%''"}}], "operator": [{"name": "relationalOperator",
-    "language": "sql", "properties": {"operator": "LIKE"}}]}, "language": "sql"}]},
-    "language": "sql"}], "select": [{"name": "select", "children": {"columns": [{"name":
-    "columnName", "language": "sql", "properties": {"columnName": "name_de", "refTableName":
-    "track"}}], "distinct": [{"name": "distinct", "language": "sql"}]}, "language":
-    "sql"}], "groupBy": []}, "language": "sql"}'
+    "LIKE"}}]}, "language": "sql"}]}, "language": "sql"}], "select": [{"name": "select",
+    "children": {"columns": [{"name": "columnName", "language": "sql", "properties":
+    {"columnName": "name_de", "refTableName": "track"}}], "distinct": [{"name": "distinct",
+    "language": "sql"}]}, "language": "sql"}], "groupBy": []}, "language": "sql"}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2025-07-22 10:48:19.403396000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-08-19 10:40:32.919806000 Z
+  value_before_type_cast: 2025-09-30 16:42:50.937359000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
@@ -51,8 +44,7 @@ concise_attributes:
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: compiled
   value_before_type_cast: "SELECT DISTINCT track.name_de\nFROM track\n\tINNER JOIN
-    track_cup ON track_cup.track_id = track.id\n\tINNER JOIN cup ON cup.id = track_cup.cup_id\nWHERE
-    cup.name LIKE 'Spezial%'"
+    cup ON cup.id = track.cup_id\nWHERE cup.name LIKE 'Spezial-Cup'"
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: assignment
   value_before_type_cast: Zeige die Namen aller Strecken, die im Cup mit dem Namen

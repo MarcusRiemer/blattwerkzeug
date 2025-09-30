@@ -14,24 +14,36 @@ concise_attributes:
   value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
     "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
     "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
-    "properties": {"columnName": "best_vehicle_id", "refTableName": "driver"}}], "rhs":
+    "properties": {"columnName": "track_id", "refTableName": "track_hazard"}}], "rhs":
     [{"name": "columnName", "language": "sql", "properties": {"columnName": "id",
-    "refTableName": "vehicle"}}], "operator": [{"name": "relationalOperator", "language":
+    "refTableName": "track"}}], "operator": [{"name": "relationalOperator", "language":
     "sql", "properties": {"operator": "="}}]}, "language": "sql"}], "table": [{"name":
-    "tableIntroduction", "language": "sql", "properties": {"name": "driver"}}]}, "language":
-    "sql"}], "tables": [{"name": "tableIntroduction", "language": "sql", "properties":
-    {"name": "vehicle"}}]}, "language": "sql"}], "where": [], "select": [{"name":
-    "select", "children": {"columns": [{"name": "columnName", "language": "sql", "properties":
-    {"columnName": "name", "refTableName": "vehicle"}}, {"name": "columnName", "language":
-    "sql", "properties": {"columnName": "weight_class", "refTableName": "driver"}}],
-    "distinct": [{"name": "distinct", "language": "sql"}]}, "language": "sql"}], "groupBy":
-    []}, "language": "sql"}'
+    "tableIntroduction", "language": "sql", "properties": {"name": "track_hazard"}}]},
+    "language": "sql"}, {"name": "innerJoinOn", "children": {"on": [{"name": "binaryExpression",
+    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "id", "refTableName": "hazard"}}], "rhs": [{"name": "columnName", "language":
+    "sql", "properties": {"columnName": "hazard_id", "refTableName": "track_hazard"}}],
+    "operator": [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
+    "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction", "language":
+    "sql", "properties": {"name": "hazard"}}]}, "language": "sql"}], "tables": [{"name":
+    "tableIntroduction", "language": "sql", "properties": {"name": "track"}}]}, "language":
+    "sql"}], "where": [{"name": "where", "children": {"expressions": [{"name": "binaryExpression",
+    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "name_de", "refTableName": "hazard"}}], "rhs": [{"name": "constant", "language":
+    "sql", "properties": {"value": "''Swooper''"}}], "operator": [{"name": "relationalOperator",
+    "language": "sql", "properties": {"operator": "="}}]}, "language": "sql"}, {"name":
+    "whereAdditional", "children": {"expression": [{"name": "columnName", "language":
+    "sql", "properties": {"columnName": "falling_off_possible", "refTableName": "track"}}]},
+    "language": "sql", "properties": {"operator": "AND"}}]}, "language": "sql"}],
+    "select": [{"name": "select", "children": {"columns": [{"name": "columnName",
+    "language": "sql", "properties": {"columnName": "name_de", "refTableName": "track"}}]},
+    "language": "sql"}], "groupBy": []}, "language": "sql"}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2025-07-22 11:06:29.840223000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-08-19 10:35:24.593777000 Z
+  value_before_type_cast: 2025-09-30 17:15:22.859893000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
@@ -40,11 +52,12 @@ concise_attributes:
   value_before_type_cast: sql
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: compiled
-  value_before_type_cast: "SELECT DISTINCT vehicle.name, driver.weight_class\nFROM
-    vehicle\n\tINNER JOIN driver ON driver.best_vehicle_id = vehicle.id"
+  value_before_type_cast: "SELECT track.name_de\nFROM track\n\tINNER JOIN track_hazard
+    ON track_hazard.track_id = track.id\n\tINNER JOIN hazard ON hazard.id = track_hazard.hazard_id\nWHERE
+    hazard.name_de = 'Swooper'\n\tAND track.falling_off_possible"
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: assignment
-  value_before_type_cast: Zeige das beste Fahrzeug pro Gewichtsklasse. Zeige auch
-    die zugehörige Gewichtsklasse.
+  value_before_type_cast: Zeige die Namen aller Strecken, auf denen das Hindernis
+    (hazard) 'Swooper' vorkommt und es möglich ist runterzufallen.
 new_record: false
 active_record_yaml_version: 2
