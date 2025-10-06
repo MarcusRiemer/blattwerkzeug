@@ -11,11 +11,29 @@
     </button> -->
 <div id="ai-coach-container">
   <div id="ai-coach-hint" *ngIf="aiHint$ | async as hint">
-    <div class="speech-bubble">
-      {{hint}}
-      <button (click)="applyAiSuggestion()" class="btn btn-secondary">
-        Apply Ai Suggestion
-      </button>
+    <div [@visibility]="!closed ? 'visible' : 'hidden'">
+      <img
+        src="vendor/ai-coach/close-hint.svg"
+        class="close-hint"
+        (click)="closeHint()"
+      />
+      <div class="speech-bubble">
+        {{hint}}
+        <button
+          (click)="applyAiSuggestion($event)"
+          class="btn"
+          id="ai-coach-button"
+        >
+          Hinweis anwenden
+        </button>
+      </div>
+    </div>
+    <div
+      [@visibility]="closed ? 'visible' : 'hidden'"
+      (click)="openHint()"
+      class="thought"
+    >
+      <img src="vendor/ai-coach/thought.svg" />
     </div>
   </div>
 
@@ -26,17 +44,17 @@
   >
     <img
       src="vendor/ai-coach/coach-neutral.svg"
-      [@coachState]="state === 'neutral' ? 'visible' : 'hidden'"
+      [@visibility]="state === 'neutral' ? 'visible' : 'hidden'"
       class="coach-image"
     />
     <img
       src="vendor/ai-coach/coach-thinking.svg"
-      [@coachState]="state === 'thinking' ? 'visible' : 'hidden'"
+      [@visibility]="state === 'thinking' ? 'visible' : 'hidden'"
       class="coach-image"
     />
     <img
       src="vendor/ai-coach/coach-idea.svg"
-      [@coachState]="state === 'idea' ? 'visible' : 'hidden'"
+      [@visibility]="state === 'idea' ? 'visible' : 'hidden'"
       class="coach-image"
     />
   </div>

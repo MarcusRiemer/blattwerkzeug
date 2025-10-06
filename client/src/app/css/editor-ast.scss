@@ -22,6 +22,16 @@
     }
 }
 
+/* Marching ants animation for chosenByAi state */
+@keyframes marching-ants-dashoffset {
+      0%, 25%, 50%, 75%, 100% {
+    border-color: black rgb(174, 174, 174) black rgb(174, 174, 174);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    border-color: rgb(174, 174, 174) black rgb(174, 174, 174) black;
+  }
+}
+
 /* An icon of a trashbin that hovers over anything and may be used to remove blocks */
 #trash-delete-block{
     font-size: 6rem;
@@ -82,6 +92,32 @@ margin-bottom: 110px;
       border-top: 12px solid #348925;
     }
   }
+
+  .close-hint{
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    z-index: 3;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+  }
+
+  .thought{
+    position: absolute;
+    bottom: 82px;
+    right: 0px;
+    width: 32px;
+    height: 32px;
+    z-index: 3;
+    cursor: pointer;
+
+    img { 
+    width: 100%;
+    height: 100%;
+    display: block; 
+  }
+  }
 }
 
 /* The visualisation of the ai coach */
@@ -94,6 +130,7 @@ margin-bottom: 110px;
     position: absolute;
     bottom: 0;
     right: 0;
+    cursor: pointer;
 
   .coach-image {
     position: absolute;
@@ -101,6 +138,12 @@ margin-bottom: 110px;
     height: 100%;
     object-fit: contain;
   }
+}
+
+/* A button to apply the ai hint */
+#ai-coach-button {
+    background-color: #348925;
+    color: white;
 }
 
 /* A virtual block that is dragged over the scene. */

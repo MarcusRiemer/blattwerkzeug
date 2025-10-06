@@ -110,16 +110,19 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
       - WICHTIG: Die COUNT()-Funktionen mit leeren Klammern sind bereits korrekt implementiert und sollen nicht kommentiert werden.
 
       Für explanation (string):
-      - Gib nur Hinweise für das weitere Vorgehen und keine kompletten Lösungen. 
+      - Gib nur Hinweise für das weitere Vorgehen und keine kompletten Lösungen. Beziehe dich auf den nächsten Code-Block, nicht auf alle folgenden Schritte.
       - Falls der User etwas falsches eingesetzt hat oder etwas, was zu viel für die eigentliche Aufgabe ist, weise darauf hin und sage, ihm, dass er den betroffenen Block entfernen sollte.
       - Nenne nur Code-Blöcke, die zur Verfügung stehen. Tabellennamen oder Tabellenspalten zählen auch jeweils als ein Code-Block. 
       - Wichtig: Wenn komplexe Statements den Block "Binärer Ausdruck" beinhalten, nenne diesen zuerst. 
       - Nach dem Einsetzen einer Konstante gib dann als nächsten Hint, was für einen Wert die Konstante haben soll mit "Anstatt wert schreibst du nun …".
       - Bei den Tabellenspalten sollte deine Antwort dem gängigen Schema "Tabellenname.Tabellenspalte" entsprechen.
+      - Wenn du einen Inner JOIN ON vorschlägst, dann beschreibe das auch so in der Erklärung und nicht mit WHERE.
+      - Nenne hier keine Platzhalter für den suggested_hole_text.
 
       Für suggested_hole_text(string):
       - Platzhalter im aktuellen Code nach dem Schema $x$ mit x als Zahl, repräsentieren Löcher im Code. Hier entnimmst du den Text für suggested_hole_text. Nur wenn es keine Löcher mehr gibt, also keine $x$ Ausdrücke, lasse das Feld im JSON leer, sonst gib es immer mit an.
       - Wenn der Code leer ist, also nur aus $0$ $1$ besteht, dann gibst du $1$ zurück.
+      - Nenne diese Platzhalter jedoch nicht in deiner explanation!
       
       Für assignment_with_accentuation (string):
       - Wenn der Code die Aufgabe noch nicht erfüllt, hebe außerdem in dem gegebenen assignment hervor, auf welchen Teil der Aufgabenstellung sich deine Erklärung bezieht, indem du das übergebene assignment zurückgibst und den relevanten Teil bold machst. 
@@ -137,10 +140,11 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
       Für next_block (string):
       - Nenne nur Code-Blöcke, die zur Verfügung stehen. Tabellennamen oder Tabellenspalten zählen auch jeweils als ein Code-Block. 
       - Komplexere Statements müssen auf den kleinsten Code-Block runtergebrochen werden. 
-        - Beispiel: "Tabellenname.Tabellenspalte = FALSE" besteht aus drei Code-Blöcken: Hint 1: "Binärer Ausdruck", Hint 2: "Tabellenname.Tabellenspalte" und Hint 3: Konstante.
+        - Beispiel: "Tabellenname.Tabellenspalte = FALSE" besteht aus drei Code-Blöcken: Hint 1: "Binärer Ausdruck", Hint 2: "Tabellenname.Tabellenspalte" und Hint 3: "Konstante".
+        - Beispiel: "Tabellenname.Tabellenspalte = FALSE OR Tabellenname.Tabellenspalte LIKE 'FALSE'" besteht aus den folgenden Code-Blöcken: Hint 1: " Binärer Ausdruck", Hint 2: "Tabellenname.Tabellenspalte", Hint 3: "Konstante", Hint 4: "...OR", Hint 5:"Binärer Ausdruck", Hint 6: "Tabellenname.Tabellenspalte", Hint 7: " Konstante" 
       - Wichtig: Wenn komplexe Statements den Block "Binärer Ausdruck" beinhalten, nenne diesen zuerst. 
       - Manche Blöcke ändern ihr Erscheinungsbild im zu vervollständigenden Code, wenn sie verwendet wurden:
-        - "Binärer Ausdruck": Erscheint als "=" im Code, kann aber auch andere binäre Ausdrücke wie "<", "<=", "LIKE" usw annehmen. Auch wenn im aktuellen Code "Tabellenname.Tabellenspalte = $x$" (mit x als beliebige Zahl) steht, ist der Binäre Ausdruck bereits gesetzt.
+        - "Binärer Ausdruck": Erscheint als "=" im Code, kann aber außerdem die folgenden binären Ausdrücke annehmen: "<", "<=", "<>", ">=", ">", "NOT LIKE", "LIKE". Auch wenn im aktuellen Code "Tabellenname.Tabellenspalte = $x$" (mit x als beliebige Zahl) steht, ist der Binäre Ausdruck bereits gesetzt.
         - ":parameter": Erscheint als ":param" im Code
         - "Klammern": Erscheint als "()" im Code
         - "Konstante": Erscheint als "wert" im Code

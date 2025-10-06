@@ -84,18 +84,66 @@ const CSS_ALPHA = "0.3";
         "chosenByAi",
         style({
           background: `
-          repeating-linear-gradient(
-            45deg,
-            RGBA(${CSS_MAGENTA}, ${CSS_ALPHA}),
-            RGBA(${CSS_MAGENTA}, ${CSS_ALPHA}) 10px,
-            RGBA(${CSS_BLACK}, 0.2) 10px,
-            RGBA(${CSS_BLACK}, 0.2) 20px
-          )
-        `,
+      repeating-linear-gradient(
+        45deg,
+        RGBA(${CSS_YELLOW}, ${CSS_ALPHA}),
+        RGBA(${CSS_YELLOW}, ${CSS_ALPHA}) 10px,
+        RGBA(${CSS_BLACK}, 0.2) 10px,
+        RGBA(${CSS_BLACK}, 0.2) 20px
+      )
+    `,
           "border-radius": "500px",
-          border: "1px solid black",
+          border: "2px dashed black",
+          "background-clip": "padding-box",
+          animation: "marching-ants-dashoffset 2.5s steps(16) infinite",
+          transform: "scale(1)",
         })
       ),
+      transition("* => chosenByAi", [
+        animate(
+          "150ms ease-out",
+          style({
+            transform: "scale(1.3)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(-3px)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(3px)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(-3px)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(3px)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(0)",
+          })
+        ),
+        animate(
+          "200ms ease-in",
+          style({
+            transform: "scale(1)",
+          })
+        ),
+      ]),
+      transition("chosenByAi => *", [animate("200ms ease-in")]),
       state(
         "validTarget",
         style({

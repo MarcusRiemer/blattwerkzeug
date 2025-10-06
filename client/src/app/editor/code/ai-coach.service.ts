@@ -120,8 +120,6 @@ export class AiCoachService {
     map((result) => result.holes.length)
   );
 
-  //Fehler und Nummer merken
-
   /**
    * Receive the generated code from the current code resource with markers for holes
    */
@@ -156,7 +154,7 @@ export class AiCoachService {
    * Translates the last dragged block from json format into code.
    * @param lastDraggedBlock The last dragged block in json format.
    * @returns The code for the last dragged block.
-   * @requires The last dragged block must be set.
+   * @requires lastDraggedBlock The last dragged block must be set.
    */
   async getCodeForLastDraggedBlock(lastDraggedBlock: any) {
     if (!lastDraggedBlock) {
@@ -200,7 +198,6 @@ export class AiCoachService {
 
   /**
    * Uses the new GraphQL Endpoint to get a hint for the current code resource.
-   * @returns A hint for the current code resource.
    */
   async getHintForCurrentCodeResource() {
     this.aiCoachState$.next("thinking");
@@ -282,34 +279,38 @@ export class AiCoachService {
     const codeResource = await this.codeResource$.pipe(first()).toPromise();
     const blockDisplayName = this.nextBlock$.value;
 
-    const insertionLocation: NodeLocation = [
-      ...hole.node.location,
-      [hole.categoryName, 0],
-    ];
+    if (hole && blockDisplayName) {
+      const insertionLocation: NodeLocation = [
+        ...hole.node.location,
+        [hole.categoryName, 0],
+      ];
 
-    const foundBlock = await this.findBlockByDisplayName(blockDisplayName);
+      const foundBlock = await this.findBlockByDisplayName(blockDisplayName);
 
-    const validator = await this._currentCodeResource.validator$
-      .pipe(first())
-      .toPromise();
+      const validator = await this._currentCodeResource.validator$
+        .pipe(first())
+        .toPromise();
 
-    const tree = await this._currentCodeResource.currentTree
-      .pipe(first())
-      .toPromise();
+      const tree = await this._currentCodeResource.currentTree
+        .pipe(first())
+        .toPromise();
 
-    // ai may suggest sth wrong or the foundBlock may be null due to an internal error, therefore it needs to be checked, if the suggested combination is valid and if the found block exists
-    if (
-      foundBlock &&
-      isLegalChild([foundBlock], validator, tree, insertionLocation)
-    ) {
-      codeResource.insertNode(insertionLocation, foundBlock);
+      // ai may suggest sth wrong or the foundBlock may be null due to an internal error, therefore it needs to be checked, if the suggested combination is valid and if the found block exists
+      if (
+        foundBlock &&
+        isLegalChild([foundBlock], validator, tree, insertionLocation)
+      ) {
+        codeResource.insertNode(insertionLocation, foundBlock);
+      } else {
+        console.log(
+          `foundHole is no valid match for the suggested hole. Hole: ${hole}, foundBlock: ${foundBlock} and insertionLocation: ${insertionLocation} `,
+          hole,
+          foundBlock,
+          insertionLocation
+        );
+      }
     } else {
-      console.log(
-        `foundHole is no valid match for the suggested hole. Hole: ${hole}, foundBlock: ${foundBlock} and insertionLocation: ${insertionLocation} `,
-        hole,
-        foundBlock,
-        insertionLocation
-      );
+      console.log("no suggested hole to apply to");
     }
   }
 
