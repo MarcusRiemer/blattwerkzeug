@@ -44,6 +44,7 @@ import { BlockState, isLegalChild } from "../block-state";
 export class DatabaseSchemaSidebarComponent {
   readonly highlights: Record<string, Observable<string>> = {};
   readonly visbilities: Record<string, Observable<BlockState>> = {};
+  readonly isTableColumnHighlighted: Record<string, Observable<boolean>> = {};
 
   constructor(
     @Inject(SIDEBAR_MODEL_TOKEN)
@@ -55,15 +56,29 @@ export class DatabaseSchemaSidebarComponent {
     private currentCodeResourceService: CurrentCodeResourceService
   ) {
     this.possibleTables.forEach((table) => {
-      this.highlights[table.name] = codeHighlightService.highlightedBlock$.pipe(
-        map(
-          (highlighted) =>
-            highlighted === table.name ||
-            highlighted.startsWith(`${table.name}.`)
-        ),
-        map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
-        shareReplay(1)
-      );
+      this.possibleTables.forEach((table) => {
+        const isColumnHighlighted$ =
+          codeHighlightService.highlightedBlock$.pipe(
+            map((highlighted) => highlighted.startsWith(`${table.name}.`)),
+            shareReplay(1)
+          );
+
+        this.isTableColumnHighlighted[table.name] = isColumnHighlighted$;
+
+        this.highlights[table.name] = combineLatest([
+          codeHighlightService.highlightedBlock$.pipe(
+            map((highlighted) => highlighted === table.name)
+          ),
+          isColumnHighlighted$,
+        ]).pipe(
+          map(
+            ([isTableHighlighted, isColumnHighlighted]) =>
+              isTableHighlighted || isColumnHighlighted
+          ), //tables are also highlighted, if their columns are highlighted
+          map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
+          shareReplay(1)
+        );
+      });
 
       this.visbilities[table.name] = combineLatest(
         of([

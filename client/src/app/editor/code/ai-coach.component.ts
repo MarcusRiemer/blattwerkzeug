@@ -14,7 +14,7 @@ import { state, style, trigger } from "@angular/animations";
   templateUrl: "templates/ai-coach.html",
   selector: "ai-coach",
   animations: [
-    trigger("coachState", [
+    trigger("visibility", [
       state("visible", style({ opacity: 1 })),
       state("hidden", style({ opacity: 0, display: "none" })),
     ]),
@@ -30,6 +30,8 @@ export class AiCoachComponent {
     this._behaviorSubjectLastDraggedBlock.asObservable();
 
   public assignmentWithAccentuation: string;
+
+  public closed: boolean = false;
 
   constructor(
     private _currentCodeResource: CurrentCodeResourceService,
@@ -91,23 +93,46 @@ export class AiCoachComponent {
     map((drag) => drag?.draggedDescription)
   );
 
+  /**
+   * Receives the ai hint
+   */
   readonly aiHint$ = this._aiService.aiHint$;
 
+  /**
+   * Receive information about the current state of the ai-coach
+   */
   readonly aiCoachState$ = this._aiService.aiCoachState$;
 
+  /**
+   * Receives the Assignment with accentuations from the ai coach
+   */
   readonly assignmentWithAccentuation$ =
     this._aiService.assignmentWithAccentuation$;
 
-  applyAiSuggestion() {
+  /**
+   * Applies the suggested Block from the ai to the suggested hole
+   * @param event
+   */
+  applyAiSuggestion(event: MouseEvent) {
     this._aiService.applyProposedBlock();
+    (event.target as HTMLElement).blur();
   }
 
   /**
    * Uses the new GraphQL Endpoint to get a hint for the current code resource.
-   * @returns A hint for the current code resource.
    */
   async onClick() {
-    this._aiService.getHintForCurrentCodeResource();
+    await this._aiService.getHintForCurrentCodeResource();
+
+    this.closed = false;
+  }
+
+  closeHint() {
+    this.closed = true;
+  }
+
+  openHint() {
+    this.closed = false;
   }
 
   /**

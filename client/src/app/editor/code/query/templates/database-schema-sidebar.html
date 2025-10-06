@@ -10,7 +10,7 @@
     <details
       *ngFor="let table of possibleTables;"
       class="ast"
-      [open]="((visbilities[possibleTables[0]?.name + '.' + possibleTables[0]?.columns[0]?.name] | async) === 'visible')&&(currentHoleLocation$ | async)"
+      [open]="(((visbilities[possibleTables[0]?.name + '.' + possibleTables[0]?.columns[0]?.name] | async) === 'visible')&&(currentHoleLocation$ | async)) || (isTableColumnHighlighted[table.name] | async)"
     >
       <summary
         class="block rounded"
