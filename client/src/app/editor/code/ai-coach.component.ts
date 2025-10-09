@@ -24,10 +24,6 @@ export class AiCoachComponent {
   public timerValue = 0;
   private _subscriptions = new Subscription();
   private _timerSubscription: Subscription;
-  private _behaviorSubjectLastDraggedBlock = new BehaviorSubject<any>(null);
-
-  readonly lastDraggedBlock$ =
-    this._behaviorSubjectLastDraggedBlock.asObservable();
 
   public assignmentWithAccentuation: string;
 
@@ -48,7 +44,7 @@ export class AiCoachComponent {
         .subscribe(([drag, currentlyDraggedBlock]) => {
           // The current drag operation goes on as long as the drag is (not un)defined
           if (drag !== undefined) {
-            this._behaviorSubjectLastDraggedBlock.next(
+            this._aiService.behaviorSubjectLastDraggedBlock$.next(
               currentlyDraggedBlock ?? null
             );
             if (this._timerSubscription) {
@@ -60,7 +56,15 @@ export class AiCoachComponent {
           if (drag === undefined) {
             this._timerSubscription = interval(1000).subscribe(() => {
               this.timerValue++;
+
+              console.log(this.timerValue);
+              //trigger an autohint after 10 secs of inactivity for study purposes
+              // remove after the study is finished
+              if (this.timerValue === 10) {
+                this.triggerAutoHint();
+              }
             });
+
             this._subscriptions.add(this._timerSubscription);
           }
         })
@@ -122,15 +126,32 @@ export class AiCoachComponent {
    * Uses the new GraphQL Endpoint to get a hint for the current code resource.
    */
   async onClick() {
+    this.timerValue = 11; //autohints shouldn't be triggered when participants already asked for a hint (only for study purposes, remove after study is finished)
+
     await this._aiService.getHintForCurrentCodeResource();
 
-    this.closed = false;
+    this.openHint();
   }
 
+  /**
+   * Automatically triggers a hint request after 10 seconds of inactivity
+   */
+  async triggerAutoHint() {
+    await this._aiService.getHintForCurrentCodeResource();
+
+    this.openHint();
+  }
+
+  /**
+   * Sets closed to true, to close the speechbubble
+   */
   closeHint() {
     this.closed = true;
   }
 
+  /**
+   * Sets closed to false, to open the speechbubble
+   */
   openHint() {
     this.closed = false;
   }

@@ -38,9 +38,9 @@ export class AiCoachService {
   public timerValue = 0;
   private _subscriptions = new Subscription();
   private _timerSubscription: Subscription;
-  private _behaviorSubjectLastDraggedBlock$ = new BehaviorSubject<any>(null);
+  public behaviorSubjectLastDraggedBlock$ = new BehaviorSubject<any>(null);
   readonly lastDraggedBlock$ =
-    this._behaviorSubjectLastDraggedBlock$.asObservable();
+    this.behaviorSubjectLastDraggedBlock$.asObservable();
   private _lastKnownHoles: EmittedHole[] | undefined;
 
   constructor(
@@ -52,33 +52,8 @@ export class AiCoachService {
     private _currentClickedHoleService: CurrentHoleLocationService
   ) {
     /**
-     *  Subscribe to the current drag service to track the currently dragged block
-     *  and update the last dragged block when the drag operation ends.
+     * Subscribe to currentCodeResource to enable resetting AiCoach values when changing assignments
      */
-    this._subscriptions.add(
-      this._dragService.currentDrag
-        .pipe(withLatestFrom(this.currentlyDraggedBlock$))
-        .subscribe(([drag, currentlyDraggedBlock]) => {
-          // The current drag operation goes on as long as the drag is (not un)defined
-          if (drag !== undefined) {
-            this._behaviorSubjectLastDraggedBlock$.next(
-              currentlyDraggedBlock ?? null
-            );
-            if (this._timerSubscription) {
-              this._timerSubscription.unsubscribe();
-            }
-            this.timerValue = 0;
-          }
-          // The current drag operation ends if the drag is undefined
-          if (drag === undefined) {
-            this._timerSubscription = interval(1000).subscribe(() => {
-              this.timerValue++;
-            });
-            this._subscriptions.add(this._timerSubscription);
-          }
-        })
-    );
-
     this._subscriptions.add(
       this._currentCodeResource.currentResource
         .pipe(distinctUntilChanged())

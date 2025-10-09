@@ -145,7 +145,10 @@ margin-bottom: 110px;
     background-color: #348925;
     color: white;
 }
-
+/* Creates whitespace so nothing is hidden by the ai coach */
+.ai-coach-spacer {
+  height: 150px; 
+}
 /* A virtual block that is dragged over the scene. */
 .dragged {
     editor-block-render-block {
