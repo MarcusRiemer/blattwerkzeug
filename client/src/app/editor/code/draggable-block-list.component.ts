@@ -19,6 +19,7 @@ import {
 } from "@angular/animations";
 import { CodeHighlightService } from "./code-highlight.service";
 import { CurrentHoleLocationService } from "../current-hole-location.service";
+import { Subscription } from "rxjs";
 
 @Component({
   templateUrl: "templates/draggable-block-list.html",
@@ -50,26 +51,16 @@ export class DraggableBlockListComponent {
   @Input()
   codeResource: CodeResource;
 
+  private _subscriptions = new Subscription();
+
   constructor(
     private _dragService: DragService,
     private _codeHighlightService: CodeHighlightService,
     private _currentHoleLocationService: CurrentHoleLocationService
   ) {}
 
-  //TODO: I want to use the scrollIntoView, after a highlight happened, not after intialization
-  // Mit subscribe dann "weiterleiten" an sidebar-blocks.ts, unsubscribe nicht vergessen
   ngAfterViewInit() {
-    //I have to add a timeout here, because of the animations, otherwise I get an undefined error
-    setTimeout(() => {
-      this.draggableBlock?.forEach((block) => {
-        if (block?.nativeElement) {
-          block.nativeElement.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-        }
-      });
-    }, 100);
+    this.subscribeToHighlightChanges();
   }
   /**
    * The user has decided to start dragging something from the sidebar.
@@ -89,5 +80,68 @@ export class DraggableBlockListComponent {
     } catch (e) {
       alert(e);
     }
+  }
+
+  /**
+   * Subscribes to all blocks' highlight states and scrolls to the highlighted block
+   */
+  private subscribeToHighlightChanges() {
+    if (!this.blockSidebar) return;
+
+    this.blockSidebar.categories.forEach((category, categoryIndex) => {
+      category.blocks.forEach((block, blockIndex) => {
+        const subscription = block.highlightState$.subscribe((state) => {
+          if (state === "highlighted") {
+            const flatIndex = this.calculateFlatIndex(
+              categoryIndex,
+              blockIndex
+            );
+
+            // Wait for the animation to start to prevent undefined error
+            setTimeout(() => {
+              this.scrollToBlock(flatIndex);
+            }, 100);
+          }
+        });
+
+        this._subscriptions.add(subscription);
+      });
+    });
+  }
+
+  /**
+   * Calculates the flat index of a block in the QueryList
+   * (accounts for all blocks across all categories)
+   */
+  private calculateFlatIndex(
+    categoryIndex: number,
+    blockIndex: number
+  ): number {
+    let flatIndex = 0;
+
+    for (let i = 0; i < categoryIndex; i++) {
+      flatIndex += this.blockSidebar.categories[i].blocks.length;
+    }
+
+    flatIndex += blockIndex;
+    return flatIndex;
+  }
+
+  /**
+   * Scrolls to a specific block by its flat index
+   */
+  private scrollToBlock(flatIndex: number) {
+    const blockArray = this.draggableBlock?.toArray();
+
+    if (blockArray && blockArray[flatIndex]?.nativeElement) {
+      blockArray[flatIndex].nativeElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    this._subscriptions.unsubscribe();
   }
 }

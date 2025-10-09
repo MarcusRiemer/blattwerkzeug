@@ -1,4 +1,10 @@
-import { Component, Inject } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  Inject,
+  QueryList,
+  ViewChildren,
+} from "@angular/core";
 
 import { CodeResource, QualifiedTypeName } from "../../../shared/syntaxtree";
 import { Table, Column } from "../../../shared/schema";
@@ -7,7 +13,7 @@ import { SIDEBAR_MODEL_TOKEN } from "../../editor.token";
 
 import { DragService } from "../../drag.service";
 import { EditDatabaseSchemaService } from "../../edit-database-schema.service";
-import { combineLatest, Observable, of } from "rxjs";
+import { combineLatest, Observable, of, Subscription } from "rxjs";
 import { CodeHighlightService } from "../code-highlight.service";
 import { map, shareReplay } from "rxjs/operators";
 import {
@@ -42,9 +48,14 @@ import { BlockState, isLegalChild } from "../block-state";
   ],
 })
 export class DatabaseSchemaSidebarComponent {
+  @ViewChildren("tableElement") tableElements: QueryList<ElementRef>;
+  @ViewChildren("columnElement") columnElements: QueryList<ElementRef>;
+
   readonly highlights: Record<string, Observable<string>> = {};
   readonly visbilities: Record<string, Observable<BlockState>> = {};
   readonly isTableColumnHighlighted: Record<string, Observable<boolean>> = {};
+
+  private _subscriptions = new Subscription();
 
   constructor(
     @Inject(SIDEBAR_MODEL_TOKEN)
@@ -137,6 +148,93 @@ export class DatabaseSchemaSidebarComponent {
     });
   }
 
+  ngAfterViewInit() {
+    this.subscribeToHighlightChanges();
+  }
+
+  /**
+   * Subscribe to highlight changes and scroll to highlighted elements
+   */
+  private subscribeToHighlightChanges() {
+    const subscription = this.codeHighlightService.highlightedBlock$.subscribe(
+      (highlightedName) => {
+        if (highlightedName) {
+          setTimeout(
+            () => this.scrollToHighlightedElement(highlightedName),
+            100
+          );
+        }
+      }
+    );
+    this._subscriptions.add(subscription);
+  }
+
+  /**
+   * Scrolls to the highlighted table or column
+   */
+  private scrollToHighlightedElement(highlightedName: string) {
+    // Check if it's a column (contains a dot)
+    if (highlightedName.includes(".")) {
+      this.scrollToColumn(highlightedName);
+    } else {
+      this.scrollToTable(highlightedName);
+    }
+  }
+
+  /**
+   * Scrolls to a specific table by name
+   */
+  private scrollToTable(tableName: string) {
+    const tableIndex = this.possibleTables.findIndex(
+      (t) => t.name === tableName
+    );
+
+    if (tableIndex >= 0) {
+      const tableArray = this.tableElements?.toArray();
+      if (tableArray && tableArray[tableIndex]?.nativeElement) {
+        tableArray[tableIndex].nativeElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
+  }
+
+  /**
+   * Scrolls to a specific column by table.column name
+   */
+  private scrollToColumn(fullColumnName: string) {
+    const [tableName, columnName] = fullColumnName.split(".");
+
+    // Calculate flat index for the column across all tables
+    let flatIndex = 0;
+    let found = false;
+
+    for (const table of this.possibleTables) {
+      if (table.name === tableName) {
+        const columnIndex = table.columns.findIndex(
+          (c) => c.name === columnName
+        );
+        if (columnIndex >= 0) {
+          flatIndex += columnIndex;
+          found = true;
+          break;
+        }
+      }
+      flatIndex += table.columns.length;
+    }
+
+    if (found) {
+      const columnArray = this.columnElements?.toArray();
+      if (columnArray && columnArray[flatIndex]?.nativeElement) {
+        columnArray[flatIndex].nativeElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
+  }
+
   /**
    * Receives the currentHoleLocation, if this is null, no hole is selected
    */
@@ -226,5 +324,9 @@ export class DatabaseSchemaSidebarComponent {
     } else {
       return [];
     }
+  }
+
+  ngOnDestroy() {
+    this._subscriptions.unsubscribe();
   }
 }
