@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'A: Streckenname DE = ENG'
+  value_before_type_cast: 'A08: Streckenname DE = ENG'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: 1f03e599-3aae-4fe7-a756-26d153c88494
@@ -29,7 +29,7 @@ concise_attributes:
   value_before_type_cast: 2025-07-22 08:06:07.182903000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-30 15:46:01.855330000 Z
+  value_before_type_cast: 2025-10-11 08:34:45.832942000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d

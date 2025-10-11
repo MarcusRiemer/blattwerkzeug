@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'B: Strecke mit Hindernis Gumba'
+  value_before_type_cast: 'B08: Strecke mit Hindernis Gumba'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: 13aaba7e-411c-499a-b089-ef2de6faf9ab
@@ -40,7 +40,7 @@ concise_attributes:
   value_before_type_cast: 2025-07-22 11:26:07.015181000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-30 17:09:25.836379000 Z
+  value_before_type_cast: 2025-10-11 08:55:23.008288000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
@@ -54,7 +54,7 @@ concise_attributes:
     hazard.name_de = 'Gumba'"
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: assignment
-  value_before_type_cast: Zeige die Namen aller Strecken an, auf denen das Hindernis
-    (hazard) mit dem Namen 'Gumba' vorkommt
+  value_before_type_cast: Zeige die deutschen Namen aller Strecken an, auf denen das
+    Hindernis (hazard) mit dem Namen 'Gumba' vorkommt
 new_record: false
 active_record_yaml_version: 2

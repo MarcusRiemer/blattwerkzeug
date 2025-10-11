@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'A: Cups mit P'
+  value_before_type_cast: 'A01: Cups mit P'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: e0034c8c-9160-4f53-a8a9-43a50d1ccf60
@@ -27,7 +27,7 @@ concise_attributes:
   value_before_type_cast: 2025-07-22 08:58:54.631276000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-30 15:37:17.281003000 Z
+  value_before_type_cast: 2025-10-09 12:01:45.967716000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d

@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'B: Gewicht Bestes Fahrzeug'
+  value_before_type_cast: 'B04: Swooper + runterfallen'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: 5ec01b7d-ed24-45ff-bb07-f5bceef43c63
@@ -43,7 +43,7 @@ concise_attributes:
   value_before_type_cast: 2025-07-22 11:06:29.840223000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-30 17:15:22.859893000 Z
+  value_before_type_cast: 2025-10-11 08:54:31.647856000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
@@ -57,7 +57,7 @@ concise_attributes:
     hazard.name_de = 'Swooper'\n\tAND track.falling_off_possible"
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: assignment
-  value_before_type_cast: Zeige die Namen aller Strecken, auf denen das Hindernis
-    (hazard) 'Swooper' vorkommt und es möglich ist runterzufallen.
+  value_before_type_cast: Zeige die deutschen Namen aller Strecken, auf denen das
+    Hindernis (hazard) 'Swooper' vorkommt und es möglich ist runterzufallen.
 new_record: false
 active_record_yaml_version: 2

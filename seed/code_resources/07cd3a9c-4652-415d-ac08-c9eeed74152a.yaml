@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'B: Spieler gewählte Fahrer'
+  value_before_type_cast: 'B09: Spieler gewählte Fahrer'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: 07cd3a9c-4652-415d-ac08-c9eeed74152a
@@ -47,7 +47,7 @@ concise_attributes:
   value_before_type_cast: 2025-07-22 11:33:52.167124000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-30 17:28:31.718550000 Z
+  value_before_type_cast: 2025-10-11 08:45:48.070239000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d

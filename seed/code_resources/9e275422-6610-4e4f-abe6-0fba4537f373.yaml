@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'A: Fahrzeug ohne freischalten'
+  value_before_type_cast: 'A02: Fahrzeug ohne freischalten'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: 9e275422-6610-4e4f-abe6-0fba4537f373
@@ -27,7 +27,7 @@ concise_attributes:
   value_before_type_cast: 2025-07-22 09:01:56.823395000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-29 15:03:12.847579000 Z
+  value_before_type_cast: 2025-10-11 08:33:28.701332000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
