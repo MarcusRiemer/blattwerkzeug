@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'A: Strecken GBA oder GCN'
+  value_before_type_cast: 'A05: Strecken GBA oder GCN'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: 789afc65-c75d-4de2-813d-c967a437830f
@@ -33,7 +33,7 @@ concise_attributes:
   value_before_type_cast: 2025-07-22 08:18:23.941197000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-30 15:44:11.896075000 Z
+  value_before_type_cast: 2025-10-11 08:52:41.436275000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
@@ -46,7 +46,7 @@ concise_attributes:
     = 'gba'\n\tOR track.track_origin = 'gcn'"
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: assignment
-  value_before_type_cast: Zeige die Namen aller Strecken, die zuerst auf den Konsolen
-    GBA ('gba') oder GCN ('gcn')erschienen sind.
+  value_before_type_cast: Zeige die deutschen Namen aller Strecken, die zuerst auf
+    den Konsolen GBA ('gba') oder GCN ('gcn')erschienen sind.
 new_record: false
 active_record_yaml_version: 2

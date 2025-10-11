@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'A: Hazardnamen gleich'
+  value_before_type_cast: 'A04: Hazardnamen gleich'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: e86d87f9-316a-4a5f-a441-d2a8b9241d1e
@@ -29,7 +29,7 @@ concise_attributes:
   value_before_type_cast: 2025-07-22 08:13:51.996044000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-30 17:08:25.066276000 Z
+  value_before_type_cast: 2025-10-11 08:33:50.915593000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d

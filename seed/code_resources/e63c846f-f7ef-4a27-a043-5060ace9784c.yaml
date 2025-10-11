@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'A: WR <= 20s'
+  value_before_type_cast: 'A10: WR <= 20s'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: e63c846f-f7ef-4a27-a043-5060ace9784c
@@ -36,7 +36,7 @@ concise_attributes:
   value_before_type_cast: 2025-07-22 07:59:57.793528000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-30 13:27:49.635811000 Z
+  value_before_type_cast: 2025-10-11 08:53:17.569500000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
@@ -50,8 +50,9 @@ concise_attributes:
     <= 20000\n\tAND track.number_of_shortcuts > 3"
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: assignment
-  value_before_type_cast: Zeige die Namen aller Strecken, die Anzahl der Abkürzungen
-    und den Weltrekord (Abkürzungen erlaubt), bei denen der Weltrekord (Abkürzungen
-    erlaubt) maximal 20 Sekunden beträgt und die mehr als 3 Abkürzungen haben.
+  value_before_type_cast: Zeige die deutschen Namen aller Strecken, die Anzahl der
+    Abkürzungen und den Weltrekord (Abkürzungen erlaubt), bei denen der Weltrekord
+    (Abkürzungen erlaubt) maximal 20 Sekunden (20000 ms) beträgt und die mehr als
+    3 Abkürzungen haben.
 new_record: false
 active_record_yaml_version: 2
