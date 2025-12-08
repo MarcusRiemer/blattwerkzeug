@@ -20,34 +20,34 @@ concise_attributes:
     {"operator": "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction",
     "language": "sql", "properties": {"name": "race"}}]}, "language": "sql"}, {"name":
     "innerJoinOn", "children": {"on": [{"name": "binaryExpression", "children": {"lhs":
-    [{"name": "columnName", "language": "sql", "properties": {"columnName": "driver_id",
-    "refTableName": "race"}}], "rhs": [{"name": "columnName", "language": "sql", "properties":
-    {"columnName": "id", "refTableName": "driver"}}], "operator": [{"name": "relationalOperator",
-    "language": "sql", "properties": {"operator": "="}}]}, "language": "sql"}], "table":
-    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "driver"}}]},
-    "language": "sql"}], "tables": [{"name": "tableIntroduction", "language": "sql",
-    "properties": {"name": "player"}}]}, "language": "sql"}], "where": [{"name": "where",
-    "children": {"expressions": [{"name": "binaryExpression", "children": {"lhs":
-    [{"name": "columnName", "language": "sql", "properties": {"columnName": "name",
-    "refTableName": "player"}}], "rhs": [{"name": "constant", "language": "sql", "properties":
-    {"value": "''Luca''"}}], "operator": [{"name": "relationalOperator", "language":
-    "sql", "properties": {"operator": "="}}]}, "language": "sql"}, {"name": "whereAdditional",
-    "children": {"expression": [{"name": "binaryExpression", "children": {"lhs": [{"name":
-    "columnName", "language": "sql", "properties": {"columnName": "name", "refTableName":
-    "player"}}], "rhs": [{"name": "constant", "language": "sql", "properties": {"value":
-    "''Sam''"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
-    {"operator": "="}}]}, "language": "sql"}]}, "language": "sql", "properties": {"operator":
-    "OR"}}]}, "language": "sql"}], "select": [{"name": "select", "children": {"columns":
-    [{"name": "columnName", "language": "sql", "properties": {"columnName": "name",
-    "refTableName": "driver"}}, {"name": "columnName", "language": "sql", "properties":
-    {"columnName": "name", "refTableName": "player"}}], "distinct": []}, "language":
+    [{"name": "columnName", "language": "sql", "properties": {"columnName": "id",
+    "refTableName": "driver"}}], "rhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "driver_id", "refTableName": "race"}}], "operator":
+    [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
+    "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction", "language":
+    "sql", "properties": {"name": "driver"}}]}, "language": "sql"}], "tables": [{"name":
+    "tableIntroduction", "language": "sql", "properties": {"name": "player"}}]}, "language":
+    "sql"}], "where": [{"name": "where", "children": {"expressions": [{"name": "binaryExpression",
+    "children": {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "name", "refTableName": "player"}}], "rhs": [{"name": "constant", "language":
+    "sql", "properties": {"value": "''Sam''"}}], "operator": [{"name": "relationalOperator",
+    "language": "sql", "properties": {"operator": "="}}]}, "language": "sql"}, {"name":
+    "whereAdditional", "children": {"expression": [{"name": "binaryExpression", "children":
+    {"lhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "name", "refTableName": "player"}}], "rhs": [{"name": "constant", "language":
+    "sql", "properties": {"value": "''Luca''"}}], "operator": [{"name": "relationalOperator",
+    "language": "sql", "properties": {"operator": "="}}]}, "language": "sql"}]}, "language":
+    "sql", "properties": {"operator": "OR"}}]}, "language": "sql"}], "select": [{"name":
+    "select", "children": {"columns": [{"name": "columnName", "language": "sql", "properties":
+    {"columnName": "name", "refTableName": "player"}}, {"name": "columnName", "language":
+    "sql", "properties": {"columnName": "name", "refTableName": "driver"}}]}, "language":
     "sql"}], "groupBy": [], "orderBy": []}, "language": "sql"}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2025-07-22 11:33:52.167124000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-10-11 08:45:48.070239000 Z
+  value_before_type_cast: 2025-12-08 09:54:07.646116000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
@@ -56,12 +56,12 @@ concise_attributes:
   value_before_type_cast: sql
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: compiled
-  value_before_type_cast: "SELECT driver.name, player.name\nFROM player\n\tINNER JOIN
-    race ON race.player_id = player.id\n\tINNER JOIN driver ON race.driver_id = driver.id\nWHERE
-    player.name = 'Luca'\n\tOR player.name = 'Sam'"
+  value_before_type_cast: "SELECT player.name, driver.name\nFROM player\n\tINNER JOIN
+    race ON race.player_id = player.id\n\tINNER JOIN driver ON driver.id = race.driver_id\nWHERE
+    player.name = 'Sam'\n\tOR player.name = 'Luca'"
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: assignment
-  value_before_type_cast: 'Zeige die Namen aller Fahrer, die die Spielerinnen ''Luca''
-    und ''Sam'' gewählt haben. Zeige auch die Namen der Spielerinnen. '
+  value_before_type_cast: 'Zeige die Namen aller Fahrer, die die Spielerinnen mit
+    dem Namen ''Luca'' oder ''Sam'' gewählt haben. Zeige auch die Namen der Spielerinnen. '
 new_record: false
 active_record_yaml_version: 2
