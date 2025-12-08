@@ -15,12 +15,14 @@ services:
     build:
       context: .
       dockerfile: ./docker/server.Dockerfile
-    image: marcusriemer/blattwerkzeug:latest
+    image: marcusriemer/blattwerkzeug:thesis-juliane-plueckhahn
     ports:
-      - 9292:9292
+      - 127.0.0.1:9292:9292
     depends_on:
       - db
     environment:
+      - RAILS_ENV=development
+      - OPEN_AI_API_KEY=hier-bitte-einfügen
       - DATABASE_HOST=db
       - SECRET_KEY_BASE=this-is-not-a-secure-key-base-please-don't-use-in-production
     volumes:

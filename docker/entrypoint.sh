@@ -4,6 +4,9 @@ cd server
 
 # If running the rails server: Prepare data
 if [ "${@:1:1}" == "rails" ] && [ "${@:2:1}" == "server" ]; then
+    # Ensure that data folders exist
+    mkdir -p /blattwerkzeug/rails_app/data/{dev,prod}/projects
+
     # Prepare the database (loading schema, creating databases.)
     bundler exec rails "db:prepare"
 

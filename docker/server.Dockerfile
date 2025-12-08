@@ -22,7 +22,7 @@ COPY client/ ./
 RUN ["make", "dist"]
 
 ######## BUILDING THE RAILS SERVER ############
-FROM ruby:3.1.4-bullseye
+FROM ruby:3.2.3-bullseye
 
 RUN mkdir -p /etc/apt/keyrings \
   && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key |  gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
@@ -73,4 +73,4 @@ RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Start the rails server
-CMD ["rails", "server",  "-p", "9292"]
+CMD ["rails", "server",  "-p", "9292", "-b", "0.0.0.0"]
