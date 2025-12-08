@@ -14,28 +14,28 @@ concise_attributes:
   value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
     "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
     "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
-    "properties": {"columnName": "track_id", "refTableName": "race"}}], "rhs": [{"name":
+    "properties": {"columnName": "player_id", "refTableName": "race"}}], "rhs": [{"name":
     "columnName", "language": "sql", "properties": {"columnName": "id", "refTableName":
-    "track"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
+    "player"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
     {"operator": "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction",
-    "language": "sql", "properties": {"name": "track"}}]}, "language": "sql"}, {"name":
+    "language": "sql", "properties": {"name": "race"}}]}, "language": "sql"}, {"name":
     "innerJoinOn", "children": {"on": [{"name": "binaryExpression", "children": {"lhs":
-    [{"name": "columnName", "language": "sql", "properties": {"columnName": "player_id",
+    [{"name": "columnName", "language": "sql", "properties": {"columnName": "track_id",
     "refTableName": "race"}}], "rhs": [{"name": "columnName", "language": "sql", "properties":
-    {"columnName": "id", "refTableName": "player"}}], "operator": [{"name": "relationalOperator",
+    {"columnName": "id", "refTableName": "track"}}], "operator": [{"name": "relationalOperator",
     "language": "sql", "properties": {"operator": "="}}]}, "language": "sql"}], "table":
-    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "player"}}]},
+    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "track"}}]},
     "language": "sql"}], "tables": [{"name": "tableIntroduction", "language": "sql",
-    "properties": {"name": "race"}}]}, "language": "sql"}], "where": [{"name": "where",
+    "properties": {"name": "player"}}]}, "language": "sql"}], "where": [{"name": "where",
     "children": {"expressions": [{"name": "binaryExpression", "children": {"lhs":
     [{"name": "columnName", "language": "sql", "properties": {"columnName": "place",
     "refTableName": "race"}}], "rhs": [{"name": "constant", "language": "sql", "properties":
     {"value": "1"}}], "operator": [{"name": "relationalOperator", "language": "sql",
     "properties": {"operator": "="}}]}, "language": "sql"}]}, "language": "sql"}],
     "select": [{"name": "select", "children": {"columns": [{"name": "columnName",
-    "language": "sql", "properties": {"columnName": "name", "refTableName": "player"}},
-    {"name": "columnName", "language": "sql", "properties": {"columnName": "time_ms",
-    "refTableName": "race"}}, {"name": "columnName", "language": "sql", "properties":
+    "language": "sql", "properties": {"columnName": "time_ms", "refTableName": "race"}},
+    {"name": "columnName", "language": "sql", "properties": {"columnName": "name",
+    "refTableName": "player"}}, {"name": "columnName", "language": "sql", "properties":
     {"columnName": "name_de", "refTableName": "track"}}]}, "language": "sql"}], "groupBy":
     []}, "language": "sql"}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
@@ -43,7 +43,7 @@ concise_attributes:
   value_before_type_cast: 2025-10-11 08:20:29.576031000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-10-11 08:56:04.723735000 Z
+  value_before_type_cast: 2025-12-08 09:55:59.719357000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
@@ -52,9 +52,9 @@ concise_attributes:
   value_before_type_cast: sql
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: compiled
-  value_before_type_cast: "SELECT player.name, race.time_ms, track.name_de\nFROM race\n\tINNER
-    JOIN track ON race.track_id = track.id\n\tINNER JOIN player ON race.player_id
-    = player.id\nWHERE race.place = 1"
+  value_before_type_cast: "SELECT race.time_ms, player.name, track.name_de\nFROM player\n\tINNER
+    JOIN race ON race.player_id = player.id\n\tINNER JOIN track ON race.track_id =
+    track.id\nWHERE race.place = 1"
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: assignment
   value_before_type_cast: 'Zeige die gefahrene Zeit, die Spieler:innennamen und die

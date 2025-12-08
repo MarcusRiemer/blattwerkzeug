@@ -14,12 +14,12 @@ concise_attributes:
   value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
     "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
     "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
-    "properties": {"columnName": "id", "refTableName": "cup"}}], "rhs": [{"name":
-    "columnName", "language": "sql", "properties": {"columnName": "cup_id", "refTableName":
-    "track"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
+    "properties": {"columnName": "cup_id", "refTableName": "track"}}], "rhs": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "id", "refTableName":
+    "cup"}}], "operator": [{"name": "relationalOperator", "language": "sql", "properties":
     {"operator": "="}}]}, "language": "sql"}], "table": [{"name": "tableIntroduction",
-    "language": "sql", "properties": {"name": "track"}}]}, "language": "sql"}], "tables":
-    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "cup"}}]},
+    "language": "sql", "properties": {"name": "cup"}}]}, "language": "sql"}], "tables":
+    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "track"}}]},
     "language": "sql"}], "where": [{"name": "where", "children": {"expressions": [{"name":
     "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
     "properties": {"columnName": "name", "refTableName": "cup"}}], "rhs": [{"name":
@@ -30,18 +30,18 @@ concise_attributes:
     "sql", "properties": {"columnName": "track_origin", "refTableName": "track"}}],
     "rhs": [{"name": "constant", "language": "sql", "properties": {"value": "''wii''"}}],
     "operator": [{"name": "relationalOperator", "language": "sql", "properties": {"operator":
-    "NOT LIKE"}}]}, "language": "sql"}]}, "language": "sql", "properties": {"operator":
+    "<>"}}]}, "language": "sql"}]}, "language": "sql", "properties": {"operator":
     "AND"}}]}, "language": "sql"}], "select": [{"name": "select", "children": {"columns":
-    [{"name": "columnName", "language": "sql", "properties": {"columnName": "name_de",
+    [{"name": "columnName", "language": "sql", "properties": {"columnName": "track_origin",
     "refTableName": "track"}}, {"name": "columnName", "language": "sql", "properties":
-    {"columnName": "track_origin", "refTableName": "track"}}]}, "language": "sql"}],
-    "groupBy": []}, "language": "sql"}'
+    {"columnName": "name_de", "refTableName": "track"}}]}, "language": "sql"}], "groupBy":
+    []}, "language": "sql"}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2025-07-22 11:13:36.350243000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-10-11 08:53:59.472210000 Z
+  value_before_type_cast: 2025-12-08 09:43:13.085510000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
@@ -50,9 +50,9 @@ concise_attributes:
   value_before_type_cast: sql
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: compiled
-  value_before_type_cast: "SELECT track.name_de, track.track_origin\nFROM cup\n\tINNER
-    JOIN track ON cup.id = track.cup_id\nWHERE cup.name = 'Blitz-Cup'\n\tAND track.track_origin
-    NOT LIKE 'wii'"
+  value_before_type_cast: "SELECT track.track_origin, track.name_de\nFROM track\n\tINNER
+    JOIN cup ON track.cup_id = cup.id\nWHERE cup.name = 'Blitz-Cup'\n\tAND track.track_origin
+    <> 'wii'"
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: assignment
   value_before_type_cast: Zeige die deutschen Namen aller Retrostrecken (keine Strecken
