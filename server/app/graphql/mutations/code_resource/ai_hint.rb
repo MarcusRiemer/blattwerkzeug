@@ -116,7 +116,7 @@ class Mutations::CodeResource::AiHint < Mutations::BaseMutation
       - Wichtig: Wenn komplexe Statements den Block "Binärer Ausdruck" beinhalten, nenne diesen zuerst. 
       - Nach dem Einsetzen einer Konstante gib dann als nächsten Hint, was für einen Wert die Konstante haben soll mit "Anstatt wert schreibst du nun …".
       - Bei den Tabellenspalten sollte deine Antwort dem gängigen Schema "Tabellenname.Tabellenspalte" entsprechen.
-      - Wenn du einen Inner JOIN ON vorschlägst, dann beschreibe das auch so in der Erklärung und nicht mit WHERE.
+      - Wenn du einen INNER JOIN ON vorschlägst, dann beschreibe das auch so in der Erklärung und nicht mit WHERE.
       - Nenne hier keine Platzhalter für den suggested_hole_text.
 
       Für suggested_hole_text(string):

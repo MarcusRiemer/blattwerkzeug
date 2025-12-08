@@ -1,14 +1,3 @@
-<!-- <h4>AI Coach</h4> -->
-<!-- <div>Timer: {{timerValue}}</div> -->
-<!-- <div *ngIf="timerValue >= 0">
-  <button (click)="copyPromptToClipboard()" class="btn btn-secondary">
-    Copy Prompt to Clipboard
-  </button>
-</div> -->
-<!-- <div>
-    <button (click)="onClick()" class="btn btn-secondary">
-      Get Hint for Current Code Resource
-    </button> -->
 <div id="ai-coach-container">
   <div id="ai-coach-hint" *ngIf="aiHint$ | async as hint">
     <div [@visibility]="!closed ? 'visible' : 'hidden'">
@@ -19,13 +8,14 @@
       />
       <div class="speech-bubble">
         {{hint}}
-        <button
+        <!-- removed for user study -->
+        <!-- <button
           (click)="applyAiSuggestion($event)"
           class="btn"
           id="ai-coach-button"
         >
           Hinweis anwenden
-        </button>
+        </button> -->
       </div>
     </div>
     <div
@@ -59,11 +49,3 @@
     />
   </div>
 </div>
-<!-- <div *ngIf="result$ | async as result">
-    Anzahl der Fehler:
-    <pre> {{ result.errors.length | json }}</pre>
-  </div>
-  <div *ngIf="countHoles$ | async as countHoles">
-    Anzahl Löcher (fehlende Kinder):
-    <pre>{{ countHoles }}</pre>
-  </div> -->

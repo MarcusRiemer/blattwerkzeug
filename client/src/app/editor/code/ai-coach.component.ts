@@ -126,7 +126,9 @@ export class AiCoachComponent {
    * Uses the new GraphQL Endpoint to get a hint for the current code resource.
    */
   async onClick() {
-    this.timerValue = 11; //autohints shouldn't be triggered when participants already asked for a hint (only for study purposes, remove after study is finished)
+    this.timerValue = 11; //autohints shouldn't be triggered when participants already asked for a hint (only for user studies using autohints)
+
+    this.closeHint();
 
     await this._aiService.getHintForCurrentCodeResource();
 
@@ -135,6 +137,7 @@ export class AiCoachComponent {
 
   /**
    * Automatically triggers a hint request after 10 seconds of inactivity
+   * Just for user studies using autohints
    */
   async triggerAutoHint() {
     await this._aiService.getHintForCurrentCodeResource();
