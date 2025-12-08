@@ -6,6 +6,6 @@ import { SqlValidator } from "./sql.validator";
 export const LANGUAGE_DESCRIPTION: LanguageDefinition = {
   id: "sql",
   name: "SQL",
-  emitters: [],
+  emitters: NODE_CONVERTER,
   validators: [SqlValidator],
 };

@@ -20,7 +20,6 @@ import { SidebarService } from "../../sidebar.service";
 
 import { CodeSidebarComponent } from "../code-sidebar.component";
 import { EditorComponentsService } from "../editor-components.service";
-import { AiCoachService } from "../ai-coach.service";
 
 interface PlacedEditorComponent {
   portal: Promise<ComponentPortal<{}>>;
@@ -62,18 +61,19 @@ export class BlockEditorComponent implements OnInit, OnDestroy {
     this._toolbarService.savingEnabled = false;
 
     // Wiring up the "switch to other editor"-button
-    let btnBlocklyEditor = this._toolbarService.addButton(
-      "blockly-editor",
-      "Blockly Editor",
-      "puzzle-piece"
-    );
-    const refBlockly = btnBlocklyEditor.onClick
-      .pipe(take(1))
-      .subscribe(async (_) => {
-        const snap = this._router.url;
-        this._router.navigateByUrl(snap + "ly");
-      });
-
+    if (false) {
+      let btnBlocklyEditor = this._toolbarService.addButton(
+        "blockly-editor",
+        "Blockly Editor",
+        "puzzle-piece"
+      );
+      const refBlockly = btnBlocklyEditor.onClick
+        .pipe(take(1))
+        .subscribe(async (_) => {
+          const snap = this._router.url;
+          this._router.navigateByUrl(snap + "ly");
+        });
+    }
     // Reacting to saving
     this._toolbarService.savingEnabled = true;
     let btnSave = this._toolbarService.saveItem;
@@ -89,48 +89,58 @@ export class BlockEditorComponent implements OnInit, OnDestroy {
     });
 
     // Making a copy
-    const btnClone = this._toolbarService.addButton(
-      "clone",
-      "Klonen",
-      "files-o",
-      undefined,
-      this._performData.project.update(this.peekProject.id)
-    );
-    const refClone = btnClone.onClick.subscribe((_) => {
-      this._codeResourceService
-        .cloneCodeResource(this.peekProject, this.peekResource)
-        .pipe(first())
-        .subscribe((clone) => {
-          this.peekProject.addCodeResource(clone);
-          this._router.navigate([clone.id], { relativeTo: this._route.parent });
-        });
-    });
+    if (false) {
+      const btnClone = this._toolbarService.addButton(
+        "clone",
+        "Klonen",
+        "files-o",
+        undefined,
+        this._performData.project.update(this.peekProject.id)
+      );
 
-    // Deleting this code resource
-    const btnDelete = this._toolbarService.addButton(
-      "delete",
-      "Löschen",
-      "trash",
-      undefined,
-      this._performData.project.update(this.peekProject.id)
-    );
-    const refDelete = btnDelete.onClick.subscribe(async (_) => {
-      const confirmed = await MessageDialogComponent.confirm(this._matDialog, {
-        description: $localize`:@@message.ask-delete-resource:Soll diese Resource wirklich gelöscht werden?`,
-      });
-
-      if (confirmed) {
+      const refClone = btnClone.onClick.subscribe((_) => {
         this._codeResourceService
-          .deleteCodeResource(this.peekProject, this.peekResource)
+          .cloneCodeResource(this.peekProject, this.peekResource)
           .pipe(first())
-          .subscribe((_) => {
-            this.peekProject.removedCodeResource(this.peekResource);
-            this._router.navigate(["create"], {
+          .subscribe((clone) => {
+            this.peekProject.addCodeResource(clone);
+            this._router.navigate([clone.id], {
               relativeTo: this._route.parent,
             });
           });
-      }
-    });
+      });
+    }
+
+    // Deleting this code resource
+    if (false) {
+      const btnDelete = this._toolbarService.addButton(
+        "delete",
+        "Löschen",
+        "trash",
+        undefined,
+        this._performData.project.update(this.peekProject.id)
+      );
+      const refDelete = btnDelete.onClick.subscribe(async (_) => {
+        const confirmed = await MessageDialogComponent.confirm(
+          this._matDialog,
+          {
+            description: $localize`:@@message.ask-delete-resource:Soll diese Resource wirklich gelöscht werden?`,
+          }
+        );
+
+        if (confirmed) {
+          this._codeResourceService
+            .deleteCodeResource(this.peekProject, this.peekResource)
+            .pipe(first())
+            .subscribe((_) => {
+              this.peekProject.removedCodeResource(this.peekResource);
+              this._router.navigate(["create"], {
+                relativeTo: this._route.parent,
+              });
+            });
+        }
+      });
+    }
 
     // Keep the sidebar updated
     const refCurrentResource =
@@ -142,10 +152,10 @@ export class BlockEditorComponent implements OnInit, OnDestroy {
       });
 
     this._subscriptionRefs.push(
-      refBlockly,
+      //refBlockly,
       refSave,
-      refClone,
-      refDelete,
+      //refClone,
+      //refDelete,
       refCurrentResource
     );
   }
@@ -237,7 +247,14 @@ export class BlockEditorComponent implements OnInit, OnDestroy {
           (c) => c.componentType === "block-root"
         );
 
-        // If the value of the assigment is set, the assignment component is added
+        //remove this after the study is finished, so the validator and the generated code are displayed again
+        components = components.filter(
+          (c) =>
+            c.componentType !== "generated-code" &&
+            c.componentType !== "validator"
+        );
+
+        // If the value of the assignment is set, the assignment component is added
         if (blockEditorIndex >= 0 && this.peekResource.assignment) {
           components.splice(blockEditorIndex, 0, {
             componentType: "assignment",
