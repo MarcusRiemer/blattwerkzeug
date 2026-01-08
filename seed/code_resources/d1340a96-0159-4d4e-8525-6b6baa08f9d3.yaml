@@ -1,0 +1,36 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 695e9a24-5ef2-44fb-a99a-54c36bf5a110
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'Blocks: Boolesche Ausdrücke'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: d1340a96-0159-4d4e-8525-6b6baa08f9d3
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "Document", "children": {"RootCssClasses": [{"name":
+    "CssClass", "language": "MetaBlockLang", "properties": {"Name": "activate-block-outline"}},
+    {"name": "CssClass", "language": "MetaBlockLang", "properties": {"Name": "activate-keyword"}}]},
+    "language": "MetaBlockLang"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-08 11:54:18.911111000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-08 11:54:18.911111000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: 81430cc2-bcff-4304-8cfd-6f05cf249a53
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: generic
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: Generic Language without code generator
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+new_record: false
+active_record_yaml_version: 2

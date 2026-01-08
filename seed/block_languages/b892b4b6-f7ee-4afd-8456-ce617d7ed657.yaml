@@ -1,0 +1,84 @@
+--- !ruby/object:BlockLanguage
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: generated_from_id
+  value_before_type_cast: d1340a96-0159-4d4e-8525-6b6baa08f9d3
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: slug
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: Boolesche Ausdrücke
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: b892b4b6-f7ee-4afd-8456-ce617d7ed657
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-08 11:54:18.966419000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-08 12:08:37.274769000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: default_programming_language_id
+  value_before_type_cast: generic
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: grammar_id
+  value_before_type_cast: b958ac3f-71f6-4c08-8b91-beda646b2d16
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: sidebars
+  value_before_type_cast: "[]"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: editor_blocks
+  value_before_type_cast: '[{"visual": [{"children": [{"style": {"color": "white",
+    "border": "2px solid red", "cursor": "default", "paddingLeft": "1ch", "paddingRight":
+    "1ch", "border-radius": "500px", "background-color": "red"}, "blockType": "error",
+    "excludedErrors": ["MISSING_CHILD", "INVALID_MIN_OCCURENCES"]}, {"text": "true",
+    "style": {"display": "inline-flex"}, "blockType": "constant"}], "blockType": "block",
+    "dropTarget": {}}], "describedType": {"typeName": "true", "languageName": "bool"}},
+    {"visual": [{"children": [{"style": {"color": "white", "border": "2px solid red",
+    "cursor": "default", "paddingLeft": "1ch", "paddingRight": "1ch", "border-radius":
+    "500px", "background-color": "red"}, "blockType": "error", "excludedErrors": ["MISSING_CHILD",
+    "INVALID_MIN_OCCURENCES"]}, {"text": "false", "style": {"display": "inline-flex"},
+    "blockType": "constant"}], "blockType": "block", "dropTarget": {}}], "describedType":
+    {"typeName": "false", "languageName": "bool"}}, {"visual": [{"children": [{"style":
+    {"color": "white", "border": "2px solid red", "cursor": "default", "paddingLeft":
+    "1ch", "paddingRight": "1ch", "border-radius": "500px", "background-color": "red"},
+    "blockType": "error", "excludedErrors": ["MISSING_CHILD", "INVALID_MIN_OCCURENCES"]},
+    {"style": {"display": "inline-flex"}, "property": "value", "blockType": "input"}],
+    "blockType": "block", "dropTarget": {}}], "describedType": {"typeName": "value",
+    "languageName": "bool"}}, {"visual": [{"children": [{"style": {"color": "white",
+    "border": "2px solid red", "cursor": "default", "paddingLeft": "1ch", "paddingRight":
+    "1ch", "border-radius": "500px", "background-color": "red"}, "blockType": "error",
+    "excludedErrors": ["MISSING_CHILD", "INVALID_MIN_OCCURENCES"]}, {"style": {"display":
+    "inline-flex"}, "property": "name", "blockType": "input"}], "blockType": "block",
+    "dropTarget": {}}], "describedType": {"typeName": "variable", "languageName":
+    "bool"}}, {"visual": [{"children": [{"style": {"color": "white", "border": "2px
+    solid red", "cursor": "default", "paddingLeft": "1ch", "paddingRight": "1ch",
+    "border-radius": "500px", "background-color": "red"}, "blockType": "error", "excludedErrors":
+    ["MISSING_CHILD", "INVALID_MIN_OCCURENCES"]}, {"text": "!", "style": {"display":
+    "inline-flex"}, "blockType": "constant"}, {"blockType": "iterator", "childGroupName":
+    "value", "emptyDropTarget": false}], "blockType": "block", "dropTarget": {}}],
+    "describedType": {"typeName": "neg", "languageName": "bool"}}, {"visual": [{"children":
+    [{"style": {"color": "white", "border": "2px solid red", "cursor": "default",
+    "paddingLeft": "1ch", "paddingRight": "1ch", "border-radius": "500px", "background-color":
+    "red"}, "blockType": "error", "excludedErrors": ["MISSING_CHILD", "INVALID_MIN_OCCURENCES"]},
+    {"text": "(", "style": {"display": "inline-flex"}, "blockType": "constant"}, {"blockType":
+    "iterator", "childGroupName": "lhs", "emptyDropTarget": false}, {"style": {"display":
+    "inline-flex"}, "property": "op", "blockType": "input", "cssClasses": ["space-around"]},
+    {"blockType": "iterator", "childGroupName": "rhs", "emptyDropTarget": false},
+    {"text": ")", "style": {"display": "inline-flex"}, "blockType": "constant"}],
+    "blockType": "block", "dropTarget": {}}], "describedType": {"typeName": "binary",
+    "languageName": "bool"}}]'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: editor_components
+  value_before_type_cast: '[{"componentType": "block-root"}, {"componentType": "validator"},
+    {"componentType": "generated-code"}]'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: local_generator_instructions
+  value_before_type_cast: '{"type": "manual"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: root_css_classes
+  value_before_type_cast: "{activate-block-outline,activate-keyword}"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: level
+new_record: false
+active_record_yaml_version: 2

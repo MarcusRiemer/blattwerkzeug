@@ -13,7 +13,7 @@ concise_attributes:
   value_before_type_cast: 2021-04-15 13:41:15.541112000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2021-09-30 11:12:49.356625000 Z
+  value_before_type_cast: 2026-01-08 12:49:37.705814000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: programming_language_id
   value_before_type_cast: meta-grammar
@@ -26,19 +26,20 @@ concise_attributes:
     [{"base": "string", "name": "Name", "type": "property"}]}, "Document": {"type":
     "concrete", "attributes": [{"type": "container", "children": [{"type": "container",
     "children": [{"tags": ["space-after"], "type": "terminal", "symbol": "Root CSS
-    Classes:"}, {"name": "RootCssClasses", "type": "sequence", "nodeTypes": [{"occurs":
-    "*", "nodeType": {"typeName": "CssClass", "languageName": "MetaBlockLang"}}]}],
-    "orientation": "horizontal"}, {"name": "EditorComponents", "type": "sequence",
-    "nodeTypes": [{"occurs": "?", "nodeType": {"typeName": "EditorComponents", "languageName":
-    "MetaBlockLang"}}]}], "orientation": "vertical"}]}, "LanguageLevel": {"type":
-    "concrete", "attributes": [{"base": "string", "name": "type", "type": "property",
-    "restrictions": [{"type": "enum", "value": ["blackList", "whiteList"]}]}]}, "EditorComponent":
-    {"type": "concrete", "attributes": [{"base": "string", "name": "Name", "type":
-    "property"}]}, "EditorComponents": {"type": "concrete", "attributes": [{"type":
-    "container", "children": [{"tags": ["space-after"], "type": "terminal", "symbol":
-    "Editor Components:"}, {"name": "Values", "type": "sequence", "nodeTypes": [{"occurs":
-    "*", "nodeType": {"typeName": "EditorComponent", "languageName": "MetaBlockLang"}}]}],
-    "orientation": "horizontal"}]}}}'
+    Classes:"}, {"name": "RootCssClasses", "type": "sequence", "between": {"type":
+    "terminal", "symbol": ", "}, "nodeTypes": [{"occurs": "*", "nodeType": {"typeName":
+    "CssClass", "languageName": "MetaBlockLang"}}]}], "orientation": "horizontal"},
+    {"name": "EditorComponents", "type": "sequence", "nodeTypes": [{"occurs": "?",
+    "nodeType": {"typeName": "EditorComponents", "languageName": "MetaBlockLang"}}]}],
+    "orientation": "vertical"}]}, "LanguageLevel": {"type": "concrete", "attributes":
+    [{"base": "string", "name": "type", "type": "property", "restrictions": [{"type":
+    "enum", "value": ["blackList", "whiteList"]}]}]}, "EditorComponent": {"type":
+    "concrete", "attributes": [{"base": "string", "name": "Name", "type": "property"}]},
+    "EditorComponents": {"type": "concrete", "attributes": [{"type": "container",
+    "children": [{"tags": ["space-after"], "type": "terminal", "symbol": "Editor Components:"},
+    {"name": "Values", "type": "sequence", "nodeTypes": [{"occurs": "*", "nodeType":
+    {"typeName": "EditorComponent", "languageName": "MetaBlockLang"}}]}], "orientation":
+    "horizontal"}]}}}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: foreign_types
   value_before_type_cast: "{}"

@@ -1,0 +1,37 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 695e9a24-5ef2-44fb-a99a-54c36bf5a110
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'Initial: Boolesche Ausdrücke'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: f9c43712-f585-45bd-b398-361ce5c7e700
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "neg", "children": {"value": [{"name": "neg",
+    "children": {"value": [{"name": "binary", "children": {"lhs": [{"name": "true",
+    "language": "bool"}], "rhs": [{"name": "variable", "language": "bool", "properties":
+    {"name": "A"}}]}, "language": "bool", "properties": {"op": "OR"}}]}, "language":
+    "bool"}]}, "language": "bool"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-08 11:54:19.070593000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-08 12:09:15.888507000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: b892b4b6-f7ee-4afd-8456-ce617d7ed657
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: generic
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: Generic Language without code generator
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+new_record: false
+active_record_yaml_version: 2

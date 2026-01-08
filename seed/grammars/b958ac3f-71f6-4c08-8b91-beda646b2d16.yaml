@@ -1,0 +1,55 @@
+--- !ruby/object:Grammar
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: slug
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: Boolesche Ausdrücke
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: b958ac3f-71f6-4c08-8b91-beda646b2d16
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-08 11:54:18.800251000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-08 12:08:41.659762000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: meta-grammar
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: generated_from_id
+  value_before_type_cast: 9d0cd350-f6ad-4869-bf42-3f61536f4946
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: types
+  value_before_type_cast: '{"bool": {"neg": {"type": "concrete", "attributes": [{"type":
+    "terminal", "symbol": "!"}, {"name": "value", "type": "sequence", "nodeTypes":
+    [{"typeName": "expr", "languageName": "bool"}]}]}, "expr": {"type": "oneOf", "oneOf":
+    [{"typeName": "true", "languageName": "bool"}, {"typeName": "false", "languageName":
+    "bool"}, {"typeName": "neg", "languageName": "bool"}, {"typeName": "binary", "languageName":
+    "bool"}, {"typeName": "variable", "languageName": "bool"}, {"typeName": "value",
+    "languageName": "bool"}]}, "true": {"type": "concrete", "attributes": [{"type":
+    "terminal", "symbol": "true"}]}, "false": {"type": "concrete", "attributes": [{"type":
+    "terminal", "symbol": "false"}]}, "value": {"type": "concrete", "attributes":
+    [{"base": "boolean", "name": "value", "type": "property"}]}, "binary": {"type":
+    "concrete", "attributes": [{"type": "terminal", "symbol": "("}, {"name": "lhs",
+    "type": "sequence", "nodeTypes": [{"typeName": "expr", "languageName": "bool"}]},
+    {"base": "string", "name": "op", "tags": ["space-around"], "type": "property",
+    "restrictions": [{"type": "enum", "value": ["OR", "AND", "XOR"]}]}, {"name": "rhs",
+    "type": "sequence", "nodeTypes": [{"typeName": "expr", "languageName": "bool"}]},
+    {"type": "terminal", "symbol": ")"}]}, "variable": {"type": "concrete", "attributes":
+    [{"base": "string", "name": "name", "type": "property"}]}}}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: foreign_types
+  value_before_type_cast: "{}"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: root
+  value_before_type_cast: '{"typeName": "expr", "languageName": "bool"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: visualisations
+  value_before_type_cast: "{}"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: foreign_visualisations
+  value_before_type_cast: "{}"
+new_record: false
+active_record_yaml_version: 2

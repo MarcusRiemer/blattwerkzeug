@@ -1,0 +1,35 @@
+--- !ruby/object:Project
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: slug
+  value_before_type_cast: lang-boolean-expression
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: '"de"=>"Sprache: Boolesche Ausdrücke", "en"=>"Language:
+    Boolean Expression"'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 695e9a24-5ef2-44fb-a99a-54c36bf5a110
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: public
+  value_before_type_cast: false
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: preview
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: index_page_id
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-08 11:53:40.857598000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-08 12:30:19.182012000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: default_database_id
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: user_id
+  value_before_type_cast: 00000000-0000-0000-0000-000000000002
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: description
+  value_before_type_cast: ''
+new_record: false
+active_record_yaml_version: 2

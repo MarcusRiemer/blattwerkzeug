@@ -1,0 +1,228 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 695e9a24-5ef2-44fb-a99a-54c36bf5a110
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'Grammar: Boolesche Ausdrücke'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 9d0cd350-f6ad-4869-bf42-3f61536f4946
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "grammar", "children": {"root": [{"name": "nodeRefOne",
+    "language": "MetaGrammar", "properties": {"typeName": "expr", "languageName":
+    "bool"}}], "nodes": [{"name": "typedef", "children": {"references": [{"name":
+    "nodeRefOne", "language": "MetaGrammar", "properties": {"typeName": "true", "languageName":
+    "bool"}}, {"name": "nodeRefOne", "language": "MetaGrammar", "properties": {"typeName":
+    "false", "languageName": "bool"}}, {"name": "nodeRefOne", "language": "MetaGrammar",
+    "properties": {"typeName": "neg", "languageName": "bool"}}, {"name": "nodeRefOne",
+    "language": "MetaGrammar", "properties": {"typeName": "binary", "languageName":
+    "bool"}}, {"name": "nodeRefOne", "language": "MetaGrammar", "properties": {"typeName":
+    "variable", "languageName": "bool"}}, {"name": "nodeRefOne", "language": "MetaGrammar",
+    "properties": {"typeName": "value", "languageName": "bool"}}]}, "language": "MetaGrammar",
+    "properties": {"typeName": "expr", "languageName": "bool"}}, {"name": "concreteNode",
+    "children": {"attributes": [{"name": "terminal", "language": "MetaGrammar", "properties":
+    {"symbol": "true"}}]}, "language": "MetaGrammar", "properties": {"typeName": "true",
+    "languageName": "bool"}}, {"name": "concreteNode", "children": {"attributes":
+    [{"name": "terminal", "language": "MetaGrammar", "properties": {"symbol": "false"}}]},
+    "language": "MetaGrammar", "properties": {"typeName": "false", "languageName":
+    "bool"}}, {"name": "concreteNode", "children": {"attributes": [{"name": "property",
+    "language": "MetaGrammar", "properties": {"base": "boolean", "name": "value"}}]},
+    "language": "MetaGrammar", "properties": {"typeName": "value", "languageName":
+    "bool"}}, {"name": "concreteNode", "children": {"attributes": [{"name": "property",
+    "language": "MetaGrammar", "properties": {"base": "string", "name": "name"}}]},
+    "language": "MetaGrammar", "properties": {"typeName": "variable", "languageName":
+    "bool"}}, {"name": "concreteNode", "children": {"attributes": [{"name": "terminal",
+    "language": "MetaGrammar", "properties": {"symbol": "!"}}, {"name": "children",
+    "children": {"references": [{"name": "nodeRefOne", "language": "MetaGrammar",
+    "properties": {"typeName": "expr", "languageName": "bool"}}]}, "language": "MetaGrammar",
+    "properties": {"base": "sequence", "name": "value"}}]}, "language": "MetaGrammar",
+    "properties": {"typeName": "neg", "languageName": "bool"}}, {"name": "concreteNode",
+    "children": {"attributes": [{"name": "terminal", "language": "MetaGrammar", "properties":
+    {"symbol": "("}}, {"name": "children", "children": {"references": [{"name": "nodeRefOne",
+    "language": "MetaGrammar", "properties": {"typeName": "expr", "languageName":
+    "bool"}}]}, "language": "MetaGrammar", "properties": {"base": "sequence", "name":
+    "lhs"}}, {"name": "property", "children": {"tags": [{"name": "tag", "language":
+    "MetaGrammar", "properties": {"name": "space-around"}}], "restrictions": [{"name":
+    "restrictionEnum", "children": {"values": [{"name": "restrictionEnumValue", "language":
+    "MetaGrammar", "properties": {"value": "OR"}}, {"name": "restrictionEnumValue",
+    "language": "MetaGrammar", "properties": {"value": "AND"}}, {"name": "restrictionEnumValue",
+    "language": "MetaGrammar", "properties": {"value": "XOR"}}]}, "language": "MetaGrammar"}]},
+    "language": "MetaGrammar", "properties": {"base": "string", "name": "op"}}, {"name":
+    "children", "children": {"references": [{"name": "nodeRefOne", "language": "MetaGrammar",
+    "properties": {"typeName": "expr", "languageName": "bool"}}]}, "language": "MetaGrammar",
+    "properties": {"base": "sequence", "name": "rhs"}}, {"name": "terminal", "language":
+    "MetaGrammar", "properties": {"symbol": ")"}}]}, "language": "MetaGrammar", "properties":
+    {"typeName": "binary", "languageName": "bool"}}]}, "language": "MetaGrammar",
+    "properties": {"name": "bool"}}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-08 11:54:18.744978000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-08 12:08:41.486836000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: df3ec59c-20c0-446d-8c84-7580e1c418bf
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: meta-grammar
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: |-
+    {
+      "types": {
+        "bool": {
+          "expr": {
+            "type": "oneOf",
+            "oneOf": [
+              {
+                "languageName": "bool",
+                "typeName": "true"
+              },
+              {
+                "languageName": "bool",
+                "typeName": "false"
+              },
+              {
+                "languageName": "bool",
+                "typeName": "neg"
+              },
+              {
+                "languageName": "bool",
+                "typeName": "binary"
+              },
+              {
+                "languageName": "bool",
+                "typeName": "variable"
+              },
+              {
+                "languageName": "bool",
+                "typeName": "value"
+              }
+            ]
+          },
+          "true": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "terminal",
+                "symbol": "true"
+              }
+            ]
+          },
+          "false": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "terminal",
+                "symbol": "false"
+              }
+            ]
+          },
+          "value": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "property",
+                "base": "boolean",
+                "name": "value"
+              }
+            ]
+          },
+          "variable": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "property",
+                "base": "string",
+                "name": "name"
+              }
+            ]
+          },
+          "neg": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "terminal",
+                "symbol": "!"
+              },
+              {
+                "type": "sequence",
+                "name": "value",
+                "nodeTypes": [
+                  {
+                    "languageName": "bool",
+                    "typeName": "expr"
+                  }
+                ]
+              }
+            ]
+          },
+          "binary": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "terminal",
+                "symbol": "("
+              },
+              {
+                "type": "sequence",
+                "name": "lhs",
+                "nodeTypes": [
+                  {
+                    "languageName": "bool",
+                    "typeName": "expr"
+                  }
+                ]
+              },
+              {
+                "type": "property",
+                "base": "string",
+                "name": "op",
+                "restrictions": [
+                  {
+                    "type": "enum",
+                    "value": [
+                      "OR",
+                      "AND",
+                      "XOR"
+                    ]
+                  }
+                ],
+                "tags": [
+                  "space-around"
+                ]
+              },
+              {
+                "type": "sequence",
+                "name": "rhs",
+                "nodeTypes": [
+                  {
+                    "languageName": "bool",
+                    "typeName": "expr"
+                  }
+                ]
+              },
+              {
+                "type": "terminal",
+                "symbol": ")"
+              }
+            ]
+          }
+        }
+      },
+      "foreignTypes": {},
+      "visualisations": {},
+      "foreignVisualisations": {},
+      "root": {
+        "languageName": "bool",
+        "typeName": "expr"
+      }
+    }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+new_record: false
+active_record_yaml_version: 2
