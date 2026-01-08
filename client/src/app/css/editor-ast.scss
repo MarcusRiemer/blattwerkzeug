@@ -58,7 +58,8 @@ editor-block-host {
 
     /* An actual block being rendered */
     editor-block-render-block {
-        display: inline-block;   // To have "proper" rectangular borders / drag zones
+        display: inline-flex;    // To have "proper" rectangular borders / drag zones
+        align-items: baseline;   // To stack nested blocks along a single text axis
         position: relative;      // To serve as an anchor for the more exact drop locations
         cursor: grab;
 
@@ -75,7 +76,6 @@ editor-block-host {
         /* Indicators where to drop stuff relative to the current block, this
            is for a vertical layout where the indicators are displayed at top or bottom */
         &.vertical > {
-
             .begin-drop, .end-drop, .begin-drop-zone, .end-drop-zone {
                 position: absolute;
                 left: 0px;
@@ -115,7 +115,6 @@ editor-block-host {
 
         // Horizontal (left to right) indicators
         &.horizontal > {
-
             .begin-drop, .end-drop, .begin-drop-zone, .end-drop-zone {
                 position: absolute;
                 top: 0px;
