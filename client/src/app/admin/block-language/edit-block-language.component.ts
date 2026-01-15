@@ -130,8 +130,13 @@ export class EditBlockLanguageComponent implements AfterViewInit {
   /**
    * Saves the current state of the block language
    */
-  onSave() {
-    this._current.save();
+  async onSave() {
+    const result = await this._current.save();
+    const errors = result.data?.updateBlockLanguage?.errors;
+    if (errors?.length > 0) {
+      console.error(errors);
+      alert(`${errors.length} errors during saving, see development console`);
+    }
   }
 
   /**

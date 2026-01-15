@@ -22,4 +22,5 @@ export interface QueryResponseDescription {
 export interface ArbitraryQueryRequestDescription {
   ast: NodeDescription;
   params: QueryParamsDescription;
+  grammarId: string | null;
 }

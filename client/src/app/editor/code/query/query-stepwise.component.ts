@@ -1,7 +1,13 @@
 import { Component } from "@angular/core";
 
-import { map, withLatestFrom, filter, mergeMap } from "rxjs/operators";
-import { BehaviorSubject, combineLatest } from "rxjs";
+import {
+  map,
+  withLatestFrom,
+  filter,
+  mergeMap,
+  switchMap,
+} from "rxjs/operators";
+import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 
 import { stepwiseSqlQuery } from "../../../shared/syntaxtree/sql/sql-steps";
 import { SyntaxTree } from "../../../shared/syntaxtree/";
@@ -9,7 +15,7 @@ import { SyntaxTree } from "../../../shared/syntaxtree/";
 import { CurrentCodeResourceService } from "../../current-coderesource.service";
 import { EditorToolbarService, ToolbarItem } from "../../toolbar.service";
 
-import { QueryService } from "./query.service";
+import { ArbitraryTreeQuery, QueryService } from "./query.service";
 
 /**
  * Controls the execution of database queries based on the current step
@@ -34,11 +40,11 @@ export class QueryStepwiseComponent {
   readonly codeResource$ = this._currentCodeResource.currentResource;
 
   readonly generatedCode$ = this.codeResource$.pipe(
-    mergeMap((c) => c.generatedCode$)
+    switchMap((c) => c.generatedCode$)
   );
 
   readonly blockLanguage$ = this.codeResource$.pipe(
-    mergeMap((c) => c.blockLanguage$)
+    switchMap((c) => c.blockLanguage$)
   );
 
   //all steps related to the initial query
@@ -57,6 +63,16 @@ export class QueryStepwiseComponent {
     map((step) => {
       return new SyntaxTree(step.ast);
     })
+  );
+
+  readonly currentRequestData$: Observable<ArbitraryTreeQuery> = combineLatest([
+    this.currentTree$,
+    this.blockLanguage$,
+  ]).pipe(
+    map(([tree, blockLanguage]) => ({
+      ast: tree.toModel(),
+      grammarId: blockLanguage.grammarId,
+    }))
   );
 
   //description for the current step
@@ -78,8 +94,8 @@ export class QueryStepwiseComponent {
   ]).pipe(map(([stepNum, steps]) => steps[stepNum]));
 
   //query result for the current step
-  readonly currentResult$ = this.currentTree$.pipe(
-    mergeMap((t) => this._queryService.runArbitraryQuery(t.toModel(), {}))
+  readonly currentResult$ = this.currentRequestData$.pipe(
+    mergeMap((t) => this._queryService.runArbitraryQuery(t, {}))
     // ignore QueryResultError
   );
 
@@ -88,17 +104,16 @@ export class QueryStepwiseComponent {
   readonly prevResult$ = combineLatest([
     this._currentStepNum,
     this.availableSteps$,
+    this.blockLanguage$,
   ]).pipe(
     filter(([stepNum]) => stepNum > 0),
-    map(([stepNum, steps]) => {
-      return steps[stepNum - 1];
+    map(([stepNum, steps, blockLanguage]) => {
+      return {
+        ast: new SyntaxTree(steps[stepNum - 1].ast).toModel(),
+        grammarId: blockLanguage.grammarId,
+      };
     }),
-    mergeMap((step) =>
-      this._queryService.runArbitraryQuery(
-        new SyntaxTree(step.ast).toModel(),
-        {}
-      )
-    )
+    mergeMap((step) => this._queryService.runArbitraryQuery(step, {}))
   );
 
   /**

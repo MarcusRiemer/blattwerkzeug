@@ -57,5 +57,7 @@ concise_attributes:
         "10163ab2-303b-4072-915a-57aeff0eaf60"
       ]
     }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
 new_record: false
 active_record_yaml_version: 2

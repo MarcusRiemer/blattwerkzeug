@@ -21,8 +21,14 @@ concise_attributes:
     "language": "MetaGrammar", "properties": {"typeName": "binary", "languageName":
     "bool"}}, {"name": "nodeRefOne", "language": "MetaGrammar", "properties": {"typeName":
     "variable", "languageName": "bool"}}, {"name": "nodeRefOne", "language": "MetaGrammar",
-    "properties": {"typeName": "value", "languageName": "bool"}}]}, "language": "MetaGrammar",
-    "properties": {"typeName": "expr", "languageName": "bool"}}, {"name": "concreteNode",
+    "properties": {"typeName": "value", "languageName": "bool"}}, {"name": "nodeRefOne",
+    "language": "MetaGrammar", "properties": {"typeName": "any", "languageName": "bool"}}]},
+    "language": "MetaGrammar", "properties": {"typeName": "expr", "languageName":
+    "bool"}}, {"name": "concreteNode", "children": {"attributes": [{"name": "children",
+    "children": {"references": [{"name": "nodeRefOne", "language": "MetaGrammar",
+    "properties": {"typeName": "expr", "languageName": "bool"}}]}, "language": "MetaGrammar",
+    "properties": {"base": "sequence", "name": "value"}}]}, "language": "MetaGrammar",
+    "properties": {"typeName": "any", "languageName": "bool"}}, {"name": "concreteNode",
     "children": {"attributes": [{"name": "terminal", "language": "MetaGrammar", "properties":
     {"symbol": "true"}}]}, "language": "MetaGrammar", "properties": {"typeName": "true",
     "languageName": "bool"}}, {"name": "concreteNode", "children": {"attributes":
@@ -62,7 +68,7 @@ concise_attributes:
   value_before_type_cast: 2026-01-08 11:54:18.744978000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2026-01-08 12:08:41.486836000 Z
+  value_before_type_cast: 2026-01-13 09:27:37.938217000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: df3ec59c-20c0-446d-8c84-7580e1c418bf
@@ -101,6 +107,25 @@ concise_attributes:
               {
                 "languageName": "bool",
                 "typeName": "value"
+              },
+              {
+                "languageName": "bool",
+                "typeName": "any"
+              }
+            ]
+          },
+          "any": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "sequence",
+                "name": "value",
+                "nodeTypes": [
+                  {
+                    "languageName": "bool",
+                    "typeName": "expr"
+                  }
+                ]
               }
             ]
           },

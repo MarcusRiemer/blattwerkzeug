@@ -13,15 +13,19 @@ class BaseIdeService
   # @param language_id [string]
   #   The id of the language to use
   #
+  # @param grammar_id [string]
+  #   The id of the language to use
+  #
   # @return [string]
   #   The string representation of the syntaxtree. If the given tree
   #   is nil, the returned object is also nil.
-  def emit_code(tree_description, language_id)
+  def emit_code(tree_description, language_id, grammar_id)
     if (tree_description)
       execute_request({
                         "type" => "emitCode",
                         "ast" => tree_description,
-                        "languageId" => language_id
+                        "languageId" => language_id,
+                        "grammarId" => grammar_id
                       })
     else
       nil

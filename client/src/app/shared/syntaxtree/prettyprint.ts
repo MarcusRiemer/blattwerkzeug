@@ -441,12 +441,7 @@ export function graphvizSyntaxTreeNode(
       [`label="${k}";`],
       // Append the name of the child group and the index of the node to
       // form a unique path
-      // This needs to be reversed because otherwise graphviz will show
-      // these childre in ... well ... reverse order. The node that is mentioned
-      // last seems to be rendered first.
-      ...v
-        .map((v, i) => graphvizSyntaxTreeNode(v, `${path}_${k}_${i}`))
-        .reverse(),
+      ...v.map((v, i) => graphvizSyntaxTreeNode(v, `${path}_${k}_${i}`)),
       `}`,
       // Create the connection from the parent
       ...v.map((_, i) => `${path} -> ${path}_${k}_${i};`),

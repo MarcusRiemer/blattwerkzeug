@@ -62,7 +62,7 @@
   </ng-container>
 
   <!-- Schema Editor -->
-  <ng-container *ngIf="hasDatabase$ | async">
+  <ng-container *ngIf="hasSqlCode$ | async">
     <a
       mat-list-item
       [routerLink]="['schema', currentDatabaseName$ | async]"

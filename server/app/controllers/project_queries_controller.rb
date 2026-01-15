@@ -19,7 +19,7 @@ class ProjectQueriesController < ApplicationController
 
     sql_ast = request_data['ast']
     begin
-      sql = IdeService.guaranteed_instance.emit_code(sql_ast, sql_ast['language'])
+      sql = IdeService.guaranteed_instance.emit_code(sql_ast, sql_ast['language'], request_data['grammar_id'])
       result = database.execute_sql(sql, request_data['params'], preview_max_rows)
 
       render json: result

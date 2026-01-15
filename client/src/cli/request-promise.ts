@@ -79,9 +79,9 @@ export function httpRequest<T>(
       request.write(buffer);
     }
 
-    console.error(
-      `${method}: ${url.toString()} (${buffer.length} byte request body)`
-    );
+    // console.error(
+    //   `${method}: ${url.toString()} (${buffer.length} byte request body)`
+    // );
 
     // And hit off the request for good
     request.end();

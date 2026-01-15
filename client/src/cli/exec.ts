@@ -7,7 +7,7 @@ import * as MetaBlockLanguage from "../app/shared/syntaxtree/meta-blocklanguage/
 
 import { ServerApi } from "../app/shared/serverdata/serverapi";
 
-import { AvailableLanguages } from "../app/shared/syntaxtree/";
+import { AvailableLanguages, Language } from "../app/shared/syntaxtree/";
 import {
   graphvizSyntaxTree,
   prettyPrintGrammar,
@@ -63,6 +63,7 @@ interface EmitCodeCommand {
   type: "emitCode";
   ast: NodeDescription;
   languageId: string;
+  grammarId?: string;
 }
 
 /**
@@ -124,13 +125,34 @@ async function findGrammar(slug: string) {
 /**
  * Retrieves a single Language by its name
  */
-function findLanguage(id: string) {
-  const desc = Object.values(AvailableLanguages).find(
-    (l) => l.programmingLanguageId == id
-  );
-  if (desc) return desc;
-  else {
-    throw new Error(`Unknown language ${id}`);
+async function findLanguage(
+  languageId: string,
+  grammarId: string | null
+): Promise<Language> {
+  if (grammarId) {
+    const liveGrammar = await findGrammar(grammarId);
+    if (liveGrammar) {
+      return new Language(
+        {
+          id: languageId,
+          name: liveGrammar.name,
+          validators: [],
+          emitters: [],
+        },
+        liveGrammar
+      );
+    } else {
+      throw new Error(`Unknown grammar ${grammarId}`);
+    }
+  } else {
+    const builtinLanguage = Object.values(AvailableLanguages).find(
+      (l) => l.programmingLanguageId == languageId
+    );
+    if (builtinLanguage) {
+      return builtinLanguage;
+    } else {
+      throw new Error(`Unknown builtin language ${languageId}`);
+    }
   }
 }
 
@@ -189,7 +211,7 @@ export async function executeCommand(
       case "emitCode": {
         if (command.languageId !== "generic") {
           try {
-            const l = findLanguage(command.languageId);
+            const l = await findLanguage(command.languageId, command.grammarId);
             const t = new SyntaxTree(command.ast);
             return l.emitTree(t);
           } catch (e) {

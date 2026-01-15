@@ -56,16 +56,27 @@ concise_attributes:
     [{"name": "property", "language": "MetaGrammar", "properties": {"base": "string",
     "name": "Name"}}]}, "language": "MetaGrammar", "properties": {"typeName": "CssClass",
     "languageName": "MetaBlockLang"}}, {"name": "concreteNode", "children": {"attributes":
-    [{"name": "property", "language": "MetaGrammar", "properties": {"base": "string",
-    "name": "Name"}}]}, "language": "MetaGrammar", "properties": {"typeName": "EditorComponent",
-    "languageName": "MetaBlockLang"}}]}, "language": "MetaGrammar", "properties":
-    {"name": "MetaBlockLang"}}'
+    [{"name": "property", "children": {"tags": [], "restrictions": [{"name": "restrictionEnum",
+    "children": {"values": [{"name": "restrictionEnumValue", "language": "MetaGrammar",
+    "properties": {"value": "block-root"}}, {"name": "restrictionEnumValue", "language":
+    "MetaGrammar", "properties": {"value": "json-ast"}}, {"name": "restrictionEnumValue",
+    "language": "MetaGrammar", "properties": {"value": "regex-test"}}, {"name": "restrictionEnumValue",
+    "language": "MetaGrammar", "properties": {"value": "execute-js"}}, {"name": "restrictionEnumValue",
+    "language": "MetaGrammar", "properties": {"value": "execute-math"}}, {"name":
+    "restrictionEnumValue", "language": "MetaGrammar", "properties": {"value": "execute-fsm"}},
+    {"name": "restrictionEnumValue", "language": "MetaGrammar", "properties": {"value":
+    "query-preview"}}, {"name": "restrictionEnumValue", "language": "MetaGrammar",
+    "properties": {"value": "validator"}}, {"name": "restrictionEnumValue", "language":
+    "MetaGrammar", "properties": {"value": "generated-code"}}]}, "language": "MetaGrammar"}]},
+    "language": "MetaGrammar", "properties": {"base": "string", "name": "Name"}}]},
+    "language": "MetaGrammar", "properties": {"typeName": "EditorComponent", "languageName":
+    "MetaBlockLang"}}]}, "language": "MetaGrammar", "properties": {"name": "MetaBlockLang"}}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2021-04-15 13:41:15.419967000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2021-09-30 11:12:49.161492000 Z
+  value_before_type_cast: 2026-01-15 08:16:01.170704000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: df3ec59c-20c0-446d-8c84-7580e1c418bf
@@ -194,7 +205,23 @@ concise_attributes:
               {
                 "type": "property",
                 "base": "string",
-                "name": "Name"
+                "name": "Name",
+                "restrictions": [
+                  {
+                    "type": "enum",
+                    "value": [
+                      "block-root",
+                      "json-ast",
+                      "regex-test",
+                      "execute-js",
+                      "execute-math",
+                      "execute-fsm",
+                      "query-preview",
+                      "validator",
+                      "generated-code"
+                    ]
+                  }
+                ]
               }
             ]
           }
@@ -208,5 +235,7 @@ concise_attributes:
         "typeName": "Document"
       }
     }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
 new_record: false
 active_record_yaml_version: 2

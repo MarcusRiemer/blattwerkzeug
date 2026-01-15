@@ -6,7 +6,7 @@ import {
 } from "@angular/common/http";
 
 import { Observable, of } from "rxjs";
-import { catchError, delay, map } from "rxjs/operators";
+import { catchError, delay, first, map } from "rxjs/operators";
 
 import {
   ArbitraryQueryRequestDescription,
@@ -57,6 +57,8 @@ export class QueryResultError {
 
 export type QueryResult = QueryResultRows | QueryResultError;
 
+export type ArbitraryTreeQuery = { ast: NodeDescription; grammarId: string };
+
 /**
  * Allows interaction with the query specific operations
  * of the server.
@@ -80,10 +82,10 @@ export class QueryService {
    * @param sqlResource A code resource that compiles to SQL.
    * @param params The parameters to run this query.
    */
-  runArbitraryQuery(
-    sqlResource: CodeResource | NodeDescription,
+  async runArbitraryQuery(
+    sqlResource: CodeResource | ArbitraryTreeQuery,
     params: QueryParamsDescription
-  ) {
+  ): Promise<QueryResult> {
     let headers = new HttpHeaders({ "Content-Type": "application/json" });
 
     const url = this._server.getRunQueryUrl(
@@ -93,10 +95,15 @@ export class QueryService {
     const ast =
       sqlResource instanceof CodeResource
         ? sqlResource.syntaxTreePeek.toModel()
-        : sqlResource;
+        : sqlResource.ast;
+    const grammarId =
+      sqlResource instanceof CodeResource
+        ? (await sqlResource.blockLanguagePeek).grammarId
+        : sqlResource.grammarId;
 
     const body: ArbitraryQueryRequestDescription = {
       ast,
+      grammarId,
       params: params,
     };
 
@@ -112,9 +119,10 @@ export class QueryService {
         delay(500),
         map((res) =>
           res instanceof QueryResultError ? res : new QueryResultRows(res)
-        )
+        ),
+        first()
       );
 
-    return toReturn;
+    return toReturn.toPromise();
   }
 }

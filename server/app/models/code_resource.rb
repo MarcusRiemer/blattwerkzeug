@@ -150,7 +150,14 @@ class CodeResource < ApplicationRecord
   # @raise [IdeServiceError] If anything goes wrong during compilation.
   def emit_ast!(ide_service = IdeService.instance, programming_language_id: nil)
     programming_language_id ||= self.programming_language_id
-    ide_service.emit_code(self.ast, programming_language_id)
+
+    grammar_id = if ["meta-grammar"].include?(programming_language_id) then
+                   nil
+                 else
+                   block_language.grammar_id
+                 end
+
+    ide_service.emit_code(self.ast, programming_language_id, grammar_id)
   end
 
   # Checks the current state of the AST and synchronizes this state to the

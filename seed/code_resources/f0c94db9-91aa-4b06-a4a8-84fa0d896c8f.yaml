@@ -2,29 +2,29 @@
 concise_attributes:
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: project_id
-  value_before_type_cast: b1149fa7-dc3d-414f-93b9-56c7f77c27d0
+  value_before_type_cast: 695e9a24-5ef2-44fb-a99a-54c36bf5a110
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'Initial: Meta: Block Language'
+  value_before_type_cast: '02: Redundant'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
-  value_before_type_cast: 6072bad2-f939-47dd-a5f0-c4d7ed4b14ef
+  value_before_type_cast: f0c94db9-91aa-4b06-a4a8-84fa0d896c8f
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: ast
-  value_before_type_cast: '{"name": "Document", "children": {"RootCssClasses": [{"name":
-    "CssClass", "language": "MetaBlockLang", "properties": {"Name": "activate-block-outline"}}],
-    "EditorComponents": [{"name": "EditorComponents", "children": {"Values": [{"name":
-    "EditorComponent", "language": "MetaBlockLang", "properties": {"Name": "block-root"}}]},
-    "language": "MetaBlockLang"}]}, "language": "MetaBlockLang"}'
+  value_before_type_cast: '{"name": "binary", "children": {"lhs": [{"name": "any",
+    "children": {"value": [{"name": "variable", "language": "bool", "properties":
+    {"name": "A"}}]}, "language": "bool"}], "rhs": [{"name": "any", "children": {"value":
+    [{"name": "false", "language": "bool"}]}, "language": "bool"}]}, "language": "bool",
+    "properties": {"op": "OR"}}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
-  value_before_type_cast: 2021-04-15 13:41:15.719870000 Z
+  value_before_type_cast: 2026-01-13 09:27:18.075922000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2021-05-24 10:19:38.595615000 Z
+  value_before_type_cast: 2026-01-13 10:16:57.714838000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
-  value_before_type_cast: 81430cc2-bcff-4304-8cfd-6f05cf249a53
+  value_before_type_cast: b892b4b6-f7ee-4afd-8456-ce617d7ed657
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: programming_language_id
   value_before_type_cast: generic

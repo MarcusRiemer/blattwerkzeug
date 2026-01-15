@@ -35,6 +35,13 @@ generated/%.graphviz: examples/syntaxtree/%.json $(CLI_PROG_CLIENT)
 	@mkdir -p generated
 	@echo '{ "type": "graphvizTree", "model": $(shell cat "$<" | jq -c .)}' | node $(CLI_PROG_CLIENT) | jq -r . | tee "generated/$*.graphviz"
 
+generated/%.svg: generated/%.graphviz
+	@mkdir -p generated
+	dot -Tsvg -o $@ $^
+
+generated/%.emf: generated/%.svg
+	inkscape $^ --export-filename $@
+
 # Default set of pretty printed grammar files
 pretty-grammars: generated/sql.grammar generated/dxml.grammar generated/regex.grammar generated/css.grammar generated/json.grammar generated/trucklino-program.grammar
 
@@ -42,7 +49,7 @@ pretty-grammars: generated/sql.grammar generated/dxml.grammar generated/regex.gr
 pretty-blocks: generated/sql.blocks
 
 # Default set of graphviz trees
-graphviz-trees: generated/ast-example-if.graphviz generated/ast-example-if-no-pred.graphviz generated/ast-example-null.graphviz generated/ast-example-expr-variable.graphviz generated/ast-example-expr-binary.graphviz generated/ast-sql-column-name.graphviz generated/ast-example-xml-node-two-attributes.graphviz generated/ast-trucklino-wait-traffic-light.graphviz
+graphviz-trees: generated/ast-example-if.graphviz generated/ast-example-if-no-pred.graphviz generated/ast-example-null.graphviz generated/ast-example-expr-variable.graphviz generated/ast-example-expr-binary.graphviz generated/ast-sql-column-name.graphviz generated/ast-example-xml-node-two-attributes.graphviz generated/ast-trucklino-wait-traffic-light.graphviz generated/ast-xml-root.graphviz
 
 # Re-generate everything that can be created dynamically
 all-generated: pretty-grammars pretty-blocks graphviz-trees

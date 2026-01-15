@@ -9,13 +9,20 @@
         "ast": {
           "$ref": "#/definitions/NodeDescription"
         },
+        "grammarId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "params": {
           "$ref": "#/definitions/QueryParamsDescription"
         }
       },
       "required": [
         "ast",
-        "params"
+        "params",
+        "grammarId"
       ],
       "type": "object"
     },

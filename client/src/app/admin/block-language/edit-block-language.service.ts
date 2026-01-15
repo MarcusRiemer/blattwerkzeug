@@ -184,8 +184,8 @@ export class EditBlockLanguageService {
   /**
    * Saves the current state of the block language
    */
-  save() {
-    this._updateBlockLanguageGQL.mutate(this.editedSubject).toPromise();
+  async save() {
+    return this._updateBlockLanguageGQL.mutate(this.editedSubject).toPromise();
   }
 
   /**

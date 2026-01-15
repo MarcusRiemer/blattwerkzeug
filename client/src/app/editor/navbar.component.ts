@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 import { of } from "rxjs";
-import { map, shareReplay } from "rxjs/operators";
+import { map, shareReplay, switchMap } from "rxjs/operators";
 
 import { GrammarGeneratedByGQL } from "../../generated/graphql";
 
@@ -24,8 +24,10 @@ export class NavbarComponent {
     private readonly _currentCodeResource: CurrentCodeResourceService
   ) {}
 
-  readonly hasDatabase$ = this._projectService.activeProject.pipe(
-    map((p) => !!p.currentDatabaseName)
+  readonly hasSqlCode$ = this._projectService.activeProject.pipe(
+    switchMap((p) => p.codeResources),
+    switchMap((codeResources) => codeResources.emittedLanguage$),
+    map((emittedLanguage) => emittedLanguage.programmingLanguageId === "sql")
   );
 
   readonly currentDatabaseName$ = this._projectService.activeProject.pipe(

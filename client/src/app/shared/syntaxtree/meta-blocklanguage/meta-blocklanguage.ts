@@ -4,7 +4,10 @@ import { SyntaxTree } from "../syntaxtree";
 import { NodeDescription } from "../syntaxtree.description";
 
 export type BlockLanguageSettings = Partial<
-  Pick<BlockLanguageDescription, "rootCssClasses" | "editorComponents">
+  Pick<
+    BlockLanguageDescription,
+    "rootCssClasses" | "editorComponents" | "sidebars"
+  >
 >;
 
 export function readFromNode(

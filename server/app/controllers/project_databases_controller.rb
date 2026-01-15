@@ -91,10 +91,16 @@ class ProjectDatabasesController < ApplicationController
 
   # Downloads the requested database
   def database_download
+    project_name = ["en", "de"]
+                     .map { current_database.project.name[_1] }
+                     .filter { _1 }
+                     .map { _1.parameterize }
+                     .find { _1 }
+
     send_file current_database.sqlite_file_path,
               type: "application/x-sqlite3",
               disposition: "attachment",
-              filename: "#{current_database.project.name}-#{current_database.name}.sqlite"
+              filename: "#{project_name}-#{current_database.name}.sqlite"
   end
 
   # Creates a new table in the given database

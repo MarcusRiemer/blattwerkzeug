@@ -1,7 +1,14 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 
 import { Subscription } from "rxjs";
-import { first, filter, finalize, flatMap, map } from "rxjs/operators";
+import {
+  first,
+  filter,
+  finalize,
+  flatMap,
+  map,
+  mergeMap,
+} from "rxjs/operators";
 
 import { DatabaseQueryErrorDescription } from "../../../shared";
 import { SyntaxTree } from "../../../shared/syntaxtree";
@@ -59,7 +66,7 @@ export class QueryPreviewComponent implements OnInit, OnDestroy {
 
   // All parameters that are part of the current tree
   readonly queryParameterNames = this._currentQuery.pipe(
-    flatMap((c) => c.syntaxTree$),
+    mergeMap((c) => c.syntaxTree$),
     map(extractQueryParameterNames)
   );
 
@@ -77,31 +84,26 @@ export class QueryPreviewComponent implements OnInit, OnDestroy {
       "play",
       "r"
     );
-    this._btnRun.onClick.subscribe((_) => {
+    this._btnRun.onClick.subscribe(async (_) => {
       // Visual feedback that the query is in progress
       this.queryInProgress = true;
       // Store query parameters after every execution
       this.persistQueryParameters();
 
-      this._queryService
-        .runArbitraryQuery(
-          this._currentCodeResource.peekResource,
-          this.requiredQueryParameters
-        )
-        .pipe(
-          first(),
-          finalize(() => (this.queryInProgress = false))
-        )
-        .subscribe((res) => {
-          if (res instanceof QueryResultRows) {
-            // Succesful query, store it and remove the error
-            this.result = res;
-            this.error = undefined;
-          } else {
-            this.result = undefined;
-            this.error = res.data;
-          }
-        });
+      const res = await this._queryService.runArbitraryQuery(
+        this._currentCodeResource.peekResource,
+        this.requiredQueryParameters
+      );
+
+      this.queryInProgress = false;
+      if (res instanceof QueryResultRows) {
+        // Succesful query, store it and remove the error
+        this.result = res;
+        this.error = undefined;
+      } else {
+        this.result = undefined;
+        this.error = res.data;
+      }
     });
 
     // Fire the query every time the ast changes into a valid tree.

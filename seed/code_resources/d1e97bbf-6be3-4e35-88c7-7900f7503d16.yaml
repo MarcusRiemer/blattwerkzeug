@@ -68,5 +68,7 @@ concise_attributes:
         "typeName": "grammar"
       }
     }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
 new_record: false
 active_record_yaml_version: 2
