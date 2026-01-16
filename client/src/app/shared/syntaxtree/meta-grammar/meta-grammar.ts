@@ -160,6 +160,11 @@ export function convertChildren(
     toReturn.nodeTypes = typeReferences;
   }
 
+  const between = attrNode.getChildInCategory("between");
+  if (between) {
+    toReturn.between = convertTerminal(between);
+  }
+
   possiblyAddTags(attrNode, toReturn);
 
   return toReturn;

@@ -1,9 +1,6 @@
 --- !ruby/object:BlockLanguage
 concise_attributes:
 - !ruby/object:ActiveModel::Attribute::FromDatabase
-  name: generated_from_id
-  value_before_type_cast: 6072bad2-f939-47dd-a5f0-c4d7ed4b14ef
-- !ruby/object:ActiveModel::Attribute::FromDatabase
   name: slug
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
@@ -74,6 +71,9 @@ concise_attributes:
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: root_css_classes
   value_before_type_cast: "{activate-block-outline}"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: generated_from_id
+  value_before_type_cast: 6072bad2-f939-47dd-a5f0-c4d7ed4b14ef
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: level
 new_record: false
