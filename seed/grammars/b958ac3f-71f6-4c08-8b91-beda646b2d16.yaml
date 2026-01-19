@@ -13,7 +13,7 @@ concise_attributes:
   value_before_type_cast: 2026-01-08 11:54:18.800251000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2026-01-13 09:27:38.118112000 Z
+  value_before_type_cast: 2026-01-19 09:18:01.948275000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: programming_language_id
   value_before_type_cast: meta-grammar
@@ -25,7 +25,7 @@ concise_attributes:
   value_before_type_cast: '{"bool": {"any": {"type": "concrete", "attributes": [{"name":
     "value", "type": "sequence", "nodeTypes": [{"typeName": "expr", "languageName":
     "bool"}]}]}, "neg": {"type": "concrete", "attributes": [{"type": "terminal", "symbol":
-    "!"}, {"name": "value", "type": "sequence", "nodeTypes": [{"typeName": "expr",
+    "¬"}, {"name": "value", "type": "sequence", "nodeTypes": [{"typeName": "expr",
     "languageName": "bool"}]}]}, "expr": {"type": "oneOf", "oneOf": [{"typeName":
     "true", "languageName": "bool"}, {"typeName": "false", "languageName": "bool"},
     {"typeName": "neg", "languageName": "bool"}, {"typeName": "binary", "languageName":
@@ -37,7 +37,7 @@ concise_attributes:
     "type": "property"}]}, "binary": {"type": "concrete", "attributes": [{"type":
     "terminal", "symbol": "("}, {"name": "lhs", "type": "sequence", "nodeTypes": [{"typeName":
     "expr", "languageName": "bool"}]}, {"base": "string", "name": "op", "tags": ["space-around"],
-    "type": "property", "restrictions": [{"type": "enum", "value": ["OR", "AND", "XOR"]}]},
+    "type": "property", "restrictions": [{"type": "enum", "value": ["∨", "∧"]}]},
     {"name": "rhs", "type": "sequence", "nodeTypes": [{"typeName": "expr", "languageName":
     "bool"}]}, {"type": "terminal", "symbol": ")"}]}, "variable": {"type": "concrete",
     "attributes": [{"base": "string", "name": "name", "type": "property"}]}}}'

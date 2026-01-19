@@ -16,13 +16,13 @@ concise_attributes:
     "dxml"}}], "nodes": [{"name": "visualizeNode", "children": {"attributes": [{"name":
     "container", "children": {"attributes": [{"name": "container", "children": {"attributes":
     [{"name": "terminal", "language": "MetaGrammar", "properties": {"symbol": "<"}},
-    {"name": "interpolate", "children": {"tags": [{"name": "tag", "language": "MetaGrammar",
+    {"name": "property", "children": {"tags": [{"name": "tag", "language": "MetaGrammar",
     "properties": {"name": "keyword"}}]}, "language": "MetaGrammar", "properties":
-    {"name": "name"}}, {"name": "each", "language": "MetaGrammar", "properties": {"name":
-    "attributes"}}, {"name": "terminal", "language": "MetaGrammar", "properties":
-    {"symbol": ">"}}], "orientation": [{"name": "orientation", "language": "MetaGrammar",
-    "properties": {"orientation": "horizontal"}}]}, "language": "MetaGrammar"}, {"name":
-    "container", "children": {"tags": [{"name": "tag", "language": "MetaGrammar",
+    {"base": "string", "name": "name"}}, {"name": "each", "language": "MetaGrammar",
+    "properties": {"name": "attributes"}}, {"name": "terminal", "language": "MetaGrammar",
+    "properties": {"symbol": ">"}}], "orientation": [{"name": "orientation", "language":
+    "MetaGrammar", "properties": {"orientation": "horizontal"}}]}, "language": "MetaGrammar"},
+    {"name": "container", "children": {"tags": [{"name": "tag", "language": "MetaGrammar",
     "properties": {"name": "indent"}}], "attributes": [{"name": "each", "language":
     "MetaGrammar", "properties": {"name": "elements"}}], "orientation": [{"name":
     "orientation", "language": "MetaGrammar", "properties": {"orientation": "vertical"}}]},
@@ -37,26 +37,24 @@ concise_attributes:
     "vertical"}}]}, "language": "MetaGrammar"}], "references": [{"name": "nodeRefOne",
     "language": "MetaGrammar", "properties": {"typeName": "element", "languageName":
     "dxml"}}]}, "language": "MetaGrammar"}, {"name": "visualizeNode", "children":
-    {"attributes": [{"name": "container", "children": {"tags": [], "attributes": [{"name":
-    "interpolate", "children": {"tags": [{"name": "tag", "language": "MetaGrammar",
-    "properties": {"name": "space-before"}}]}, "language": "MetaGrammar", "properties":
-    {"name": "name"}}, {"name": "terminal", "language": "MetaGrammar", "properties":
-    {"symbol": "="}}, {"name": "interpolate", "children": {"tags": [{"name": "tag",
-    "language": "MetaGrammar", "properties": {"name": "double-quote"}}]}, "language":
-    "MetaGrammar", "properties": {"name": "value"}}], "orientation": [{"name": "orientation",
-    "language": "MetaGrammar", "properties": {"orientation": "horizontal"}}]}, "language":
-    "MetaGrammar"}], "references": [{"name": "nodeRefOne", "language": "MetaGrammar",
-    "properties": {"typeName": "attribute", "languageName": "dxml"}}]}, "language":
-    "MetaGrammar"}], "includes": [], "visualizes": [{"name": "grammarVisualizes",
-    "children": {"includes": [{"name": "grammarRef", "language": "MetaGrammar", "properties":
-    {"grammarId": "3b919483-8a97-41a8-8798-a8bb386609ba"}}]}, "language": "MetaGrammar"}]},
-    "language": "MetaGrammar", "properties": {"name": "dxml"}}'
+    {"attributes": [{"name": "interpolate", "children": {"tags": [{"name": "tag",
+    "language": "MetaGrammar", "properties": {"name": "space-before"}}]}, "language":
+    "MetaGrammar", "properties": {"name": "name"}}, {"name": "terminal", "language":
+    "MetaGrammar", "properties": {"symbol": "="}}, {"name": "interpolate", "children":
+    {"tags": [{"name": "tag", "language": "MetaGrammar", "properties": {"name": "double-quote"}}]},
+    "language": "MetaGrammar", "properties": {"name": "value"}}], "references": [{"name":
+    "nodeRefOne", "language": "MetaGrammar", "properties": {"typeName": "attribute",
+    "languageName": "dxml"}}]}, "language": "MetaGrammar"}], "includes": [], "visualizes":
+    [{"name": "grammarVisualizes", "children": {"includes": [{"name": "grammarRef",
+    "language": "MetaGrammar", "properties": {"grammarId": "3b919483-8a97-41a8-8798-a8bb386609ba"}}]},
+    "language": "MetaGrammar"}]}, "language": "MetaGrammar", "properties": {"name":
+    "dxml"}}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2020-08-14 07:17:51.678142000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2021-03-12 12:44:01.138768000 Z
+  value_before_type_cast: 2026-01-19 13:08:55.832600000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: df3ec59c-20c0-446d-8c84-7580e1c418bf
@@ -87,7 +85,8 @@ concise_attributes:
                         "symbol": "<"
                       },
                       {
-                        "type": "interpolate",
+                        "type": "property",
+                        "base": "string",
                         "name": "name",
                         "tags": [
                           "keyword"
@@ -145,27 +144,21 @@ concise_attributes:
             "type": "visualise",
             "attributes": [
               {
-                "type": "container",
-                "orientation": "horizontal",
-                "children": [
-                  {
-                    "type": "interpolate",
-                    "name": "name",
-                    "tags": [
-                      "space-before"
-                    ]
-                  },
-                  {
-                    "type": "terminal",
-                    "symbol": "="
-                  },
-                  {
-                    "type": "interpolate",
-                    "name": "value",
-                    "tags": [
-                      "double-quote"
-                    ]
-                  }
+                "type": "interpolate",
+                "name": "name",
+                "tags": [
+                  "space-before"
+                ]
+              },
+              {
+                "type": "terminal",
+                "symbol": "="
+              },
+              {
+                "type": "interpolate",
+                "name": "value",
+                "tags": [
+                  "double-quote"
                 ]
               }
             ]
@@ -181,5 +174,7 @@ concise_attributes:
         "3b919483-8a97-41a8-8798-a8bb386609ba"
       ]
     }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
 new_record: false
 active_record_yaml_version: 2

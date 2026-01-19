@@ -1,0 +1,4 @@
+---
+- - "../seed/block_languages"
+  - a22c66ad-d94a-4aa5-95ac-6fa1f2d13908
+  - !ruby/class 'Seed::BlockLanguageSeed'

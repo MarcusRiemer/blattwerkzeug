@@ -5,7 +5,7 @@ concise_attributes:
   value_before_type_cast: 695e9a24-5ef2-44fb-a99a-54c36bf5a110
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: name
-  value_before_type_cast: 'Initial: Boolesche Ausdrücke'
+  value_before_type_cast: '01: Initial'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: id
   value_before_type_cast: f9c43712-f585-45bd-b398-361ce5c7e700
@@ -15,13 +15,13 @@ concise_attributes:
     "children": {"value": [{"name": "binary", "children": {"lhs": [{"name": "variable",
     "language": "bool", "properties": {"name": "A"}}], "rhs": [{"name": "variable",
     "language": "bool", "properties": {"name": "A"}}]}, "language": "bool", "properties":
-    {"op": "OR"}}]}, "language": "bool"}]}, "language": "bool"}'
+    {"op": "∨"}}]}, "language": "bool"}]}, "language": "bool"}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2026-01-08 11:54:19.070593000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2026-01-08 13:28:51.907965000 Z
+  value_before_type_cast: 2026-01-19 12:36:19.004106000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: b892b4b6-f7ee-4afd-8456-ce617d7ed657

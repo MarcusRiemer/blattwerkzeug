@@ -18,7 +18,7 @@ concise_attributes:
   value_before_type_cast: 2020-08-13 11:38:25.484463000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2020-09-02 20:49:18.009496000 Z
+  value_before_type_cast: 2026-01-19 12:59:11.213283000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: e4ad4071-ab82-4687-be04-4d19a7ecae36
@@ -28,5 +28,7 @@ concise_attributes:
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: compiled
   value_before_type_cast: Generic Language without code generator
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
 new_record: false
 active_record_yaml_version: 2

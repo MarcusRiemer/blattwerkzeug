@@ -41,7 +41,7 @@ concise_attributes:
     "language": "MetaGrammar", "properties": {"base": "string", "name": "name"}}]},
     "language": "MetaGrammar", "properties": {"typeName": "variable", "languageName":
     "bool"}}, {"name": "concreteNode", "children": {"attributes": [{"name": "terminal",
-    "language": "MetaGrammar", "properties": {"symbol": "!"}}, {"name": "children",
+    "language": "MetaGrammar", "properties": {"symbol": "¬"}}, {"name": "children",
     "children": {"references": [{"name": "nodeRefOne", "language": "MetaGrammar",
     "properties": {"typeName": "expr", "languageName": "bool"}}]}, "language": "MetaGrammar",
     "properties": {"base": "sequence", "name": "value"}}]}, "language": "MetaGrammar",
@@ -53,9 +53,8 @@ concise_attributes:
     "lhs"}}, {"name": "property", "children": {"tags": [{"name": "tag", "language":
     "MetaGrammar", "properties": {"name": "space-around"}}], "restrictions": [{"name":
     "restrictionEnum", "children": {"values": [{"name": "restrictionEnumValue", "language":
-    "MetaGrammar", "properties": {"value": "OR"}}, {"name": "restrictionEnumValue",
-    "language": "MetaGrammar", "properties": {"value": "AND"}}, {"name": "restrictionEnumValue",
-    "language": "MetaGrammar", "properties": {"value": "XOR"}}]}, "language": "MetaGrammar"}]},
+    "MetaGrammar", "properties": {"value": "∨"}}, {"name": "restrictionEnumValue",
+    "language": "MetaGrammar", "properties": {"value": "∧"}}]}, "language": "MetaGrammar"}]},
     "language": "MetaGrammar", "properties": {"base": "string", "name": "op"}}, {"name":
     "children", "children": {"references": [{"name": "nodeRefOne", "language": "MetaGrammar",
     "properties": {"typeName": "expr", "languageName": "bool"}}]}, "language": "MetaGrammar",
@@ -68,7 +67,7 @@ concise_attributes:
   value_before_type_cast: 2026-01-08 11:54:18.744978000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2026-01-13 09:27:37.938217000 Z
+  value_before_type_cast: 2026-01-19 09:18:01.775817000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: df3ec59c-20c0-446d-8c84-7580e1c418bf
@@ -172,7 +171,7 @@ concise_attributes:
             "attributes": [
               {
                 "type": "terminal",
-                "symbol": "!"
+                "symbol": "¬"
               },
               {
                 "type": "sequence",
@@ -211,9 +210,8 @@ concise_attributes:
                   {
                     "type": "enum",
                     "value": [
-                      "OR",
-                      "AND",
-                      "XOR"
+                      "∨",
+                      "∧"
                     ]
                   }
                 ],

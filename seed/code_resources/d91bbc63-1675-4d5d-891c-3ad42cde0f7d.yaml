@@ -1,0 +1,40 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 733cb6c2-34fe-4323-89fa-6920f0a9a422
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'Initial: Demo SQL'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: d91bbc63-1675-4d5d-891c-3ad42cde0f7d
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "select", "children": {"from": [{"name": "from",
+    "children": {"tables": [{"name": "tableName", "language": "sql", "properties":
+    {"name": "sprachen"}}, {"name": "tableAs", "children": {"table": [{"name": "tableName",
+    "language": "sql", "properties": {"name": "sprachen"}}]}, "language": "sql", "properties":
+    {"alias": "zwo"}}]}, "language": "sql"}], "columns": [{"name": "star", "language":
+    "sql"}]}, "language": "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-15 10:02:35.641946000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-16 11:36:17.746691000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: a22c66ad-d94a-4aa5-95ac-6fa1f2d13908
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: |-
+    SELECT *
+    FROM sprachen, sprachen,  AS , zwo
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+new_record: false
+active_record_yaml_version: 2

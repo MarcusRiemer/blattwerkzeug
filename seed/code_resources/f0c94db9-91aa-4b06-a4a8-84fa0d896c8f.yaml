@@ -11,17 +11,15 @@ concise_attributes:
   value_before_type_cast: f0c94db9-91aa-4b06-a4a8-84fa0d896c8f
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: ast
-  value_before_type_cast: '{"name": "binary", "children": {"lhs": [{"name": "any",
-    "children": {"value": [{"name": "variable", "language": "bool", "properties":
-    {"name": "A"}}]}, "language": "bool"}], "rhs": [{"name": "any", "children": {"value":
-    [{"name": "false", "language": "bool"}]}, "language": "bool"}]}, "language": "bool",
-    "properties": {"op": "OR"}}'
+  value_before_type_cast: '{"name": "binary", "children": {"lhs": [{"name": "variable",
+    "language": "bool", "properties": {"name": "A"}}], "rhs": [{"name": "false", "language":
+    "bool"}]}, "language": "bool", "properties": {"op": "∨"}}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2026-01-13 09:27:18.075922000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2026-01-13 10:16:57.714838000 Z
+  value_before_type_cast: 2026-01-19 12:33:20.200156000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: b892b4b6-f7ee-4afd-8456-ce617d7ed657

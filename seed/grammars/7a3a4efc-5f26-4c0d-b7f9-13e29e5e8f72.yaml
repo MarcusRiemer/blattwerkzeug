@@ -1,0 +1,60 @@
+--- !ruby/object:Grammar
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: slug
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: Demo SQL
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 7a3a4efc-5f26-4c0d-b7f9-13e29e5e8f72
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-15 10:02:35.371464000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-19 13:13:05.276235000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: meta-grammar
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: generated_from_id
+  value_before_type_cast: 1044df51-22bc-4165-82e5-bb383ba13820
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: types
+  value_before_type_cast: '{"sql": {"expr": {"type": "oneOf", "oneOf": [{"typeName":
+    "star", "languageName": "sql"}]}, "from": {"type": "concrete", "attributes": [{"type":
+    "container", "children": [{"tags": ["space-after", "keyword"], "type": "terminal",
+    "symbol": "FROM"}, {"name": "tables", "type": "allowed", "between": {"tags": ["space-after"],
+    "type": "terminal", "symbol": ","}, "nodeTypes": [{"occurs": "+", "nodeType":
+    {"typeName": "tableIntro", "languageName": "sql"}}]}], "orientation": "horizontal"}]},
+    "star": {"type": "concrete", "attributes": [{"type": "terminal", "symbol": "*"}]},
+    "select": {"type": "concrete", "attributes": [{"type": "container", "children":
+    [{"type": "container", "children": [{"tags": ["space-after", "keyword"], "type":
+    "terminal", "symbol": "SELECT"}, {"name": "columns", "type": "sequence", "between":
+    {"type": "terminal", "symbol": ","}, "nodeTypes": [{"occurs": "+", "nodeType":
+    {"typeName": "expr", "languageName": "sql"}}]}], "orientation": "horizontal"},
+    {"name": "from", "type": "sequence", "nodeTypes": [{"typeName": "from", "languageName":
+    "sql"}]}], "orientation": "vertical"}]}, "tableAs": {"type": "concrete", "attributes":
+    [{"type": "container", "children": [{"name": "table", "type": "sequence", "nodeTypes":
+    [{"typeName": "tableName", "languageName": "sql"}]}, {"tags": ["space-around",
+    "keyword"], "type": "terminal", "symbol": "AS"}, {"base": "string", "name": "alias",
+    "type": "property"}], "orientation": "horizontal"}]}, "distinct": {"type": "concrete",
+    "attributes": [{"tags": ["keyword"], "type": "terminal", "symbol": "DISTINCT"}]},
+    "tableName": {"type": "concrete", "attributes": [{"base": "string", "name": "name",
+    "type": "property"}]}, "tableIntro": {"type": "oneOf", "oneOf": [{"typeName":
+    "tableName", "languageName": "sql"}, {"typeName": "tableAs", "languageName": "sql"}]}}}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: foreign_types
+  value_before_type_cast: "{}"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: root
+  value_before_type_cast: '{"typeName": "select", "languageName": "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: visualisations
+  value_before_type_cast: "{}"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: foreign_visualisations
+  value_before_type_cast: "{}"
+new_record: false
+active_record_yaml_version: 2

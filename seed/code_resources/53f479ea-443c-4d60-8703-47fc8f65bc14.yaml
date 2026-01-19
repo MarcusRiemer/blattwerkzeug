@@ -13,13 +13,14 @@ concise_attributes:
   name: ast
   value_before_type_cast: '{"name": "element", "children": {"elements": [], "attributes":
     [{"name": "attribute", "language": "dxml", "properties": {"name": "a", "value":
+    "b"}}, {"name": "attribute", "language": "dxml", "properties": {"name": "a", "value":
     "b"}}]}, "language": "dxml", "properties": {"name": "e"}}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2020-08-13 12:46:19.691981000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2020-09-02 20:49:43.173374000 Z
+  value_before_type_cast: 2026-01-19 13:03:19.535666000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: e4ad4071-ab82-4687-be04-4d19a7ecae36
@@ -29,5 +30,7 @@ concise_attributes:
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: compiled
   value_before_type_cast: Generic Language without code generator
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
 new_record: false
 active_record_yaml_version: 2

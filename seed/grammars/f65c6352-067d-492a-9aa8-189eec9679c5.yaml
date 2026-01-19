@@ -16,7 +16,7 @@ concise_attributes:
   value_before_type_cast: 2020-08-14 08:18:16.049875000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2021-04-13 15:10:29.840189000 Z
+  value_before_type_cast: 2026-01-19 13:08:56.017113000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: programming_language_id
   value_before_type_cast: generic
@@ -29,7 +29,7 @@ concise_attributes:
     "string", "name": "value", "type": "property"}]}, "element": {"type": "concrete",
     "attributes": [{"base": "string", "name": "name", "type": "property"}, {"name":
     "attributes", "type": "sequence", "nodeTypes": [{"occurs": "*", "nodeType": {"typeName":
-    "attribute", "languageName": "dxml"}}]}, {"name": "elements", "type": "sequence",
+    "attribute", "languageName": "dxml"}}]}, {"name": "elements", "type": "allowed",
     "nodeTypes": [{"occurs": "*", "nodeType": {"typeName": "text", "languageName":
     "dxml"}}, {"occurs": "*", "nodeType": {"typeName": "element", "languageName":
     "dxml"}}]}]}, "attribute": {"type": "concrete", "attributes": [{"base": "string",
@@ -42,16 +42,16 @@ concise_attributes:
   name: visualisations
   value_before_type_cast: '{"dxml": {"element": {"type": "visualise", "attributes":
     [{"type": "container", "children": [{"type": "container", "children": [{"type":
-    "terminal", "symbol": "<"}, {"name": "name", "tags": ["keyword"], "type": "interpolate"},
-    {"name": "attributes", "type": "each"}, {"type": "terminal", "symbol": ">"}],
-    "orientation": "horizontal"}, {"tags": ["indent"], "type": "container", "children":
-    [{"name": "elements", "type": "each"}], "orientation": "vertical"}, {"type": "container",
-    "children": [{"type": "terminal", "symbol": "</"}, {"name": "name", "tags": ["keyword"],
-    "type": "interpolate"}, {"type": "terminal", "symbol": ">"}], "orientation": "horizontal"}],
-    "orientation": "vertical"}]}, "attribute": {"type": "visualise", "attributes":
-    [{"type": "container", "children": [{"name": "name", "tags": ["space-before"],
+    "terminal", "symbol": "<"}, {"base": "string", "name": "name", "tags": ["keyword"],
+    "type": "property"}, {"name": "attributes", "type": "each"}, {"type": "terminal",
+    "symbol": ">"}], "orientation": "horizontal"}, {"tags": ["indent"], "type": "container",
+    "children": [{"name": "elements", "type": "each"}], "orientation": "vertical"},
+    {"type": "container", "children": [{"type": "terminal", "symbol": "</"}, {"name":
+    "name", "tags": ["keyword"], "type": "interpolate"}, {"type": "terminal", "symbol":
+    ">"}], "orientation": "horizontal"}], "orientation": "vertical"}]}, "attribute":
+    {"type": "visualise", "attributes": [{"name": "name", "tags": ["space-before"],
     "type": "interpolate"}, {"type": "terminal", "symbol": "="}, {"name": "value",
-    "tags": ["double-quote"], "type": "interpolate"}], "orientation": "horizontal"}]}}}'
+    "tags": ["double-quote"], "type": "interpolate"}]}}}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: foreign_visualisations
   value_before_type_cast: "{}"

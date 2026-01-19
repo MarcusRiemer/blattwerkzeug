@@ -1,0 +1,25 @@
+--- !ruby/object:ProjectDatabase
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 733cb6c2-34fe-4323-89fa-6920f0a9a422
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: default
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 77f193aa-d5d3-402e-920c-c4ad95af8771
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: schema
+  value_before_type_cast: '[{"name": "sprachen", "columns": [{"name": "id", "type":
+    "INTEGER", "index": 0, "notNull": true, "primary": true, "dfltValue": null}, {"name":
+    "name", "type": "TEXT", "index": 1, "notNull": true, "primary": false, "dfltValue":
+    null}], "foreignKeys": [], "systemTable": false}]'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-15 10:11:41.796019000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-15 10:11:41.799688000 Z
+new_record: false
+active_record_yaml_version: 2

@@ -29,7 +29,7 @@ concise_attributes:
     "properties": {"typeName": "element", "languageName": "dxml"}}], "cardinality":
     [{"name": "knownCardinality", "language": "MetaGrammar", "properties": {"cardinality":
     "*"}}]}, "language": "MetaGrammar"}]}, "language": "MetaGrammar", "properties":
-    {"base": "sequence", "name": "elements"}}]}, "language": "MetaGrammar", "properties":
+    {"base": "allowed", "name": "elements"}}]}, "language": "MetaGrammar", "properties":
     {"typeName": "element", "languageName": "dxml"}}, {"name": "concreteNode", "children":
     {"attributes": [{"name": "property", "language": "MetaGrammar", "properties":
     {"base": "string", "name": "name"}}, {"name": "property", "language": "MetaGrammar",
@@ -44,7 +44,7 @@ concise_attributes:
   value_before_type_cast: 2020-08-13 09:57:41.797908000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2020-09-02 21:44:29.657927000 Z
+  value_before_type_cast: 2026-01-07 11:13:15.260988000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: df3ec59c-20c0-446d-8c84-7580e1c418bf
@@ -79,7 +79,7 @@ concise_attributes:
                 ]
               },
               {
-                "type": "sequence",
+                "type": "allowed",
                 "name": "elements",
                 "nodeTypes": [
                   {
@@ -135,5 +135,7 @@ concise_attributes:
         "typeName": "element"
       }
     }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
 new_record: false
 active_record_yaml_version: 2

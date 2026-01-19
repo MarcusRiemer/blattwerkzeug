@@ -12,15 +12,20 @@ concise_attributes:
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: ast
   value_before_type_cast: '{"name": "element", "children": {"elements": [{"name":
-    "text", "language": "dxml", "properties": {"value": "Text"}}], "attributes": [{"name":
-    "attribute", "language": "dxml", "properties": {"name": "id", "value": "a"}}]},
+    "text", "language": "dxml", "properties": {"value": "Hier geht es zum"}}, {"name":
+    "element", "children": {"elements": [{"name": "text", "language": "dxml", "properties":
+    {"value": "Werkzeug holen"}}], "attributes": [{"name": "attribute", "language":
+    "dxml", "properties": {"name": "href", "value": "https://blattwerkzeug.de/"}}]},
+    "language": "dxml", "properties": {"name": "a"}}], "attributes": [{"name": "attribute",
+    "language": "dxml", "properties": {"name": "id", "value": "a"}}, {"name": "attribute",
+    "language": "dxml", "properties": {"name": "class", "value": "important"}}]},
     "language": "dxml", "properties": {"name": "p"}}'
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: created_at
   value_before_type_cast: 2021-03-12 12:41:37.380625000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2021-03-12 12:43:20.800962000 Z
+  value_before_type_cast: 2026-01-15 10:39:38.364390000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: block_language_id
   value_before_type_cast: e4ad4071-ab82-4687-be04-4d19a7ecae36
@@ -30,5 +35,7 @@ concise_attributes:
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: compiled
   value_before_type_cast: Generic Language without code generator
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
 new_record: false
 active_record_yaml_version: 2

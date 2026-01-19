@@ -16,7 +16,7 @@ concise_attributes:
   value_before_type_cast: 2020-08-13 11:36:20.679675000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2021-02-05 13:34:25.971626000 Z
+  value_before_type_cast: 2026-01-07 11:13:15.372018000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: programming_language_id
   value_before_type_cast: generic
@@ -26,7 +26,7 @@ concise_attributes:
     "string", "name": "value", "type": "property"}]}, "element": {"type": "concrete",
     "attributes": [{"base": "string", "name": "name", "type": "property"}, {"name":
     "attributes", "type": "sequence", "nodeTypes": [{"occurs": "*", "nodeType": {"typeName":
-    "attribute", "languageName": "dxml"}}]}, {"name": "elements", "type": "sequence",
+    "attribute", "languageName": "dxml"}}]}, {"name": "elements", "type": "allowed",
     "nodeTypes": [{"occurs": "*", "nodeType": {"typeName": "text", "languageName":
     "dxml"}}, {"occurs": "*", "nodeType": {"typeName": "element", "languageName":
     "dxml"}}]}]}, "attribute": {"type": "concrete", "attributes": [{"base": "string",
