@@ -1,0 +1,408 @@
+\documentclass{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper]{geometry}
+\usepackage{hyperref}
+\usepackage{acronym}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{todonotes}
+\usepackage{csquotes}
+
+\usepackage[
+    backend=biber,
+    style=numeric,
+    sortlocale=de_DE,
+    natbib=true,
+    url=false,
+    doi=true,
+    eprint=false
+]{biblatex}
+\addbibresource{forreal.bib}
+
+\setminted{linenos,frame=leftline}
+
+\title{Generating block based development environments for real world programming languages}
+\author{Marcus Riemer, M.Sc.}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\chapter{Introduction: Bridging the Gap}
+\label{sec:introduction-bridging-the-gap}
+
+First introduces the IDE from an end user perspective, some screenshots of block editors and their runtimes.
+
+Then a brief explanation of the underlying grammar
+
+\chapter{Motivation: Why yet another system?}
+\label{sec:motivation}
+
+This chapter shows how the approach of augmenting existing programming languages with block based editors relates to existing teaching strategies.
+
+\section{Picking a language to teach}
+
+Picking a suitable programming language for teaching is a task that requires careful evaluation and comes with many tradeoffs depending on the target domain (e.g. games, embedded system, mobile apps, the web, desktop programs, ...) and the people to be teached (e.g. age, motivation, prior knowledge, ...). Broadly speaking there are two paths with regards to the programming language itself: Adapting a professional programming language or picking a specialised language for learners. Today many professional programming languages are available without charge or are open source. Learners therefore often have the possibility to use the exact same languages as in the wider industry \todo{Choice in block languages has also increased}.
+
+Once a teacher has picked a programming language, the next choice arises. In practice the tooling that is required or available to work with a certain language makes big difference. \todo{Learn IDE like BlueJ vs e.g. IntelliJ}
+
+\section{Block Based Programming}
+\label{sec:block-based-programming}
+
+Visual code editors that make use of drag and drop are commonly referred to as \enquote{block based} editors or programming languages. The probably most prominent example in the space is Scratch, which was released in 2007 \cite{clark_relax_2001} and implements its own programming language. Today Scrtach is available as a browser application \footnote{\url{https://scratch.mit.edu/}} and the block editor user interface is built upon Googles Blockly library\footnote{\url{https://developers.google.com/blockly}}.
+
+Scratch has demonstrated that visual programming environments are an excellent way for learners to take first steps in programming. It introduces a metaphor of \enquote{actors} acting out on a \enquote{stage} to describe a canvas on which objects can be moved around. Code is structured in terms of these actors and stages and can change their (often visual) properties. The concept of stacking and nesting blocks enforces proper indentation of code without the possibility of creating any syntactical errors. Having a sidebar to see available tools lowers the requirement to remember available options. It also adds the possibility to explore what options are provided by Scratch.
+
+One common problem with Scratch is that its very carefully designed approach to increase accessibility resulted in deviations from programming languages used in the industry. Apart from the obvious fact that Scratch uses visual programming, the semantics of the underlying language are not always compatible with common languages like C, Java or Python.
+
+Event based programming
+
+Concurrent by default
+
+Organisation of code in actors, not files
+
+Of course C, Java and Python are all capable of event based programming. Common user interfaces libraries like Qt or JavaFX also hide the existance of a main loop inside their own code. So compared to Scratch these are more advanced concepts in real world programming languages and therefore not common entry points when learning how to program.
+
+One common step after Scratch is the MIT App Inventor. It keeps the idea of block based programming but changes the metaphor from some kind of \enquote{stage play} to ultimately more conventional app development. This includes the availability of common user interface elements like buttons, checkboxes, labels, list views, text boxes, ...
+
+\section{Frames}
+\label{sec:frames}
+
+Another concept that aims at reducing complexity by providing dedicated spaces in which code should be inserted. One such implementation is presented by \textcite{kolling_frame-based_2015} as part of the Greenfoot IDE to teach and learn Java programming\footnote{\url{https://www.greenfoot.org/frames/}}.
+
+\section{Levels}
+\label{sec:levels}
+
+A proper didactical reduction is one of the fundamentals of teaching. In programming education this reduction can take many forms, but more often than not is an artificial restriction by teachers. Haskell has compiler features that can be enabled or disabled, but for testing purposes. Racket allows this on a language level.
+
+\section{Drag \& drop augmentation of real world programming languages}
+
+\chapter{Blattwerkzeug: Grammar-based descriptions of block based IDEs}
+
+This chapter describes a formal definition that can be used to generate block based subsets of existing programming languages as well as \enquote{artificial} languages with a custom runtime. We call this formal definition a grammar, because the mental model of modelling a language is very similar to constructing a context free grammar in compiler construction. But the purpose of the BlattWerkzeug-grammar is sort of inverse to those of grammars in compiler construction: Instead of aiding in the conversion from a raw string to an abstract syntax tree, the BlattWerkzeug grammar is used to validate existing abstract syntax trees and to convert these trees into a properly formatted string representation of the corresponding program.
+
+Augmenting existing programming languages as a block based variation requires the specification of a grammar that ultimately emits valid source code of the target language.
+
+\section{Syntax of data type definitions}
+
+Ultimately all data structures described in this document will be stored in the form of a JSON document at some point. All formal data type definitions therefore take the form of TypeScript type specifications and are taken from the implementation, although sometimes slightly compacted to improve readability. For example the codebase follows the convention of using a \texttt{Description}-suffix to denote types which are data-only. This helpful to distinguish the domain of types when programming, but redundant when explaining.
+
+\section{Preliminary: Blattwerkzeug abstract syntax trees}
+
+The BlattWerkzeug abstract syntax tree requires each node to have a type name which is essentially a pair of a namespace (\texttt{language}) and a typename (\texttt{name}).
+
+\begin{figure}[p]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \begin{minted}{json}
+{
+  "name": "expVar"
+  "language": "ruby"
+}
+\end{minted}
+  \caption{JSON Representation}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{syntaxtrees/ast-diss-expr-variable.pdf}
+  \caption{Graphical Representation}
+\end{subfigure}
+\caption{AST with node that has nothing but a name}
+\label{fig:test}
+\end{figure}
+
+\begin{listing}[!ht]
+\begin{minted}{typescript}
+interface NodeDescription {
+  name: string
+  language: string
+
+  properties?: Record<string, string>
+  children?: Record<string, NodeDescription[]>
+}
+\end{minted}
+\caption{Abstract syntax tree datatype}
+\end{listing}
+
+
+Typename, namespace, atomic children and named child groups.
+
+\section{Example: Boolean Expression Language}
+
+This section implements the syntax for basic language to denote boolean expressions. It demonstrates the basic concepts for structural validation of the BlattWerkzeug grammar. In text form, an example of a valid expressions for this proposed syntax would be $\neg(A \land false) \lor (\neg B \land true)$. This example includes the boolean values $true$ and $false$, variables $A$ and $B$, the unary operation of a negation and the binary operation for the logical AND and OR.
+
+In the abstract syntax tree, we want to represent the atomic values $true$ and $false$ as two distinct types of nodes. Listing~\ref{lst:bool-grammar-true-false} shows the human readable representation of a grammar for this use case. It defines the node types \texttt{bool.true} and \texttt{bool.false}. Therefore trees consisting of exactly these node types as a root would be validated by the grammar.
+
+\begin{listing}[!ht]
+\begin{minted}{text}
+grammar bool {
+  node true  { }
+  node false { }
+}
+\end{minted}
+\caption{Boolean Expression Grammar: constants $true$ and $false$}
+\label{lst:bool-grammar-true-false}
+\end{listing}
+
+
+\begin{listing}[!ht]
+\begin{minted}[highlightlines={4-6}]{text}
+grammar bool {
+  node true  { }
+  node false { }
+  node var {
+    prop name string
+  }
+}
+\end{minted}
+\caption{Boolean Expression Grammar: User defined variables }
+\label{lst:bool-grammar-var}
+\end{listing}
+
+\begin{listing}[!ht]
+\begin{minted}[highlightlines={7-9}]{text}
+grammar bool {
+  node true  { }
+  node false { }
+  node var {
+    prop name string
+  }
+  node neg {
+    children value ::= true | false | var | neg
+  }
+}
+\end{minted}
+\caption{Boolean Expression Grammar: Negation }
+\label{lst:bool-grammar-neg}
+\end{listing}
+
+\subsection{Design: Truth values}
+
+Alternative: Use a single node with a boolean property.
+
+\section{Example: XML languages}
+
+Prior example focussed on ground rules for validation to define the structure of valid trees and barely touched the possibilities to control the representation of the text representation. This example will show how any XML language can be defined structurally, extended to a valid XML-text-representation and refined to follow more conventional code layout by using indentation in the textual representation.
+
+\subsection{Validation: sequence / allowed}
+\label{sec:validation-sequence-allowed}
+
+Order independent text and child elements.
+
+\subsection{Possibility: Separating visualisation from structure}
+\label{sec:possibility-separating-visualisation-from-structure}
+
+visualises / interpolate / each
+
+\subsection{Visualisation in lines}
+\label{sec:visualisation-in-lines}
+
+containers
+
+\section{Grammar overview}
+
+The previous examples have demonstrated the practical capabilities of the implemented grammar system. This section serves as a complete overview of all grammar elements and provides a formal specification of the validation semantics of the grammar. The visualisation aspects of grammars, such as terminal symbols, containers, ... are described in principal, but their visualisation semantics may slightly differ depending on the backend that is used for visualisation.
+
+The validation semantics are a subset of XML schema. Where applicable, this specification will therefore link to the corresponding specification the semantics are borrowed from. The text representation of the grammar is loosely inspired by the RelaxNG compact notation \textcite{clark_relax_2001}.
+
+The grammar itself is a collection of type definitions and a root specification. It may be referred to by using either a name or a UUID. As it is customary in tree structures, validation starts from the root, so the grammar needs to specify what that root is. This root specification comes in an indirect form, it denotes the fully qualified type name that must match the fully qualified typename of the root in the abstract syntax tree.
+
+For practical purposes the \texttt{root} must be described as being optional: Grammars can be edited through either a text based or a drag \& drop editor in the BlattWerkzeug IDE itself and it would be very inconvenient if grammars without root specifications couldn't be saved due to a too strict type system. This has the minor inconvenience of adding the need for a \texttt{UNSPECIFIED\_ROOT} type of error that can occur during runtime and signals an error in the grammar instead of a problem with the given abstract syntax tree.
+
+\begin{minted}{typescript}
+interface Grammar {
+  id: string;
+  name: string;
+
+  types: NamedLanguages;
+  root?: QualifiedTypeName;
+}
+
+interface QualifiedTypeName {
+  typeName: string;
+  languageName: string;
+}
+
+type NamedLanguages = Record<string, NamedTypes>;
+type NamedTypes = Record<string, NodeType>;
+
+type NodeType = NodeConcreteTyp | NodeOneOfType;
+\end{minted}
+
+\subsection{node}
+
+A \texttt{node} is used to describe a valid node of an abstract syntax tree and corresponds to a draggable block in a block editor. When walking through the syntax tree. The qualified type name of a node
+
+\begin{minted}{typescript}
+interface QualifiedTypeName {
+  typeName: string;
+  languageName: string;
+}
+\end{minted}
+
+
+\subsection{property / interpolate}
+
+\subsection{children / each}
+
+\subsection{terminal}
+
+\subsection{container}
+
+\subsection{choice}
+
+\subsection{typedef}
+
+\subsection{Visualizing grammars}
+
+\subsection{Extending grammars}
+
+\subsection{Visualisation algorithm}
+
+\section{Interpretation of block languages: The builtin block editor}
+
+The BlattWerkzeug IDE does not immediately use grammars to visualize syntax trees, instead it relies on a structure called block language which adds a few more fine tuning options not present on the grammar level.
+
+\subsection{Compiling a grammar to a block language}
+
+\subsection{Block editor UI elements}
+
+\subsection{Editor components / Runtimes}
+
+Block language configuration allows to choose relevant editor modules.
+
+\section{The surrounding IDE: syntax trees as code resources}
+
+AST representation stored in the database alongside a name.
+
+\section{Providing Blocks: The sidebar}
+
+\subsection{Manually Defined}
+
+\subsection{Automatically Generated}
+
+\subsection{Generated via runtime}
+\label{sec:generated-via-runtime}
+
+\subsection{Interacting with holes: filtering blocks}
+\label{sec:interacting-holes-filter}
+
+\section{Mutating the tree: A closer look at drag \& drop Operations}
+\label{sec:mutating-the-tree-drag-drop-operations}
+
+What to do when a block is moved inside a tree?
+
+\subsection{Limiting holes based on grammar}
+\label{sec:limiting-holes-based-on-grammar}
+
+Seems obvious, but is in contrast to Blockly which sees typing as an edge case that will be rarely used.
+
+\subsection{Move / Copy}\label{sec:move-copy}
+
+\subsection{Embrace}
+\label{sec:embrace}
+
+\subsection{Changing types}
+\label{sec:changing-types}
+
+Workaround for Invisible Root problem.
+
+Allows nodes that introduce identifiers to change to a reference for that identifier.
+
+\section{Designing for sequences}
+\label{sec:working-with-sequences}
+
+All examples so far readily used multiple \texttt{children} per node type, often interspersed with terminal symbols. But there is a more general rule: It is seldomly useful to represent sequences of valid types in a single \texttt{children} directive.
+
+\subsection{Why the EBNF does not suffice}
+\label{sec:why-the-ebnf-does-not-suffice}
+
+Modelling \texttt{allowed} with e.g. a cardinality of \texttt{?} in EBNF would be very tedious.
+
+\subsection{Example: Re-ordering regular expressions}
+
+Work on sequences by Endri Memaj.
+
+\section{A way out: Custom Code generation for specific types}
+\label{sec:possibility-custom-code-generation}
+
+What if the generated code must look different from the grammar representation?
+
+MetaGrammar and MetaBlock language use this do output JSON.
+
+Trucklino uses this to generate JavaScript code involving lots of iterators.
+
+\section{Additional representations of a Blockwerzeug Syntax Tree}
+
+The proposed grammar is not overly tightly associated with the block editor, it is also the basis for additional representations.
+
+\subsection{Drag \& drop editor for AST representation}
+
+Useful when creating languages or dealing with odd errors.
+
+\subsection{Target language string via prettier}
+\label{sec:prettyprinting-the-prettier-backend}
+
+\subsection{A different approach to blocks via Google Blockly}
+
+\chapter{Case Studies: Self hosting \& real world Programming languages}
+
+\section{BlattWerkzeug Meta Grammar}\label{sec:meta-grammar}
+
+Shows bootstrapping / Self Hostedness
+
+\subsection{Syntactic Sugar}
+
+\subsection{Omissions}
+
+\subsection{JSON Representation irrelevant because of tool}
+\label{sec:json-representation-irrelevant-because-of-tool}
+
+\section{SQL}
+\label{sec:sql}
+
+\subsection{Parameterisation}
+
+\subsection{Runtime block data from the database}
+
+\subsection{AST transformation to show step-by-step execution}
+
+\section{JavaScript}
+\label{sec:javascript}
+
+\subsection{Trucklino}
+
+Special JavaScript runtime that emits generator code for stepwise execution.
+
+\chapter{Conclusion}
+\label{sec:conclusion}
+
+\section{Informal user acceptance tests}
+
+\section{Grammar is convenient, no need for levels}
+\label{sec:no-need-for-levels}
+
+
+\appendix
+
+\chapter{Bibliography}
+
+\printbibliography[heading=none]
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% TeX-engine: pdflatex
+%%% End:

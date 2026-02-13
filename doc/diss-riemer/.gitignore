@@ -1,0 +1,13 @@
+_minted
+auto
+*.aux
+*.log
+*.out
+*.tdo
+*.toc
+*.bbl
+*.bcf
+*.blg
+*.fls
+*.fdb_latexmk
+*.run.xml
