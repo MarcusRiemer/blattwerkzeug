@@ -1,0 +1,24 @@
+{
+  "name": "binary",
+  "language": "bool",
+  "properties": {
+    "op": "∨"
+  },
+  "children": {
+    "lhs": [
+      {
+        "name": "variable",
+        "language": "bool",
+        "properties": {
+          "name": "A"
+        }
+      }
+    ],
+    "rhs": [
+      {
+        "name": "false",
+        "language": "bool"
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "element",
+  "language": "xml",
+  "properties": {
+    "name": "root"
+  },
+  "children": {
+    "elements": [],
+    "attributes": []
+  }
+}

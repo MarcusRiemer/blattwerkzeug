@@ -1,8 +1,8 @@
-\documentclass{report}
+\documentclass[]{report}
 
 \usepackage[utf8]{inputenc}
 \usepackage[a4paper]{geometry}
-\usepackage{hyperref}
+\usepackage[skip=5pt, indent=0pt]{parskip}
 \usepackage{acronym}
 \usepackage{graphicx}
 \usepackage{minted}
@@ -22,6 +22,9 @@
     eprint=false
 ]{biblatex}
 \addbibresource{forreal.bib}
+
+\usepackage{hyperref}
+\usepackage{cleveref}
 
 \setminted{linenos,frame=leftline}
 
@@ -86,6 +89,8 @@ A proper didactical reduction is one of the fundamentals of teaching. In program
 
 \section{Drag \& drop augmentation of real world programming languages}
 
+Fundamental: This is not about inventing new languages, it is about teaching existing languages.
+
 \chapter{Blattwerkzeug: Grammar-based descriptions of block based IDEs}
 
 This chapter describes a formal definition that can be used to generate block based subsets of existing programming languages as well as \enquote{artificial} languages with a custom runtime. We call this formal definition a grammar, because the mental model of modelling a language is very similar to constructing a context free grammar in compiler construction. But the purpose of the BlattWerkzeug-grammar is sort of inverse to those of grammars in compiler construction: Instead of aiding in the conversion from a raw string to an abstract syntax tree, the BlattWerkzeug grammar is used to validate existing abstract syntax trees and to convert these trees into a properly formatted string representation of the corresponding program.
@@ -98,28 +103,7 @@ Ultimately all data structures described in this document will be stored in the 
 
 \section{Preliminary: Blattwerkzeug abstract syntax trees}
 
-The BlattWerkzeug abstract syntax tree requires each node to have a type name which is essentially a pair of a namespace (\texttt{language}) and a typename (\texttt{name}).
-
-\begin{figure}[p]
-\centering
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \begin{minted}{json}
-{
-  "name": "expVar"
-  "language": "ruby"
-}
-\end{minted}
-  \caption{JSON Representation}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=.7\linewidth]{syntaxtrees/ast-diss-expr-variable.pdf}
-  \caption{Graphical Representation}
-\end{subfigure}
-\caption{AST with node that has nothing but a name}
-\label{fig:test}
-\end{figure}
+Blattwerkzeugs abstract syntax trees are identified via a typename that consists of a language name and a local type name. Optionally a node stores atomic data as strings called \enquote{properties} and children in so called \enquote{named child groups}. A tree may be valid in the context of a specific grammar (see \cref{sec:grammar-specification}), but the tree itself has no concept of validity beyond the TypeScript type definition and in extension the JSON specifications when parsing a tree from it's string representation. The same goes for the visual representation: The tree itself requires a block language (see \cref{sec:block-language-specification}) in order to have a mapping to elements of a user interface. The formal data type definition is in \cref{lst:type-node-description}.
 
 \begin{listing}[!ht]
 \begin{minted}{typescript}
@@ -132,16 +116,74 @@ interface NodeDescription {
 }
 \end{minted}
 \caption{Abstract syntax tree datatype}
+\label{lst:type-node-description}
 \end{listing}
 
+The structure itself and the intentions for properties and named child groups are best understood by example. \Cref{ast:name-only} shows a minimal example of a tree containing nothing but a node of type \texttt{ruby.null}. Having the \texttt{language} as a namespace ensures that commonly used constructs like \texttt{if}, \texttt{class}, \texttt{expr}, ... do not clash when using different languages in a single tree. The \texttt{name} itself can be chosen arbitrarily, but should reflect the syntax element that is being represented. In the graphical representation nodes are depicted as boxes with the typename as the title of the box in \mintinline{ruby}{"${language}.${name}"} notation.
 
-Typename, namespace, atomic children and named child groups.
+\begin{figure}[p]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \inputminted{json}{syntaxtrees/ast-diss-expr-null.json}
+  \caption{JSON Representation}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[scale=0.9]{syntaxtrees/ast-diss-expr-null.pdf}
+  \caption{Graphical Representation}
+\end{subfigure}
+\caption{AST with node that has nothing but a name}
+\label{ast:name-only}
+\end{figure}
+
+\textbf{Properties} are used to represent atomic data: values which are effectively leafs of the tree and may not have children of their own. They are always stored as strings, but the value stored may be subject to additional restrictions during validation. In the graphical representation properties are displayed as a table inside the box of the node. \Cref{ast:with-prop} shows how a node could represent the a name of a variable in an expression.
+
+\begin{figure}[p]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \inputminted[highlightlines={4-6}]{json}{syntaxtrees/ast-diss-expr-prop.json}
+  \caption{JSON Representation}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[scale=0.9]{syntaxtrees/ast-diss-expr-prop.pdf}
+  \vspace{5mm}
+  \caption{Graphical Representation}
+\end{subfigure}
+\caption{Node with single property of \enquote{name} and value \enquote{\texttt{PI}}}
+\label{ast:with-prop}
+\end{figure}
+
+In order to address restrictions for certain groups of \textbf{child nodes} in the grammar, every child is associated with the name of a corresponding child group. The names of these groups should reflect their nature: \Cref{ast:with-children} shows a binary expression where the child groups are named \texttt{left} and \texttt{right} as this is vital information for operations that are not commutative.
+
+\begin{figure}[p]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \inputminted[highlightlines={7-23}]{json}{syntaxtrees/ast-diss-expr-binary.json}
+  \caption{JSON Representation}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[scale=0.9]{syntaxtrees/ast-diss-expr-binary.pdf}
+  \vspace{25mm}
+  \caption{Graphical Representation}
+\end{subfigure}
+\caption{Binary expression with children for left and right side}
+\label{ast:with-children}
+\end{figure}
 
 \section{Example: Boolean Expression Language}
 
-This section implements the syntax for basic language to denote boolean expressions. It demonstrates the basic concepts for structural validation of the BlattWerkzeug grammar. In text form, an example of a valid expressions for this proposed syntax would be $\neg(A \land false) \lor (\neg B \land true)$. This example includes the boolean values $true$ and $false$, variables $A$ and $B$, the unary operation of a negation and the binary operation for the logical AND and OR.
+333This section implements a possible syntax for basic language to denote boolean expressions by providing a grammar.
 
-In the abstract syntax tree, we want to represent the atomic values $true$ and $false$ as two distinct types of nodes. Listing~\ref{lst:bool-grammar-true-false} shows the human readable representation of a grammar for this use case. It defines the node types \texttt{bool.true} and \texttt{bool.false}. Therefore trees consisting of exactly these node types as a root would be validated by the grammar.
+As with the AST, the canonical representation of grammars would be a JSON-document. There is however a visualisation called \enquote{Meta Grammar}, which is used as part of the block editor and also lends itself to be represented in text. The formal specification will be given in \Cref{sec:grammar-specification}, the following examples focus on the concepts of the meta grammar definition.
+
+This example language demonstrates the basic concepts for structural validation of the BlattWerkzeug grammar. In text form, an example of a valid expressions for this proposed syntax would be $\neg(A \land false) \lor (\neg B \land true)$. This example includes the boolean values $true$ and $false$, variables $A$ and $B$, the unary operation of a negation and the binary operation for the logical AND and OR.
+
+In the abstract syntax tree, we want to represent the atomic values $true$ and $false$ as two distinct types of nodes. \Cref{lst:bool-grammar-true-false} shows the meta grammar representation for this use case. It defines the node types \texttt{bool.true} and \texttt{bool.false}. Therefore trees consisting of exactly these node types as a root could be validated by the grammar\footnote{Technically the meta grammar representation uses the first defined type as root, so in strict terms only a tree consisting of \texttt{bool.true} would validate.}.
 
 \begin{listing}[!ht]
 \begin{minted}{text}
@@ -154,6 +196,7 @@ grammar bool {
 \label{lst:bool-grammar-true-false}
 \end{listing}
 
+To introduce free variables, a node called \texttt{var} is introduced in \cref{lst:bool-grammar-var}. Different variables are distinguished by the property (\texttt{prop}) called \texttt{name} and for the moment any \texttt{string} (this includes unwanted characters such as newlines) is a valid identifier.
 
 \begin{listing}[!ht]
 \begin{minted}[highlightlines={4-6}]{text}
@@ -168,6 +211,8 @@ grammar bool {
 \caption{Boolean Expression Grammar: User defined variables }
 \label{lst:bool-grammar-var}
 \end{listing}
+
+In order to support negation, another new node \texttt{neg} is introduced.
 
 \begin{listing}[!ht]
 \begin{minted}[highlightlines={7-9}]{text}
@@ -184,6 +229,27 @@ grammar bool {
 \end{minted}
 \caption{Boolean Expression Grammar: Negation }
 \label{lst:bool-grammar-neg}
+\end{listing}
+
+\begin{listing}[!ht]
+\begin{minted}[highlightlines={9,11-13}]{text}
+grammar bool {
+  node true  { "true" }
+  node false { "false" }
+  node var {
+    prop var string
+  }
+  node neg {
+    "¬"
+    children value ::= exp
+  }
+  node exp {
+    children value ::= true | false | var | neg
+  }
+}
+\end{minted}
+\caption{Boolean Expression Grammar: Common node for expression }
+\label{lst:bool-grammar-exp-node}
 \end{listing}
 
 \subsection{Design: Truth values}
@@ -209,7 +275,8 @@ visualises / interpolate / each
 
 containers
 
-\section{Grammar overview}
+\section{Grammar specification}
+\label{sec:grammar-specification}
 
 The previous examples have demonstrated the practical capabilities of the implemented grammar system. This section serves as a complete overview of all grammar elements and provides a formal specification of the validation semantics of the grammar. The visualisation aspects of grammars, such as terminal symbols, containers, ... are described in principal, but their visualisation semantics may slightly differ depending on the backend that is used for visualisation.
 
@@ -228,20 +295,21 @@ interface Grammar {
   root?: QualifiedTypeName;
 }
 
+type NamedLanguages = Record<string, NamedTypes>;
+type NamedTypes = Record<string, NodeType>;
+
+type NodeType = NodeConcreteType | NodeOneOfType;
+
 interface QualifiedTypeName {
   typeName: string;
   languageName: string;
 }
 
-type NamedLanguages = Record<string, NamedTypes>;
-type NamedTypes = Record<string, NodeType>;
-
-type NodeType = NodeConcreteTyp | NodeOneOfType;
 \end{minted}
 
 \subsection{node}
 
-A \texttt{node} is used to describe a valid node of an abstract syntax tree and corresponds to a draggable block in a block editor. When walking through the syntax tree. The qualified type name of a node
+A \texttt{node} is used to describe a valid node of an abstract syntax tree (\texttt{NodeConcreteTyp}) and corresponds to a draggable block in a block editor. When walking through the syntax tree. The qualified type name of a node
 
 \begin{minted}{typescript}
 interface QualifiedTypeName {
@@ -263,11 +331,24 @@ interface QualifiedTypeName {
 
 \subsection{typedef}
 
+\subsection{Common style: Keywords}
+
+\subsection{Common requirement: Balanced quotes \& parentheses}
+
 \subsection{Visualizing grammars}
 
 \subsection{Extending grammars}
 
 \subsection{Visualisation algorithm}
+
+\section{Custom validation rules}
+
+\subsection{Example: HTML validation rules for XML}
+
+\subsection{API overview}
+
+\section{Block language specification}
+\label{sec:block-language-specification}
 
 \section{Interpretation of block languages: The builtin block editor}
 
@@ -338,9 +419,9 @@ Work on sequences by Endri Memaj.
 
 What if the generated code must look different from the grammar representation?
 
-MetaGrammar and MetaBlock language use this do output JSON.
+\subsection{Example: Omitting closing tags for empty HTML elements}
 
-Trucklino uses this to generate JavaScript code involving lots of iterators.
+\subsection{API overview}
 
 \section{Additional representations of a Blockwerzeug Syntax Tree}
 
@@ -371,6 +452,8 @@ Shows bootstrapping / Self Hostedness
 \section{SQL}
 \label{sec:sql}
 
+\subsection{SQLite Runtime}
+
 \subsection{Parameterisation}
 
 \subsection{Runtime block data from the database}
@@ -380,12 +463,16 @@ Shows bootstrapping / Self Hostedness
 \section{JavaScript}
 \label{sec:javascript}
 
+\subsection{Browser Runtime}
+
 \subsection{Trucklino}
 
 Special JavaScript runtime that emits generator code for stepwise execution.
 
 \chapter{Conclusion}
 \label{sec:conclusion}
+
+\section{Proven patterns when modelling languages with BlattWerkzeug}
 
 \section{Informal user acceptance tests}
 
@@ -399,10 +486,18 @@ Special JavaScript runtime that emits generator code for stepwise execution.
 
 \printbibliography[heading=none]
 
+\chapter{Miscellaneous Languages \& Runtimes}
+
+\section{ToDo Lists}
+
+\section{GraphViz}
+
+\section{Algebraic Math Transformations}
+
 \end{document}
 
 %%% Local Variables:
 %%% mode: LaTeX
 %%% TeX-master: t
-%%% TeX-engine: pdflatex
+%%% TeX-command-extra-options: "-shell-escape"
 %%% End:

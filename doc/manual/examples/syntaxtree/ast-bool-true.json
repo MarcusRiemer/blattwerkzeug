@@ -1,0 +1,22 @@
+{
+  "name": "neg",
+  "language": "bool",
+  "children": {
+    "value": [
+      {
+        "name": "neg",
+        "language": "bool",
+        "children": {
+          "value": [
+            {
+              "name": "true",
+              "language": "bool",
+              "children": {
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

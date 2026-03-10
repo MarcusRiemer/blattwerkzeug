@@ -1,5 +1,9 @@
-_minted
-auto
+_minted/
+auto/
+
+syntaxtrees/
+!syntaxtrees/*.json
+
 *.aux
 *.log
 *.out
@@ -11,3 +15,7 @@ auto
 *.fls
 *.fdb_latexmk
 *.run.xml
+*.synctex.gz
+
+main.pdf
+seafile-ignore.txt

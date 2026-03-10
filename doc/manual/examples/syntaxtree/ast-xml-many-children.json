@@ -1,0 +1,33 @@
+{
+  "name": "element",
+  "language": "xml",
+  "properties": {
+    "name": "root"
+  },
+  "children": {
+    "elements": [
+      {
+        "name": "element",
+        "language": "xml",
+        "properties": {
+          "name": "c3"
+        }
+      },
+      {
+        "name": "element",
+        "language": "xml",
+        "properties": {
+          "name": "c2"
+        }
+      },
+      {
+        "name": "element",
+        "language": "xml",
+        "properties": {
+          "name": "c1"
+        }
+      }
+    ],
+    "attributes": []
+  }
+}
