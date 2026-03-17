@@ -1,7 +1,7 @@
 _minted/
 auto/
 
-syntaxtrees/
+syntaxtrees/*
 !syntaxtrees/*.json
 
 *.aux

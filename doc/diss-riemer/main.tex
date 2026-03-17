@@ -45,12 +45,14 @@
 
 First introduces the IDE from an end user perspective, some screenshots of block editors and their runtimes.
 
+Explain augmentation as the chosen approach
+
 Then a brief explanation of the underlying grammar
 
 \chapter{Motivation: Why yet another system?}
 \label{sec:motivation}
 
-This chapter shows how the approach of augmenting existing programming languages with block based editors relates to existing teaching strategies.
+This chapter shows how the chosen approach of augmenting existing programming languages with block based editors relates to existing teaching strategies.
 
 \section{Picking a language to teach}
 
@@ -177,7 +179,7 @@ In order to address restrictions for certain groups of \textbf{child nodes} in t
 
 \section{Example: Boolean Expression Language}
 
-333This section implements a possible syntax for basic language to denote boolean expressions by providing a grammar.
+This section implements a possible syntax for basic language to denote boolean expressions by providing a grammar.
 
 As with the AST, the canonical representation of grammars would be a JSON-document. There is however a visualisation called \enquote{Meta Grammar}, which is used as part of the block editor and also lends itself to be represented in text. The formal specification will be given in \Cref{sec:grammar-specification}, the following examples focus on the concepts of the meta grammar definition.
 
@@ -212,7 +214,7 @@ grammar bool {
 \label{lst:bool-grammar-var}
 \end{listing}
 
-In order to support negation, another new node \texttt{neg} is introduced.
+So far successfully validated \enquote{trees} could only ever consisted of a root node. In order to support negation, another new node \texttt{neg} is introduced in \cref{lst:bool-grammar-neg-explicit}. This introduces a child group named \enquote{value} using the \texttt{children} specifier. The right hand side of the \texttt{::=} delimiter is in the style of the extended Backus-Naur form (EBNF). So in this specific example there may be a single child that is either of node type \texttt{true}, \texttt{false}, \texttt{var} or \texttt{neg}.
 
 \begin{listing}[!ht]
 \begin{minted}[highlightlines={7-9}]{text}
@@ -228,28 +230,95 @@ grammar bool {
 }
 \end{minted}
 \caption{Boolean Expression Grammar: Negation }
-\label{lst:bool-grammar-neg}
+\label{lst:bool-grammar-neg-explicit}
 \end{listing}
 
+As the grammar in \cref{lst:bool-grammar-neg-explicit} is the first one to allow children in trees, we can take a look at \cref{fig:boolean-expr-examples-neg} for examples of valid and invalid trees. The valid trees show the structure of things that can be represented right now, essentially chains of negations that end in \texttt{true}, \texttt{false} or a \texttt{var}. The invalid example \cref{fig:boolean-expr-examples-neg-invalid} will however result in the following errors:
+
+\begin{enumerate}
+\item Root: Unexpected child group \enquote{value}
+\item Root: Missing property \enquote{name}
+\end{enumerate}
+
+In practice these kinds of errors about structurally invalid trees are not expected to be very common: Transformations take place using specialised drag \& drop tools with pre-defined blocks that are available. But when changing a grammar after having created some trees according to the previous version of the grammar, such errors are part of the typical development process.
+
+\begin{figure}[!ht]
+\begin{subfigure}[t]{.3\textwidth}
+  \centering
+  \includegraphics[scale=0.9]{syntaxtrees/ast-diss-bool-neg-1.pdf}
+  \caption{Valid: $\neg A$}
+  \label{fig:boolean-expr-examples-neg-var}
+\end{subfigure}
+\begin{subfigure}[t]{.3\textwidth}
+  \centering
+  \includegraphics[scale=0.9]{syntaxtrees/ast-diss-bool-neg-2.pdf}
+  \caption{Valid: $\neg \neg false$}
+    \label{fig:boolean-expr-examples-neg-double-false}
+  \end{subfigure}
+\begin{subfigure}[t]{.3\textwidth}
+  \centering
+  \includegraphics[scale=0.9]{syntaxtrees/ast-diss-bool-neg-3.pdf}
+  \caption{Invalid: A \texttt{var} node with children, but without the \texttt{name} property}
+  \label{fig:boolean-expr-examples-neg-invalid}
+\end{subfigure}
+\caption{Boolean expression trees to be validated according to \cref{lst:bool-grammar-neg-explicit}}
+\label{fig:boolean-expr-examples-neg}
+\end{figure}
+
+We can take the two valid examples one step further and take a look on how they would be rendered in text form:
+
+\begin{enumerate}
+\item \Cref{fig:boolean-expr-examples-neg-var} renders to $A$, but should be $\neg A$
+\item \Cref{fig:boolean-expr-examples-neg-double-false} renders to an empty string, but should be $\neg \neg false$
+\end{enumerate}
+
+This incorrect result is due to missing information in the grammar, the trees itself are fine. So far the only aspect that was represented in the rendered output was the value of the \texttt{prop name} of \texttt{var} and the observation, that this \texttt{prop} was stored as a child node of the root \texttt{neg} node. This is because in addition to defining the structure of the data, the defined \texttt{node}s also contain instructions on how to visually represent them. But \cref{lst:bool-grammar-neg-explicit} does not define any instructions on how to represent the \texttt{true} and \texttt{false} nodes.  We therefore extend the grammar in \cref{lst:bool-grammar-neg-explicit-terminals} to include \textbf{terminal symbols}. Now the instructions for the \texttt{true} and \texttt{false} node convey the corresponding terminal symbols that should be used for the string representation. The unicode negation character \texttt{¬} is used for the \texttt{neg} node and demonstrates that the order of instructions is important: During text rendering the instructions in a node will be followed from top to bottom. These examples also demonstrate that \texttt{children} instructions do not have a representation of their own (unlike \texttt{prop}), but they do instruct the rendering process to recurse into the nodes in that named child group. After extending the grammar with the terminal symbols for \texttt{true}, \texttt{false} and \texttt{neg}, their text representation matches the expected representation exactly.
+
 \begin{listing}[!ht]
-\begin{minted}[highlightlines={9,11-13}]{text}
+\begin{minted}[highlightlines={2,3,8}]{text}
 grammar bool {
   node true  { "true" }
   node false { "false" }
   node var {
-    prop var string
+    prop name string
   }
   node neg {
     "¬"
-    children value ::= exp
-  }
-  node exp {
     children value ::= true | false | var | neg
   }
 }
 \end{minted}
-\caption{Boolean Expression Grammar: Common node for expression }
-\label{lst:bool-grammar-exp-node}
+\caption{Boolean Expression Grammar: Negation with terminal symbols}
+\label{lst:bool-grammar-neg-explicit-terminals}
+\end{listing}
+
+Building upon these principles \cref{lst:bool-grammar-exp-bin-redundant} introduces the binary expression \texttt{bin} with childgroups for \texttt{left} and \texttt{right}. This serves as another example on how the order of instructions inside a node are used during the rendering transformation: When rendered the \texttt{op} will visually separate the the \texttt{left} child from the \textrm{right} child.
+
+\Cref{lst:bool-grammar-exp-bin-redundant} on line 13 also showcases the \texttt{enum} restriction for properties: Instead of allowing any string value to be used as an \texttt{op}eration, the only permitted values are defined as the \enquote{and} and \enquote{or} operations in their respective mathematical notation.
+
+An unpleasant aspect of \cref{lst:bool-grammar-exp-bin-redundant} is the excessive redundancy regarding the \texttt{children} types: \texttt{left} and \textrm{right} both state \texttt{true | false | var | neg | bin} and the \texttt{value} of \texttt{neg} had to be updated to include \texttt{bin}. All of these occurences must be kept identical, as they represent the concept of \enquote{being able to use any expression here} that applies to all child groups in this example.
+
+\begin{listing}[!ht]
+\begin{minted}[escapeinside=§§,highlightlines={9,11-15}]{text}
+grammar bool {
+  node true  { "true" }
+  node false { "false" }
+  node var {
+    prop name string
+  }
+  node neg {
+    "¬"
+    children value ::= true | false | var | neg | bin
+  }
+  node bin {
+    children left  ::= true | false | var | neg | bin
+    prop op  string { enum "§$\land$§" "§$\lor$§" }
+    children right ::= true | false | var | neg | bin
+  }
+}
+\end{minted}
+\caption{Boolean Expression Grammar: Unary and Binary expressions with redundancy}
+\label{lst:bool-grammar-exp-bin-redundant}
 \end{listing}
 
 \subsection{Design: Truth values}
@@ -322,6 +391,11 @@ interface QualifiedTypeName {
 \subsection{property / interpolate}
 
 \subsection{children / each}
+
+\begin{enumerate}
+\item Recursive usage of introduced type possible
+\item No regards for order of referenced types
+\end{enumerate}
 
 \subsection{terminal}
 

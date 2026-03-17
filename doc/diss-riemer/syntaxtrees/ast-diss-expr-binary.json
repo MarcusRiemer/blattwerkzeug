@@ -1,0 +1,24 @@
+{
+  "language": "ruby",
+  "name": "expBinary",
+  "properties": {
+    "op": "=="
+  },
+  "children": {
+    "left": [
+      {
+        "language": "ruby",
+        "name": "expVarRef",
+        "properties": {
+          "name": "PI"
+        }
+      }
+    ],
+    "right": [
+      {
+        "language": "ruby",
+        "name": "null"
+      }
+    ]
+  }
+}

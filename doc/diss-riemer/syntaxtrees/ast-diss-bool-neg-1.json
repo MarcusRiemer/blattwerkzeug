@@ -1,0 +1,15 @@
+{
+  "language": "bool",
+  "name": "neg",
+  "children": {
+    "value": [
+      {
+        "language": "bool",
+        "name": "var",
+        "properties": {
+          "name": "A"
+        }
+      }
+    ]
+  }
+}

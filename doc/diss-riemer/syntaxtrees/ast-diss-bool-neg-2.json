@@ -1,0 +1,20 @@
+{
+  "language": "bool",
+  "name": "neg",
+  "children": {
+    "value": [
+      {
+        "language": "bool",
+        "name": "neg",
+        "children": {
+          "value": [
+            {
+              "language": "bool",
+              "name": "false"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
