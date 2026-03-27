@@ -14,7 +14,7 @@ concise_attributes:
   value_before_type_cast: 2018-05-15 18:24:27.264702000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: updated_at
-  value_before_type_cast: 2025-09-08 10:18:13.730284000 Z
+  value_before_type_cast: 2025-09-30 13:48:46.184234000 Z
 - !ruby/object:ActiveModel::Attribute::FromDatabase
   name: programming_language_id
   value_before_type_cast: sql
@@ -109,12 +109,12 @@ concise_attributes:
     {"tags": ["keyword", "space-around"], "type": "terminal", "symbol": "USING"},
     {"name": "using", "type": "sequence", "nodeTypes": ["expression"]}], "orientation":
     "horizontal"}]}, "whereAdditional": {"type": "concrete", "attributes": [{"type":
-    "container", "children": [{"base": "string", "name": "operator", "tags": ["operator"],
-    "type": "property", "restrictions": [{"type": "enum", "value": ["AND", "OR"]}]},
-    {"name": "expression", "type": "sequence", "nodeTypes": ["expression"]}], "orientation":
-    "horizontal"}]}, "binaryExpression": {"type": "concrete", "attributes": [{"type":
-    "container", "children": [{"name": "lhs", "type": "sequence", "nodeTypes": ["expression"]},
-    {"name": "operator", "type": "sequence", "nodeTypes": ["relationalOperator"]},
+    "container", "children": [{"base": "string", "name": "operator", "tags": ["space-around",
+    "operator"], "type": "property", "restrictions": [{"type": "enum", "value": ["AND",
+    "OR"]}]}, {"name": "expression", "type": "sequence", "nodeTypes": ["expression"]}],
+    "orientation": "horizontal"}]}, "binaryExpression": {"type": "concrete", "attributes":
+    [{"type": "container", "children": [{"name": "lhs", "type": "sequence", "nodeTypes":
+    ["expression"]}, {"name": "operator", "type": "sequence", "nodeTypes": ["relationalOperator"]},
     {"name": "rhs", "type": "sequence", "nodeTypes": ["expression"]}], "orientation":
     "horizontal"}]}, "tableIntroduction": {"type": "concrete", "attributes": [{"base":
     "string", "name": "name", "tags": ["explicit-spaces"], "type": "property"}]},

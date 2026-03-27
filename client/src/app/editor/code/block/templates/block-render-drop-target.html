@@ -4,6 +4,7 @@
 <div
   *ngIf="(showAnything | async)"
   [@background-color]="targetState$ | async"
+  (click)="onClick()"
   (mouseover)="onMouseEnter($event)"
   (mouseout)="onMouseOut($event)"
 >

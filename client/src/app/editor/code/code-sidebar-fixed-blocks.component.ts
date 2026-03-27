@@ -9,6 +9,10 @@ import {
 } from "../../shared/block";
 
 import { SIDEBAR_MODEL_TOKEN } from "../editor.token";
+import { CodeHighlightService } from "./code-highlight.service";
+import { CurrentHoleLocationService } from "../current-hole-location.service";
+import { RenderedCodeResourceService } from "./block/rendered-coderesource.service";
+import { CurrentCodeResourceService } from "../current-coderesource.service";
 
 @Component({
   templateUrl: "templates/sidebar-fixed-blocks.html",
@@ -17,7 +21,10 @@ import { SIDEBAR_MODEL_TOKEN } from "../editor.token";
 export class CodeSidebarFixedBlocksComponent {
   constructor(
     @Inject(SIDEBAR_MODEL_TOKEN)
-    public readonly codeResource: CodeResource
+    public readonly codeResource: CodeResource,
+    private codeHighlightService: CodeHighlightService,
+    private currentHoleLocationService: CurrentHoleLocationService,
+    private renderedDataService: CurrentCodeResourceService
   ) {}
 
   readonly currentBlockLanguage$ = this.codeResource.blockLanguage$;
@@ -28,7 +35,15 @@ export class CodeSidebarFixedBlocksComponent {
         .filter(
           (s): s is FixedBlocksSidebarDescription => s.type === "fixedBlocks"
         )
-        .map((s) => new FixedBlocksSidebar(s))
+        .map(
+          (s) =>
+            new FixedBlocksSidebar(
+              s,
+              this.codeHighlightService,
+              this.currentHoleLocationService,
+              this.renderedDataService
+            )
+        )
     )
   );
 }

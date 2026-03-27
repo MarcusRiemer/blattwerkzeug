@@ -22,8 +22,18 @@
     }
 }
 
+/* Marching ants animation for chosenByAi state */
+@keyframes marching-ants-dashoffset {
+      0%, 25%, 50%, 75%, 100% {
+    border-color: black rgb(174, 174, 174) black rgb(174, 174, 174);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    border-color: rgb(174, 174, 174) black rgb(174, 174, 174) black;
+  }
+}
+
 /* An icon of a trashbin that hovers over anything and may be used to remove blocks */
-trash {
+#trash-delete-block{
     font-size: 6rem;
     position: fixed;
     padding: 5px;
@@ -32,6 +42,113 @@ trash {
     z-index: 2; /* 1 is not elevated enough, it conflicts with the material sidebar */
 }
 
+/* Container for the ai coach elements */
+#ai-coach-container {
+   position: fixed;
+   bottom: 45px;  
+   right: 230px;  
+   z-index: 2;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+}
+
+/* Displays the hint from the ai coach*/
+#ai-coach-hint {
+margin-bottom: 110px;
+  .speech-bubble {
+    position: relative;
+    background: white;
+    border: 2px solid #348925;
+    border-radius: 12px;
+    padding: 12px 16px;
+    max-width: 250px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    
+    // Speech bubble arrow pointing down to coach
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 75%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid white;
+    }
+    
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: -13px;
+      left: 75%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 12px solid #348925;
+    }
+  }
+
+  .close-hint{
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    z-index: 3;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+  }
+
+  .thought{
+    position: absolute;
+    bottom: 82px;
+    right: 0px;
+    width: 32px;
+    height: 32px;
+    z-index: 3;
+    cursor: pointer;
+
+    img { 
+    width: 100%;
+    height: 100%;
+    display: block; 
+  }
+  }
+}
+
+/* The visualisation of the ai coach */
+#ai-coach-image {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    flex-basis: 100px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: pointer;
+
+  .coach-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+/* A button to apply the ai hint */
+#ai-coach-button {
+    background-color: #348925;
+    color: white;
+}
+/* Creates whitespace so nothing is hidden by the ai coach */
+.ai-coach-spacer {
+  height: 150px; 
+}
 /* A virtual block that is dragged over the scene. */
 .dragged {
     editor-block-render-block {

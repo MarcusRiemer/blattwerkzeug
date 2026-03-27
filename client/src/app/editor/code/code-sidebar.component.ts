@@ -23,6 +23,9 @@ import { DefinedTypesSidebarComponent } from "./meta/defined-types.sidebar.compo
 import { DatabaseSchemaSidebarComponent } from "./query/database-schema-sidebar.component";
 import { UserFunctionsSidebarComponent } from "./truck/user-functions-sidebar.component";
 import { TruckWorldTilesSidebarComponent } from "./truck/world-editor/truck-world-tiles-sidebar.component";
+import { CodeHighlightService } from "./code-highlight.service";
+import { CurrentHoleLocationService } from "../current-hole-location.service";
+import { RenderedCodeResourceService } from "./block/rendered-coderesource.service";
 
 /**
  * Maps ids of sidebar components to their actual components.
@@ -63,7 +66,10 @@ export class CodeSidebarComponent {
     private _currentCodeResource: CurrentCodeResourceService,
     private _resourceReferences: ResourceReferencesService,
     private _grammarData: FullGrammarGQL,
-    private _sidebarDataService: SidebarDataService
+    private _sidebarDataService: SidebarDataService,
+    private _codeHighlightService: CodeHighlightService,
+    private _currentHoleLocationService: CurrentHoleLocationService,
+    private _renderDataService: CurrentCodeResourceService
   ) {}
 
   readonly currentCodeResource$ = this._currentCodeResource.currentResource;
@@ -113,7 +119,17 @@ export class CodeSidebarComponent {
   readonly fallbackSidebar$: Observable<FixedBlocksSidebar> = combineLatest([
     this.currentBlockLanguage$,
     this._fallbackSidebarDescription$,
-  ]).pipe(map(([_b, desc]) => new FixedBlocksSidebar(desc)));
+  ]).pipe(
+    map(
+      ([_b, desc]) =>
+        new FixedBlocksSidebar(
+          desc,
+          this._codeHighlightService,
+          this._currentHoleLocationService,
+          this._renderDataService
+        )
+    )
+  );
 
   /**
    * The actual sidebars that need to be spawned for the current language.

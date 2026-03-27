@@ -1,4 +1,10 @@
-import { Component, Inject } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  Inject,
+  QueryList,
+  ViewChildren,
+} from "@angular/core";
 
 import { CodeResource, QualifiedTypeName } from "../../../shared/syntaxtree";
 import { Table, Column } from "../../../shared/schema";
@@ -7,17 +13,233 @@ import { SIDEBAR_MODEL_TOKEN } from "../../editor.token";
 
 import { DragService } from "../../drag.service";
 import { EditDatabaseSchemaService } from "../../edit-database-schema.service";
+import { combineLatest, Observable, of, Subscription } from "rxjs";
+import { CodeHighlightService } from "../code-highlight.service";
+import { map, shareReplay } from "rxjs/operators";
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from "@angular/animations";
+import { CurrentCodeResourceService } from "../../current-coderesource.service";
+import { CurrentHoleLocationService } from "../../current-hole-location.service";
+import { BlockState, isLegalChild } from "../block-state";
 
 @Component({
   templateUrl: "templates/database-schema-sidebar.html",
+  animations: [
+    trigger("background", [
+      state("neutral", style({ background: "white" })),
+      state("highlighted", style({ background: "#d63384" })),
+      transition("neutral => highlighted", animate("500ms ease-out")),
+      transition("highlighted => neutral", animate("500ms ease-out")),
+    ]),
+    trigger("visibility", [
+      state("visible", style({ opacity: 1.0, transform: "scale(1.0)" })),
+      state(
+        "invisible",
+        style({ opacity: 0, transform: "scale(0)", display: "none" })
+      ),
+      transition("visible => invisible", animate("500ms ease-out")),
+      transition("invisible => visible", animate("500ms ease-out")),
+    ]),
+  ],
 })
 export class DatabaseSchemaSidebarComponent {
+  @ViewChildren("tableElement") tableElements: QueryList<ElementRef>;
+  @ViewChildren("columnElement") columnElements: QueryList<ElementRef>;
+
+  readonly highlights: Record<string, Observable<string>> = {};
+  readonly visbilities: Record<string, Observable<BlockState>> = {};
+  readonly isTableColumnHighlighted: Record<string, Observable<boolean>> = {};
+
+  private _subscriptions = new Subscription();
+
   constructor(
     @Inject(SIDEBAR_MODEL_TOKEN)
     private _codeResource: CodeResource,
     private _dragService: DragService,
-    private _schemaService: EditDatabaseSchemaService
-  ) {}
+    private _schemaService: EditDatabaseSchemaService,
+    private codeHighlightService: CodeHighlightService,
+    private currentHoleLocationService: CurrentHoleLocationService,
+    private currentCodeResourceService: CurrentCodeResourceService
+  ) {
+    this.possibleTables.forEach((table) => {
+      this.possibleTables.forEach((table) => {
+        const isColumnHighlighted$ =
+          codeHighlightService.highlightedBlock$.pipe(
+            map((highlighted) => highlighted.startsWith(`${table.name}.`)),
+            shareReplay(1)
+          );
+
+        this.isTableColumnHighlighted[table.name] = isColumnHighlighted$;
+
+        this.highlights[table.name] = combineLatest([
+          codeHighlightService.highlightedBlock$.pipe(
+            map((highlighted) => highlighted === table.name)
+          ),
+          isColumnHighlighted$,
+        ]).pipe(
+          map(
+            ([isTableHighlighted, isColumnHighlighted]) =>
+              isTableHighlighted || isColumnHighlighted
+          ), //tables are also highlighted, if their columns are highlighted
+          map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
+          shareReplay(1)
+        );
+      });
+
+      this.visbilities[table.name] = combineLatest(
+        of([
+          {
+            language: "sql",
+            name: "tableIntroduction",
+          },
+        ]),
+        this.currentCodeResourceService.validator$,
+        this.currentCodeResourceService.currentTree,
+        this.currentHoleLocationService.currentHoleLocation$,
+        of([
+          {
+            language: "sql",
+            name: "columnName",
+          },
+        ])
+      ).pipe(
+        map(([table, val, tree, holeLocation, tableFakeColumn]): BlockState => {
+          const toReturn =
+            isLegalChild(table, val, tree, holeLocation) ||
+            isLegalChild(tableFakeColumn, val, tree, holeLocation); // table should also be visible, if a column is allowed in the holeLocation
+          return toReturn ? "visible" : "invisible";
+        }),
+        shareReplay(1)
+      );
+
+      table.columns.forEach((column) => {
+        this.highlights[`${table.name}.${column.name}`] =
+          codeHighlightService.highlightedBlock$.pipe(
+            map(
+              (highlighted) => highlighted === `${table.name}.${column.name}`
+            ),
+            map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
+            shareReplay(1)
+          );
+
+        this.visbilities[`${table.name}.${column.name}`] = combineLatest(
+          of([
+            {
+              language: "sql",
+              name: "columnName",
+            },
+          ]),
+          this.currentCodeResourceService.validator$,
+          this.currentCodeResourceService.currentTree,
+          this.currentHoleLocationService.currentHoleLocation$
+        ).pipe(
+          map(([tableColumn, val, tree, holeLocation]): BlockState => {
+            const toReturn = isLegalChild(tableColumn, val, tree, holeLocation);
+            return toReturn ? "visible" : "invisible";
+          }),
+          shareReplay(1)
+        );
+      });
+    });
+  }
+
+  ngAfterViewInit() {
+    this.subscribeToHighlightChanges();
+  }
+
+  /**
+   * Subscribe to highlight changes and scroll to highlighted elements
+   */
+  private subscribeToHighlightChanges() {
+    const subscription = this.codeHighlightService.highlightedBlock$.subscribe(
+      (highlightedName) => {
+        if (highlightedName) {
+          setTimeout(
+            () => this.scrollToHighlightedElement(highlightedName),
+            100
+          );
+        }
+      }
+    );
+    this._subscriptions.add(subscription);
+  }
+
+  /**
+   * Scrolls to the highlighted table or column
+   */
+  private scrollToHighlightedElement(highlightedName: string) {
+    // Check if it's a column (contains a dot)
+    if (highlightedName.includes(".")) {
+      this.scrollToColumn(highlightedName);
+    } else {
+      this.scrollToTable(highlightedName);
+    }
+  }
+
+  /**
+   * Scrolls to a specific table by name
+   */
+  private scrollToTable(tableName: string) {
+    const tableIndex = this.possibleTables.findIndex(
+      (t) => t.name === tableName
+    );
+
+    if (tableIndex >= 0) {
+      const tableArray = this.tableElements?.toArray();
+      if (tableArray && tableArray[tableIndex]?.nativeElement) {
+        tableArray[tableIndex].nativeElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
+  }
+
+  /**
+   * Scrolls to a specific column by table.column name
+   */
+  private scrollToColumn(fullColumnName: string) {
+    const [tableName, columnName] = fullColumnName.split(".");
+
+    // Calculate flat index for the column across all tables
+    let flatIndex = 0;
+    let found = false;
+
+    for (const table of this.possibleTables) {
+      if (table.name === tableName) {
+        const columnIndex = table.columns.findIndex(
+          (c) => c.name === columnName
+        );
+        if (columnIndex >= 0) {
+          flatIndex += columnIndex;
+          found = true;
+          break;
+        }
+      }
+      flatIndex += table.columns.length;
+    }
+
+    if (found) {
+      const columnArray = this.columnElements?.toArray();
+      if (columnArray && columnArray[flatIndex]?.nativeElement) {
+        columnArray[flatIndex].nativeElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
+  }
+
+  /**
+   * Receives the currentHoleLocation, if this is null, no hole is selected
+   */
+  readonly currentHoleLocation$ =
+    this.currentHoleLocationService.currentHoleLocation$;
 
   /**
    * @return The tables that should be shown.
@@ -37,6 +259,12 @@ export class DatabaseSchemaSidebarComponent {
    * The user has decided to start dragging something from the sidebar.
    */
   startTableDrag(evt: DragEvent, table: Table) {
+    this.codeHighlightService.clearHighlight();
+
+    this.currentHoleLocationService.clearCurrentHoleLocation();
+
+    console.log("Table", table);
+
     try {
       this._dragService.dragStart(evt, [
         {
@@ -56,6 +284,10 @@ export class DatabaseSchemaSidebarComponent {
    * The user has decided to start dragging something from the sidebar.
    */
   startColumnDrag(evt: DragEvent, table: Table, column: Column) {
+    this.codeHighlightService.clearHighlight();
+
+    this.currentHoleLocationService.clearCurrentHoleLocation();
+
     try {
       this._dragService.dragStart(evt, [
         {
@@ -92,5 +324,9 @@ export class DatabaseSchemaSidebarComponent {
     } else {
       return [];
     }
+  }
+
+  ngOnDestroy() {
+    this._subscriptions.unsubscribe();
   }
 }

@@ -1,23 +1,40 @@
-<h5>
-  Datenbank
-  <code>{{ databaseName }}</code>
-</h5>
-<div class="schema-tables">
-  <details *ngFor="let table of possibleTables;" class="ast">
-    <summary class="block rounded">
-      <span (dragstart)="startTableDrag($event, table)" draggable="true">
-        {{ table.name }}
-      </span>
-    </summary>
-    <ul class="ast">
-      <li
-        *ngFor="let tableColumn of table.columns;"
-        (dragstart)="startColumnDrag($event, table, tableColumn)"
-        draggable="true"
+<div
+  *ngIf="(visbilities[possibleTables[0]?.name] | async) === 'visible' || 
+           (visbilities[possibleTables[0]?.name + '.' + possibleTables[0]?.columns[0]?.name] | async) === 'visible'"
+>
+  <h5>
+    Datenbank
+    <code>{{ databaseName }}</code>
+  </h5>
+  <div class="schema-tables">
+    <details
+      *ngFor="let table of possibleTables;"
+      class="ast"
+      [open]="(((visbilities[possibleTables[0]?.name + '.' + possibleTables[0]?.columns[0]?.name] | async) === 'visible')&&(currentHoleLocation$ | async)) || (isTableColumnHighlighted[table.name] | async)"
+    >
+      <summary
         class="block rounded"
+        [@background]="highlights[table.name] | async"
+        [@visibility]="visbilities[table.name] | async"
+        #tableElement
       >
-        {{ tableColumn.name }}
-      </li>
-    </ul>
-  </details>
+        <span (dragstart)="startTableDrag($event, table)" draggable="true">
+          {{ table.name }}
+        </span>
+      </summary>
+      <ul class="ast">
+        <li
+          *ngFor="let tableColumn of table.columns;"
+          (dragstart)="startColumnDrag($event, table, tableColumn)"
+          draggable="true"
+          class="block rounded"
+          [@background]="highlights[table.name + '.' + tableColumn.name] | async"
+          [@visibility]="visbilities[table.name + '.' + tableColumn.name] | async"
+          #columnElement
+        >
+          {{ tableColumn.name }}
+        </li>
+      </ul>
+    </details>
+  </div>
 </div>

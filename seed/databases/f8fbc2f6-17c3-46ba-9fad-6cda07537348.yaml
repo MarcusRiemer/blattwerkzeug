@@ -1,0 +1,115 @@
+--- !ruby/object:ProjectDatabase
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: default
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: f8fbc2f6-17c3-46ba-9fad-6cda07537348
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: schema
+  value_before_type_cast: '[{"name": "cup", "columns": [{"name": "id", "type": "INTEGER",
+    "index": 0, "notNull": false, "primary": true, "dfltValue": null}, {"name": "name",
+    "type": "TEXT", "index": 1, "notNull": true, "primary": false, "dfltValue": null}],
+    "foreignKeys": [], "systemTable": false}, {"name": "cup_unlock_requirements",
+    "columns": [{"name": "unlocked_cup_id", "type": "INTEGER", "index": 0, "notNull":
+    true, "primary": true, "dfltValue": null}, {"name": "required_cup_id", "type":
+    "INTEGER", "index": 1, "notNull": true, "primary": true, "dfltValue": null}],
+    "foreignKeys": [{"references": [{"toTable": "cup", "toColumn": "id", "fromColumn":
+    "unlocked_cup_id"}]}, {"references": [{"toTable": "cup", "toColumn": "id", "fromColumn":
+    "required_cup_id"}]}], "systemTable": false}, {"name": "drift_charge", "columns":
+    [{"name": "value", "type": "TEXT", "index": 0, "notNull": false, "primary": true,
+    "dfltValue": null}], "foreignKeys": [], "systemTable": false}, {"name": "driver",
+    "columns": [{"name": "id", "type": "INTEGER", "index": 0, "notNull": false, "primary":
+    true, "dfltValue": null}, {"name": "name", "type": "TEXT", "index": 1, "notNull":
+    true, "primary": false, "dfltValue": null}, {"name": "unlock_necessary", "type":
+    "BOOLEAN", "index": 2, "notNull": true, "primary": false, "dfltValue": null},
+    {"name": "weight_class", "type": "TEXT", "index": 3, "notNull": true, "primary":
+    false, "dfltValue": null}, {"name": "home_track_id", "type": "INTEGER", "index":
+    4, "notNull": false, "primary": false, "dfltValue": null}, {"name": "best_vehicle_id",
+    "type": "INTEGER", "index": 5, "notNull": true, "primary": false, "dfltValue":
+    null}], "foreignKeys": [{"references": [{"toTable": "vehicle", "toColumn": "id",
+    "fromColumn": "best_vehicle_id"}]}, {"references": [{"toTable": "track", "toColumn":
+    "id", "fromColumn": "home_track_id"}]}, {"references": [{"toTable": "weight_class",
+    "toColumn": "value", "fromColumn": "weight_class"}]}], "systemTable": false},
+    {"name": "hazard", "columns": [{"name": "id", "type": "INTEGER", "index": 0, "notNull":
+    false, "primary": true, "dfltValue": null}, {"name": "name_de", "type": "TEXT",
+    "index": 1, "notNull": true, "primary": false, "dfltValue": null}, {"name": "name_eng",
+    "type": "TEXT", "index": 2, "notNull": true, "primary": false, "dfltValue": null}],
+    "foreignKeys": [], "systemTable": false}, {"name": "player", "columns": [{"name":
+    "id", "type": "INTEGER", "index": 0, "notNull": false, "primary": true, "dfltValue":
+    null}, {"name": "name", "type": "TEXT", "index": 1, "notNull": true, "primary":
+    false, "dfltValue": null}, {"name": "mii_name", "type": "TEXT", "index": 2, "notNull":
+    true, "primary": false, "dfltValue": null}], "foreignKeys": [], "systemTable":
+    false}, {"name": "race", "columns": [{"name": "track_id", "type": "INTEGER", "index":
+    0, "notNull": true, "primary": true, "dfltValue": null}, {"name": "player_id",
+    "type": "INTEGER", "index": 1, "notNull": true, "primary": true, "dfltValue":
+    null}, {"name": "driver_id", "type": "INTEGER", "index": 2, "notNull": true, "primary":
+    false, "dfltValue": null}, {"name": "vehicle_id", "type": "INTEGER", "index":
+    3, "notNull": true, "primary": false, "dfltValue": null}, {"name": "time_ms",
+    "type": "INTEGER", "index": 4, "notNull": true, "primary": false, "dfltValue":
+    null}, {"name": "place", "type": "INTEGER", "index": 5, "notNull": true, "primary":
+    false, "dfltValue": null}], "foreignKeys": [{"references": [{"toTable": "vehicle",
+    "toColumn": "id", "fromColumn": "vehicle_id"}]}, {"references": [{"toTable": "driver",
+    "toColumn": "id", "fromColumn": "driver_id"}]}, {"references": [{"toTable": "player",
+    "toColumn": "id", "fromColumn": "player_id"}]}, {"references": [{"toTable": "track",
+    "toColumn": "id", "fromColumn": "track_id"}]}], "systemTable": false}, {"name":
+    "strategy", "columns": [{"name": "value", "type": "TEXT", "index": 0, "notNull":
+    false, "primary": true, "dfltValue": null}], "foreignKeys": [], "systemTable":
+    false}, {"name": "system", "columns": [{"name": "value", "type": "TEXT", "index":
+    0, "notNull": false, "primary": true, "dfltValue": null}], "foreignKeys": [],
+    "systemTable": false}, {"name": "track", "columns": [{"name": "id", "type": "INTEGER",
+    "index": 0, "notNull": false, "primary": true, "dfltValue": null}, {"name": "name_de",
+    "type": "TEXT", "index": 1, "notNull": true, "primary": false, "dfltValue": null},
+    {"name": "name_eng", "type": "TEXT", "index": 2, "notNull": true, "primary": false,
+    "dfltValue": null}, {"name": "cup_id", "type": "INTEGER", "index": 3, "notNull":
+    true, "primary": false, "dfltValue": null}, {"name": "track_origin", "type": "TEXT",
+    "index": 4, "notNull": true, "primary": false, "dfltValue": null}, {"name": "best_strategy",
+    "type": "TEXT", "index": 5, "notNull": false, "primary": false, "dfltValue": null},
+    {"name": "world_record_shortcuts_allowed_ms", "type": "INTEGER", "index": 6, "notNull":
+    true, "primary": false, "dfltValue": null}, {"name": "world_record_shortcuts_not_allowed_ms",
+    "type": "INTEGER", "index": 7, "notNull": true, "primary": false, "dfltValue":
+    null}, {"name": "number_of_shortcuts", "type": "INTEGER", "index": 8, "notNull":
+    true, "primary": false, "dfltValue": null}, {"name": "cannon_available", "type":
+    "BOOLEAN", "index": 9, "notNull": true, "primary": false, "dfltValue": null},
+    {"name": "falling_off_possible", "type": "BOOLEAN", "index": 10, "notNull": true,
+    "primary": false, "dfltValue": null}], "foreignKeys": [{"references": [{"toTable":
+    "strategy", "toColumn": "value", "fromColumn": "best_strategy"}]}, {"references":
+    [{"toTable": "system", "toColumn": "value", "fromColumn": "track_origin"}]}, {"references":
+    [{"toTable": "cup", "toColumn": "id", "fromColumn": "cup_id"}]}], "systemTable":
+    false}, {"name": "track_hazard", "columns": [{"name": "track_id", "type": "INTEGER",
+    "index": 0, "notNull": true, "primary": true, "dfltValue": null}, {"name": "hazard_id",
+    "type": "INTEGER", "index": 1, "notNull": true, "primary": true, "dfltValue":
+    null}], "foreignKeys": [{"references": [{"toTable": "hazard", "toColumn": "id",
+    "fromColumn": "hazard_id"}]}, {"references": [{"toTable": "track", "toColumn":
+    "id", "fromColumn": "track_id"}]}], "systemTable": false}, {"name": "vehicle",
+    "columns": [{"name": "id", "type": "INTEGER", "index": 0, "notNull": false, "primary":
+    true, "dfltValue": null}, {"name": "name", "type": "TEXT", "index": 1, "notNull":
+    true, "primary": false, "dfltValue": null}, {"name": "vehicle_type_id", "type":
+    "INTEGER", "index": 2, "notNull": true, "primary": false, "dfltValue": null},
+    {"name": "weight_class", "type": "TEXT", "index": 3, "notNull": true, "primary":
+    false, "dfltValue": null}, {"name": "unlock_necessary", "type": "BOOLEAN", "index":
+    4, "notNull": true, "primary": false, "dfltValue": null}], "foreignKeys": [{"references":
+    [{"toTable": "vehicle_type", "toColumn": "id", "fromColumn": "vehicle_type_id"}]},
+    {"references": [{"toTable": "weight_class", "toColumn": "value", "fromColumn":
+    "weight_class"}]}], "systemTable": false}, {"name": "vehicle_type", "columns":
+    [{"name": "id", "type": "INTEGER", "index": 0, "notNull": false, "primary": true,
+    "dfltValue": null}, {"name": "type", "type": "TEXT", "index": 1, "notNull": true,
+    "primary": false, "dfltValue": null}, {"name": "wheelie_possible", "type": "BOOLEAN",
+    "index": 2, "notNull": true, "primary": false, "dfltValue": null}, {"name": "max_drift_charge",
+    "type": "TEXT", "index": 3, "notNull": true, "primary": false, "dfltValue": null}],
+    "foreignKeys": [{"references": [{"toTable": "drift_charge", "toColumn": "value",
+    "fromColumn": "max_drift_charge"}]}], "systemTable": false}, {"name": "weight_class",
+    "columns": [{"name": "value", "type": "TEXT", "index": 0, "notNull": false, "primary":
+    true, "dfltValue": null}], "foreignKeys": [], "systemTable": false}]'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2025-07-18 13:26:05.352683000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2025-09-30 15:58:41.539465000 Z
+new_record: false
+active_record_yaml_version: 2

@@ -31,6 +31,10 @@ import { EditorDebugMenuComponent } from "./debug-menu.component";
 
 import { SettingsComponent } from "./project-settings/settings.component";
 import { MembersComponent } from "./project-settings/members.component";
+import { CodeHighlightService } from "./code/code-highlight.service";
+import { CurrentHoleLocationService } from "./current-hole-location.service";
+import { AiCoachService } from "./code/ai-coach.service";
+import { AiCoachComponent } from "./code/ai-coach.component";
 
 @NgModule({
   imports: [
@@ -65,6 +69,9 @@ import { MembersComponent } from "./project-settings/members.component";
     SidebarService,
     SidebarDataService,
     DragService,
+    CodeHighlightService,
+    CurrentHoleLocationService,
+    AiCoachService,
   ],
   exports: [
     EditorComponent,

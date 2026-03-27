@@ -1,4 +1,4 @@
-import { NodeDescription, SyntaxTree } from "../syntaxtree";
+import { _exactMatches, NodeDescription, SyntaxTree } from "../syntaxtree";
 
 import {
   FixedBlocksSidebarDescription,
@@ -8,6 +8,12 @@ import {
   isNodeDerivedPropertyDescription,
 } from "./block.description";
 import { Sidebar } from "./sidebar";
+import { combineLatest, Observable, of } from "rxjs";
+import { map, shareReplay } from "rxjs/operators";
+import { CodeHighlightService } from "../../editor/code/code-highlight.service";
+import { CurrentHoleLocationService } from "../../editor/current-hole-location.service";
+import { BlockState, isLegalChild } from "../../editor/code/block-state";
+import { CurrentCodeResourceService } from "../../editor/current-coderesource.service";
 
 /**
  * Resolves all runtime derived values for a tailored node description. The
@@ -80,8 +86,21 @@ export class FixedSidebarBlock {
    */
   public readonly defaultNode: NodeTailoredDescription[];
 
-  constructor(desc: SidebarBlockDescription) {
+  public readonly highlightState$: Observable<string>;
+
+  constructor(
+    desc: SidebarBlockDescription,
+    codeHighlightService: CodeHighlightService,
+    private _currentHoleLocationService: CurrentHoleLocationService,
+    private _currentCodeService: CurrentCodeResourceService
+  ) {
     this.displayName = desc.displayName;
+
+    this.highlightState$ = codeHighlightService.highlightedBlock$.pipe(
+      map((highlighted) => highlighted === this.displayName),
+      map((isHighlighted) => (isHighlighted ? "highlighted" : "neutral")),
+      shareReplay(1)
+    );
 
     if (Array.isArray(desc.defaultNode)) {
       this.defaultNode = desc.defaultNode;
@@ -93,6 +112,24 @@ export class FixedSidebarBlock {
   tailoredBlockDescription(ast: SyntaxTree) {
     return this.defaultNode.map((b) => tailorBlockDescription(ast, b));
   }
+
+  /**
+   * Sets the current blockState based on its location
+   *
+   * @return The current block state of this block
+   */
+  readonly visibilityState$: Observable<BlockState> = combineLatest(
+    of(this), // cleaner if I would use this.defaultNode but then I use defaultNode before it's initialisation
+    this._currentCodeService.validator$,
+    this._currentCodeService.currentTree,
+    this._currentHoleLocationService.currentHoleLocation$
+  ).pipe(
+    map(([block, val, tree, holeLocation]): BlockState => {
+      const toReturn = isLegalChild(block, val, tree, holeLocation);
+      return toReturn ? "visible" : "invisible";
+    }),
+    shareReplay(1)
+  );
 }
 
 /**
@@ -101,6 +138,7 @@ export class FixedSidebarBlock {
 export interface BlocksSidebarCategory {
   readonly blocks: ReadonlyArray<FixedSidebarBlock>;
   readonly displayName: string;
+  readonly visibility$: Observable<BlockState>;
 }
 
 export class FixedBlocksSidebarCategory implements BlocksSidebarCategory {
@@ -111,13 +149,31 @@ export class FixedBlocksSidebarCategory implements BlocksSidebarCategory {
 
   public readonly blocks: ReadonlyArray<FixedSidebarBlock>;
 
+  public readonly visibility$: Observable<BlockState>;
+
   constructor(
     _parent: FixedBlocksSidebar,
-    desc: FixedBlocksSidebarCategoryDescription
+    desc: FixedBlocksSidebarCategoryDescription,
+    codeHighlightService: CodeHighlightService,
+    currentHoleLocationService: CurrentHoleLocationService,
+    renderDataService: CurrentCodeResourceService
   ) {
     this.displayName = desc.categoryCaption;
     this.blocks = desc.blocks.map(
-      (blockDesc) => new FixedSidebarBlock(blockDesc)
+      (blockDesc) =>
+        new FixedSidebarBlock(
+          blockDesc,
+          codeHighlightService,
+          currentHoleLocationService,
+          renderDataService
+        )
+    );
+    this.visibility$ = combineLatest(
+      this.blocks.map((block) => block.visibilityState$)
+    ).pipe(
+      map((states) =>
+        states.some((state) => state === "visible") ? "visible" : "invisible"
+      )
     );
   }
 }
@@ -142,10 +198,30 @@ export class FixedBlocksSidebar implements Sidebar {
    */
   public readonly categories: ReadonlyArray<BlocksSidebarCategory>;
 
-  constructor(desc: FixedBlocksSidebarDescription) {
+  public readonly visibility$: Observable<BlockState>;
+
+  constructor(
+    desc: FixedBlocksSidebarDescription,
+    codeHighlightService: CodeHighlightService,
+    currentHoleLocationService: CurrentHoleLocationService,
+    renderDataService: CurrentCodeResourceService
+  ) {
     this.displayName = desc.caption;
     this.categories = desc.categories.map((catDesc) => {
-      return new FixedBlocksSidebarCategory(this, catDesc);
+      return new FixedBlocksSidebarCategory(
+        this,
+        catDesc,
+        codeHighlightService,
+        currentHoleLocationService,
+        renderDataService
+      );
     });
+    this.visibility$ = combineLatest(
+      this.categories.map((category) => category.visibility$)
+    ).pipe(
+      map((states) =>
+        states.some((state) => state === "visible") ? "visible" : "invisible"
+      )
+    );
   }
 }

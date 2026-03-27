@@ -1,5 +1,20 @@
-mutation AiHintCodeResource($id: ID!) {
-  aiHintCodeResource(input: {id: $id}) {
+mutation AiHintCodeResource(
+  $id: ID!
+  $compiledSource: String!
+  $lastDraggedBlock: String
+  $clickedHoleText: String
+) {
+  aiHintCodeResource(
+    input: {
+      id: $id
+      compiledSource: $compiledSource
+      lastDraggedBlock: $lastDraggedBlock
+      clickedHoleText: $clickedHoleText
+    }
+  ) {
     answerText
+    nextBlock
+    assignmentWithAccentuation
+    suggestedHoleText
   }
 }

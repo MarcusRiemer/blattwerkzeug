@@ -1,0 +1,52 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: 0eeeb53d-6767-4118-a396-82ebfbb27d02
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'B06: Fahrzeuge mit Wheelie'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 150f2a97-5e68-4142-945a-05860798f1b7
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: '{"name": "querySelect", "children": {"from": [{"name":
+    "from", "children": {"joins": [{"name": "innerJoinOn", "children": {"on": [{"name":
+    "binaryExpression", "children": {"lhs": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "vehicle_type_id", "refTableName": "vehicle"}}],
+    "rhs": [{"name": "columnName", "language": "sql", "properties": {"columnName":
+    "id", "refTableName": "vehicle_type"}}], "operator": [{"name": "relationalOperator",
+    "language": "sql", "properties": {"operator": "="}}]}, "language": "sql"}], "table":
+    [{"name": "tableIntroduction", "language": "sql", "properties": {"name": "vehicle_type"}}]},
+    "language": "sql"}], "tables": [{"name": "tableIntroduction", "language": "sql",
+    "properties": {"name": "vehicle"}}]}, "language": "sql"}], "where": [{"name":
+    "where", "children": {"expressions": [{"name": "columnName", "language": "sql",
+    "properties": {"columnName": "wheelie_possible", "refTableName": "vehicle_type"}}]},
+    "language": "sql"}], "select": [{"name": "select", "children": {"columns": [{"name":
+    "columnName", "language": "sql", "properties": {"columnName": "type", "refTableName":
+    "vehicle_type"}}, {"name": "columnName", "language": "sql", "properties": {"columnName":
+    "name", "refTableName": "vehicle"}}]}, "language": "sql"}], "groupBy": []}, "language":
+    "sql"}'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2025-07-22 10:14:01.587273000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2025-12-08 09:49:17.763228000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: cb3f1cce-1337-441f-ab0c-788f3b60bc4d
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: "SELECT vehicle_type.type, vehicle.name\nFROM vehicle\n\tINNER
+    JOIN vehicle_type ON vehicle.vehicle_type_id = vehicle_type.id\nWHERE vehicle_type.wheelie_possible"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+  value_before_type_cast: Zeige den Fahrzeugtypen und den Namen aller Fahrzeuge, die
+    einen Wheelie machen können
+new_record: false
+active_record_yaml_version: 2

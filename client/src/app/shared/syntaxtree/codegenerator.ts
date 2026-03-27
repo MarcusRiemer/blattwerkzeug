@@ -33,6 +33,17 @@ export type EmittedHole = {
   holeText: string;
 };
 
+export function emittedHoles(result: ValidationResult): EmittedHole[] {
+  const mode: "numeric" | "path" = "numeric";
+  return result.holes.map((err, idx): EmittedHole => {
+    const holeText =
+      mode === "numeric"
+        ? `$${idx}$`
+        : `$${err.node.location},${err.data.category},0$`;
+    return { categoryName: err.data.category, holeText, node: err.node };
+  });
+}
+
 /**
  * Transforms an AST into its compiled string representation.
  */
@@ -85,20 +96,13 @@ export class CodeGenerator {
 
   emitWithHoles(ast: SyntaxNode | SyntaxTree, validator: Validator): string {
     const result = validator.validateFromRoot(ast);
-    const mode: "numeric" | "path" = "numeric";
 
-    const emittedHoles = result.holes.map((err, idx): EmittedHole => {
-      const holeText =
-        mode === "numeric"
-          ? `$${idx}$`
-          : `$${err.node.location},${err.data.category},0$`;
-      return { categoryName: err.data.category, holeText, node: err.node };
-    });
+    const holes = emittedHoles(result);
 
     return prettierCodeGeneratorFromGrammar(
       this.types,
       this.ensureRootNode(ast),
-      emittedHoles
+      holes
     );
   }
 

@@ -12,6 +12,7 @@ import { map } from "rxjs/operators";
 
 import { DragService } from "./drag.service";
 import { TrashService } from "./trash.service";
+import { AiCoachService } from "./code/ai-coach.service";
 
 type AnimationState = "available" | "over" | "hidden";
 
@@ -57,7 +58,8 @@ type AnimationState = "available" | "over" | "hidden";
 export class TrashComponent {
   constructor(
     private _trashService: TrashService,
-    private _dragService: DragService
+    private _dragService: DragService,
+    private _aiService: AiCoachService
   ) {}
 
   /**
@@ -88,6 +90,7 @@ export class TrashComponent {
   mouseEnter() {
     this._mouseOver.next(true);
     this._dragService.informDraggedOverTrash();
+    this._aiService.behaviorSubjectLastDraggedBlock$.next(null); //when a block is dragged but then not used, ai doesn't have to know about this block
   }
 
   mouseLeave() {

@@ -8,7 +8,7 @@ import {
 } from "@angular/animations";
 
 import { Observable, combineLatest, BehaviorSubject } from "rxjs";
-import { map } from "rxjs/operators";
+import { filter, map, startWith, tap } from "rxjs/operators";
 
 import { locationIsOnPath } from "../../../shared/util";
 import {
@@ -28,12 +28,15 @@ import {
   dropLocationHasChildren,
 } from "./drop-target-state";
 import { RenderedCodeResourceService } from "./rendered-coderesource.service";
+import { CurrentHoleLocationService } from "../../current-hole-location.service";
+import { AiCoachService } from "../ai-coach.service";
 
 const CSS_WHITE = "255, 255, 255";
 const CSS_YELLOW = "255, 255, 0";
 const CSS_GREEN = "0, 255, 0";
 const CSS_RED = "255, 0, 0";
 const CSS_BLACK = "0, 0, 0";
+const CSS_MAGENTA = "214, 51, 132";
 const CSS_ALPHA = "0.3";
 
 /**
@@ -77,6 +80,70 @@ const CSS_ALPHA = "0.3";
           border: "1px solid black",
         })
       ),
+      state(
+        "chosenByAi",
+        style({
+          background: `
+      repeating-linear-gradient(
+        45deg,
+        RGBA(${CSS_YELLOW}, ${CSS_ALPHA}),
+        RGBA(${CSS_YELLOW}, ${CSS_ALPHA}) 10px,
+        RGBA(${CSS_BLACK}, 0.2) 10px,
+        RGBA(${CSS_BLACK}, 0.2) 20px
+      )
+    `,
+          "border-radius": "500px",
+          border: "2px dashed black",
+          "background-clip": "padding-box",
+          animation: "marching-ants-dashoffset 2.5s steps(16) infinite",
+          transform: "scale(1)",
+        })
+      ),
+      transition("* => chosenByAi", [
+        animate(
+          "150ms ease-out",
+          style({
+            transform: "scale(1.3)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(-3px)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(3px)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(-3px)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(3px)",
+          })
+        ),
+        animate(
+          "50ms",
+          style({
+            transform: "scale(1.3) translateX(0)",
+          })
+        ),
+        animate(
+          "200ms ease-in",
+          style({
+            transform: "scale(1)",
+          })
+        ),
+      ]),
+      transition("chosenByAi => *", [animate("200ms ease-in")]),
       state(
         "validTarget",
         style({
@@ -172,7 +239,9 @@ export class BlockRenderDropTargetComponent {
 
   constructor(
     private _dragService: DragService,
-    private _renderData: RenderedCodeResourceService
+    private _renderData: RenderedCodeResourceService,
+    private _currentHoleLocationService: CurrentHoleLocationService,
+    private _aiService: AiCoachService
   ) {}
 
   /**
@@ -238,33 +307,55 @@ export class BlockRenderDropTargetComponent {
   );
 
   /**
+   * Gets the suggestedHole from the ai and compares it to all exisiting holes
+   */
+  readonly chosenByAi$ = this._aiService.suggestedHole$.pipe(
+    filter((hole) => !!hole),
+    map((suggestedHole) => {
+      return (
+        suggestedHole.categoryName ===
+        this.dropLocation[this.dropLocation.length - 1][0]
+      );
+    }),
+    startWith(false)
+  );
+
+  /**
    * @return The current targeting state of this drop target
    */
-  readonly targetState$: Observable<DragTargetState | "hole" | "optional"> =
-    combineLatest(
+  readonly targetState$: Observable<
+    DragTargetState | "hole" | "optional" | "chosenByAi"
+  > = combineLatest([
+    combineLatest([
       this._dragService.currentDrag,
       this._isHole$,
       this._parentRequiresChildren$,
       this._hasChildren$,
       this._renderData.validator$,
-      this._renderData.syntaxTree$
-    ).pipe(
-      map(([drag, isHole, requiresChildren, hasChildren, val, tree]) => {
+      this._renderData.syntaxTree$,
+    ]),
+    this.chosenByAi$,
+  ]).pipe(
+    map(
+      ([
+        [drag, isHole, requiresChildren, hasChildren, val, tree],
+        chosenByAi,
+      ]) => {
         if (this._renderData.readOnly) {
           return "unknown";
         } else {
           const toReturn = targetState(drag, this.dropLocation, val, tree);
           if (toReturn === "unknown") {
-            if (isHole || requiresChildren) return "hole";
+            if (chosenByAi) return "chosenByAi";
+            else if (isHole || requiresChildren) return "hole";
             else if (!hasChildren && this.visual.emptyDropTarget)
               return "optional";
             else return "unknown";
-          } else {
-            return toReturn;
-          }
+          } else return toReturn;
         }
-      })
-    );
+      }
+    )
+  );
 
   /**
    * True if the mouse is currently over this drop target
@@ -316,6 +407,10 @@ export class BlockRenderDropTargetComponent {
   onMouseOut(evt: MouseEvent) {
     this._currentMouseTarget.next(false);
     evt.stopPropagation();
+  }
+
+  onClick() {
+    this._currentHoleLocationService.setCurrentHoleLocation(this.dropLocation);
   }
 
   readonly displayText = this._isCurrentDropCandidate.pipe(
