@@ -34,7 +34,7 @@
     "jwt-decode": "2.2.0",
     "loader-utils": "2.0.4",
     "nerdamer": "1.1.10",
-    "rxjs": "6.6.7",
+    "rxjs": "7.8.2",
     "ts-custom-error": "3.2.0",
     "tslib": "2.0.0",
     "typeface-roboto": "1.1.13",
