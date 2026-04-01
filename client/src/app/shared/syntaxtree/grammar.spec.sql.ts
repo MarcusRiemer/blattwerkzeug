@@ -23,34 +23,47 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "keyword",
-            type: "terminal",
-            symbol: "FROM",
-          },
-          {
-            name: "tables",
-            type: "sequence",
-            between: {
-              name: "columnSeparator",
-              type: "terminal",
-              symbol: ",",
-            },
-            nodeTypes: [
+            type: "container",
+            children: [
               {
-                occurs: "+",
-                nodeType: "tableIntroduction",
+                tags: ["keyword", "component"],
+                type: "terminal",
+                symbol: "FROM",
+              },
+              {
+                name: "tables",
+                type: "sequence",
+                between: {
+                  name: "columnSeparator",
+                  type: "terminal",
+                  symbol: ",",
+                },
+                nodeTypes: [
+                  {
+                    occurs: "+",
+                    nodeType: "tableIntroduction",
+                  },
+                ],
               },
             ],
+            orientation: "horizontal",
           },
           {
-            name: "joins",
-            type: "sequence",
-            nodeTypes: [
+            tags: ["indent"],
+            type: "container",
+            children: [
               {
-                occurs: "*",
-                nodeType: "join",
+                name: "joins",
+                type: "sequence",
+                nodeTypes: [
+                  {
+                    occurs: "*",
+                    nodeType: "join",
+                  },
+                ],
               },
             ],
+            orientation: "vertical",
           },
         ],
       },
@@ -66,29 +79,41 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "keyword",
-            type: "terminal",
-            symbol: "WHERE",
-          },
-          {
-            name: "expressions",
-            type: "sequence",
-            nodeTypes: [
+            type: "container",
+            children: [
               {
-                occurs: "1",
-                nodeType: {
-                  typeName: "expression",
-                  languageName: "sql",
-                },
+                tags: ["keyword", "component"],
+                type: "terminal",
+                symbol: "WHERE",
               },
               {
-                occurs: "*",
-                nodeType: {
-                  typeName: "whereAdditional",
-                  languageName: "sql",
-                },
+                type: "container",
+                children: [
+                  {
+                    name: "expressions",
+                    type: "sequence",
+                    nodeTypes: [
+                      {
+                        occurs: "1",
+                        nodeType: {
+                          typeName: "expression",
+                          languageName: "sql",
+                        },
+                      },
+                      {
+                        occurs: "*",
+                        nodeType: {
+                          typeName: "whereAdditional",
+                          languageName: "sql",
+                        },
+                      },
+                    ],
+                  },
+                ],
+                orientation: "horizontal",
               },
             ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -96,7 +121,7 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "keyword",
+            tags: ["keyword", "component"],
             type: "terminal",
             symbol: "DELETE",
           },
@@ -106,34 +131,56 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "keyword",
-            type: "terminal",
-            symbol: "SELECT",
-          },
-          {
-            base: "boolean",
-            name: "distinct",
-            type: "property",
-            isOptional: true,
-          },
-          {
-            name: "columns",
-            type: "allowed",
-            between: {
-              name: "columnSeparator",
-              type: "terminal",
-              symbol: ",",
-            },
-            nodeTypes: [
+            type: "container",
+            children: [
               {
-                occurs: "*",
-                nodeType: "expression",
+                tags: ["keyword", "component"],
+                type: "terminal",
+                symbol: "SELECT",
               },
               {
-                occurs: "?",
-                nodeType: "starOperator",
+                name: "distinct",
+                type: "sequence",
+                nodeTypes: [
+                  {
+                    occurs: "?",
+                    nodeType: "distinct",
+                  },
+                ],
+              },
+              {
+                tags: ["allow-wrap"],
+                type: "container",
+                children: [
+                  {
+                    name: "columns",
+                    type: "parentheses",
+                    group: {
+                      type: "allowed",
+                      nodeTypes: [
+                        {
+                          occurs: "*",
+                          nodeType: "expression",
+                        },
+                        {
+                          occurs: "?",
+                          nodeType: "starOperator",
+                        },
+                      ],
+                    },
+                    between: {
+                      name: "columnSeparator",
+                      tags: ["space-after"],
+                      type: "terminal",
+                      symbol: ",",
+                    },
+                    cardinality: "1",
+                  },
+                ],
+                orientation: "horizontal",
               },
             ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -141,27 +188,34 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "keyword",
-            type: "terminal",
-            symbol: "GROUP BY",
-          },
-          {
-            name: "expressions",
-            type: "allowed",
-            between: {
-              name: "columnSeparator",
-              type: "terminal",
-              symbol: ",",
-            },
-            nodeTypes: [
+            type: "container",
+            children: [
               {
-                occurs: "+",
-                nodeType: {
-                  typeName: "expression",
-                  languageName: "sql",
+                tags: ["keyword", "component"],
+                type: "terminal",
+                symbol: "GROUP BY",
+              },
+              {
+                name: "expressions",
+                type: "allowed",
+                between: {
+                  name: "columnSeparator",
+                  tags: ["space-after"],
+                  type: "terminal",
+                  symbol: ",",
                 },
+                nodeTypes: [
+                  {
+                    occurs: "+",
+                    nodeType: {
+                      typeName: "expression",
+                      languageName: "sql",
+                    },
+                  },
+                ],
               },
             ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -169,27 +223,45 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "keyword",
-            type: "terminal",
-            symbol: "ORDER BY",
-          },
-          {
-            name: "expressions",
-            type: "allowed",
-            between: {
-              name: "columnSeparator",
-              type: "terminal",
-              symbol: ",",
-            },
-            nodeTypes: [
+            type: "container",
+            children: [
               {
-                occurs: "+",
-                nodeType: {
-                  typeName: "expression",
-                  languageName: "sql",
+                tags: ["keyword", "component"],
+                type: "terminal",
+                symbol: "ORDER BY",
+              },
+              {
+                name: "expressions",
+                type: "parentheses",
+                group: {
+                  type: "allowed",
+                  nodeTypes: [
+                    {
+                      occurs: "*",
+                      nodeType: {
+                        typeName: "expression",
+                        languageName: "sql",
+                      },
+                    },
+                    {
+                      occurs: "*",
+                      nodeType: {
+                        typeName: "sortOrder",
+                        languageName: "sql",
+                      },
+                    },
+                  ],
                 },
+                between: {
+                  name: "columnSeparator",
+                  tags: ["space-after"],
+                  type: "terminal",
+                  symbol: ",",
+                },
+                cardinality: "+",
               },
             ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -200,6 +272,16 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
             base: "string",
             name: "value",
             type: "property",
+          },
+        ],
+      },
+      distinct: {
+        type: "concrete",
+        attributes: [
+          {
+            tags: ["keyword", "space-after"],
+            type: "terminal",
+            symbol: "DISTINCT",
           },
         ],
       },
@@ -218,13 +300,43 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         attributes: [
           {
             name: "colon",
+            tags: ["parameter"],
             type: "terminal",
             symbol: ":",
           },
           {
             base: "string",
             name: "name",
+            tags: ["parameter"],
             type: "property",
+          },
+        ],
+      },
+      sortOrder: {
+        type: "concrete",
+        attributes: [
+          {
+            type: "container",
+            children: [
+              {
+                name: "expression",
+                type: "sequence",
+                nodeTypes: ["expression"],
+              },
+              {
+                base: "string",
+                name: "order",
+                tags: ["keyword", "space-before"],
+                type: "property",
+                restrictions: [
+                  {
+                    type: "enum",
+                    value: ["ASC", "DESC"],
+                  },
+                ],
+              },
+            ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -232,19 +344,27 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            base: "string",
-            name: "refTableName",
-            type: "property",
-          },
-          {
-            name: "dot",
-            type: "terminal",
-            symbol: ".",
-          },
-          {
-            base: "string",
-            name: "columnName",
-            type: "property",
+            type: "container",
+            children: [
+              {
+                base: "string",
+                name: "refTableName",
+                tags: ["explicit-spaces"],
+                type: "property",
+              },
+              {
+                name: "dot",
+                type: "terminal",
+                symbol: ".",
+              },
+              {
+                base: "string",
+                name: "columnName",
+                tags: ["explicit-spaces"],
+                type: "property",
+              },
+            ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -263,24 +383,30 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "keyword",
-            type: "terminal",
-            symbol: "INNER JOIN",
-          },
-          {
-            name: "table",
-            type: "sequence",
-            nodeTypes: ["tableIntroduction"],
-          },
-          {
-            name: "keywordOn",
-            type: "terminal",
-            symbol: "ON",
-          },
-          {
-            name: "on",
-            type: "sequence",
-            nodeTypes: ["expression"],
+            type: "container",
+            children: [
+              {
+                tags: ["keyword", "component"],
+                type: "terminal",
+                symbol: "INNER JOIN",
+              },
+              {
+                name: "table",
+                type: "sequence",
+                nodeTypes: ["tableIntroduction"],
+              },
+              {
+                tags: ["keyword", "space-around"],
+                type: "terminal",
+                symbol: "ON",
+              },
+              {
+                name: "on",
+                type: "sequence",
+                nodeTypes: ["expression"],
+              },
+            ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -288,19 +414,25 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "parenOpen",
-            type: "terminal",
-            symbol: "(",
-          },
-          {
-            name: "expression",
-            type: "sequence",
-            nodeTypes: ["expression"],
-          },
-          {
-            name: "parenClose",
-            type: "terminal",
-            symbol: ")",
+            type: "container",
+            children: [
+              {
+                name: "parenOpen",
+                type: "terminal",
+                symbol: "(",
+              },
+              {
+                name: "expression",
+                type: "sequence",
+                nodeTypes: ["expression"],
+              },
+              {
+                name: "parenClose",
+                type: "terminal",
+                symbol: ")",
+              },
+            ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -308,24 +440,30 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "delete",
-            type: "sequence",
-            nodeTypes: ["delete"],
-          },
-          {
-            name: "from",
-            type: "sequence",
-            nodeTypes: ["from"],
-          },
-          {
-            name: "where",
-            type: "sequence",
-            nodeTypes: [
+            type: "container",
+            children: [
               {
-                occurs: "?",
-                nodeType: "where",
+                name: "delete",
+                type: "sequence",
+                nodeTypes: ["delete"],
+              },
+              {
+                name: "from",
+                type: "sequence",
+                nodeTypes: ["from"],
+              },
+              {
+                name: "where",
+                type: "sequence",
+                nodeTypes: [
+                  {
+                    occurs: "?",
+                    nodeType: "where",
+                  },
+                ],
               },
             ],
+            orientation: "vertical",
           },
         ],
       },
@@ -333,49 +471,50 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "select",
-            type: "sequence",
-            nodeTypes: [
+            type: "container",
+            children: [
               {
-                occurs: "1",
-                nodeType: "select",
+                name: "select",
+                type: "sequence",
+                nodeTypes: ["select"],
+              },
+              {
+                name: "from",
+                type: "sequence",
+                nodeTypes: ["from"],
+              },
+              {
+                name: "where",
+                type: "sequence",
+                nodeTypes: [
+                  {
+                    occurs: "?",
+                    nodeType: "where",
+                  },
+                ],
+              },
+              {
+                name: "groupBy",
+                type: "sequence",
+                nodeTypes: [
+                  {
+                    occurs: "?",
+                    nodeType: "groupBy",
+                  },
+                ],
+              },
+              {
+                name: "orderBy",
+                type: "sequence",
+                nodeTypes: [
+                  {
+                    occurs: "?",
+                    nodeType: "orderBy",
+                  },
+                ],
               },
             ],
-          },
-          {
-            name: "from",
-            type: "sequence",
-            nodeTypes: ["from"],
-          },
-          {
-            name: "where",
-            type: "sequence",
-            nodeTypes: [
-              {
-                occurs: "?",
-                nodeType: "where",
-              },
-            ],
-          },
-          {
-            name: "groupBy",
-            type: "sequence",
-            nodeTypes: [
-              {
-                occurs: "?",
-                nodeType: "groupBy",
-              },
-            ],
-          },
-          {
-            name: "orderBy",
-            type: "sequence",
-            nodeTypes: [
-              {
-                occurs: "?",
-                nodeType: "orderBy",
-              },
-            ],
+            orientation: "vertical",
           },
         ],
       },
@@ -383,34 +522,51 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            base: "string",
-            name: "name",
-            type: "property",
-          },
-          {
-            name: "paren-open",
-            type: "terminal",
-            symbol: "(",
-          },
-          {
-            name: "arguments",
-            type: "sequence",
-            between: {
-              name: "param-separator",
-              type: "terminal",
-              symbol: ",",
-            },
-            nodeTypes: [
+            type: "container",
+            children: [
               {
-                occurs: "*",
-                nodeType: "expression",
+                base: "string",
+                name: "name",
+                tags: ["keyword"],
+                type: "property",
+              },
+              {
+                name: "paren-open",
+                type: "terminal",
+                symbol: "(",
+              },
+              {
+                name: "distinct",
+                type: "sequence",
+                nodeTypes: [
+                  {
+                    occurs: "?",
+                    nodeType: "distinct",
+                  },
+                ],
+              },
+              {
+                name: "arguments",
+                type: "sequence",
+                between: {
+                  name: "param-separator",
+                  type: "terminal",
+                  symbol: ",",
+                },
+                nodeTypes: [
+                  {
+                    occurs: "*",
+                    nodeType: "expression",
+                  },
+                ],
+              },
+              {
+                name: "paren-close",
+                type: "terminal",
+                symbol: ")",
               },
             ],
-          },
-          {
-            name: "paren-close",
-            type: "terminal",
-            symbol: ")",
+            orientation: "horizontal",
           },
         ],
       },
@@ -418,7 +574,7 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "star",
+            tags: ["operator"],
             type: "terminal",
             symbol: "*",
           },
@@ -428,24 +584,30 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "keyword",
-            type: "terminal",
-            symbol: "INNER JOIN",
-          },
-          {
-            name: "table",
-            type: "sequence",
-            nodeTypes: ["tableIntroduction"],
-          },
-          {
-            name: "keywordUsing",
-            type: "terminal",
-            symbol: "USING",
-          },
-          {
-            name: "using",
-            type: "sequence",
-            nodeTypes: ["expression"],
+            type: "container",
+            children: [
+              {
+                tags: ["keyword", "component"],
+                type: "terminal",
+                symbol: "INNER JOIN",
+              },
+              {
+                name: "table",
+                type: "sequence",
+                nodeTypes: ["tableIntroduction"],
+              },
+              {
+                tags: ["keyword", "space-around"],
+                type: "terminal",
+                symbol: "USING",
+              },
+              {
+                name: "using",
+                type: "sequence",
+                nodeTypes: ["expression"],
+              },
+            ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -453,20 +615,27 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            base: "string",
-            name: "operator",
-            type: "property",
-            restrictions: [
+            type: "container",
+            children: [
               {
-                type: "enum",
-                value: ["and", "or"],
+                base: "string",
+                name: "operator",
+                tags: ["operator"],
+                type: "property",
+                restrictions: [
+                  {
+                    type: "enum",
+                    value: ["AND", "OR"],
+                  },
+                ],
+              },
+              {
+                name: "expression",
+                type: "sequence",
+                nodeTypes: ["expression"],
               },
             ],
-          },
-          {
-            name: "expression",
-            type: "sequence",
-            nodeTypes: ["expression"],
+            orientation: "horizontal",
           },
         ],
       },
@@ -474,19 +643,25 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
         type: "concrete",
         attributes: [
           {
-            name: "lhs",
-            type: "sequence",
-            nodeTypes: ["expression"],
-          },
-          {
-            name: "operator",
-            type: "sequence",
-            nodeTypes: ["relationalOperator"],
-          },
-          {
-            name: "rhs",
-            type: "sequence",
-            nodeTypes: ["expression"],
+            type: "container",
+            children: [
+              {
+                name: "lhs",
+                type: "sequence",
+                nodeTypes: ["expression"],
+              },
+              {
+                name: "operator",
+                type: "sequence",
+                nodeTypes: ["relationalOperator"],
+              },
+              {
+                name: "rhs",
+                type: "sequence",
+                nodeTypes: ["expression"],
+              },
+            ],
+            orientation: "horizontal",
           },
         ],
       },
@@ -496,13 +671,8 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
           {
             base: "string",
             name: "name",
+            tags: ["explicit-spaces"],
             type: "property",
-          },
-          {
-            base: "string",
-            name: "alias",
-            type: "property",
-            isOptional: true,
           },
         ],
       },
@@ -512,6 +682,7 @@ export const GRAMMAR_SQL_DESCRIPTION: Schema.GrammarDescription = {
           {
             base: "string",
             name: "operator",
+            tags: ["operator", "space-around"],
             type: "property",
             restrictions: [
               {

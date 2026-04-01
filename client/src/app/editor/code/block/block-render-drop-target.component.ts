@@ -28,6 +28,7 @@ import {
   dropLocationHasChildren,
 } from "./drop-target-state";
 import { RenderedCodeResourceService } from "./rendered-coderesource.service";
+import { CurrentCodeResourceService } from "../../current-coderesource.service";
 
 const CSS_WHITE = "255, 255, 255";
 const CSS_YELLOW = "255, 255, 0";
@@ -170,9 +171,12 @@ export class BlockRenderDropTargetComponent {
    */
   private _currentMouseTarget = new BehaviorSubject(false);
 
+  public _isSelected$ = new BehaviorSubject(false);
+
   constructor(
     private _dragService: DragService,
-    private _renderData: RenderedCodeResourceService
+    private _renderData: RenderedCodeResourceService,
+    private _currentCodeResourceService: CurrentCodeResourceService
   ) {}
 
   /**
@@ -274,7 +278,7 @@ export class BlockRenderDropTargetComponent {
   /**
    * True if either the drop target or the drop location should be shown.
    */
-  readonly showAnything: Observable<boolean> = combineLatest(
+  readonly showAnything$: Observable<boolean> = combineLatest(
     this._isCurrentDropCandidate,
     this._isHole$,
     this._parentRequiresChildren$,
@@ -316,6 +320,19 @@ export class BlockRenderDropTargetComponent {
   onMouseOut(evt: MouseEvent) {
     this._currentMouseTarget.next(false);
     evt.stopPropagation();
+  }
+
+  onMouseClick(evt: MouseEvent) {
+    /*this._renderData.syntaxTree
+    this._renderData.validator
+    this._dragService.peekDragData.draggedDescription
+    const newTree = this._renderData.syntaxTree.insertNode(this.dropLocation , this._dragService.peekDragData.draggedDescription[0])
+    const result = this._renderData.validator.validateFromRoot(newTree)
+    const node = newTree.locate(this.dropLocation)
+    result.getErrorsOn(node)*/
+    this._currentCodeResourceService.setCurrentHoleLocation(this.dropLocation);
+    console.log(this._currentCodeResourceService.currentHoleLocation$);
+    this._isSelected$.next(true);
   }
 
   readonly displayText = this._isCurrentDropCandidate.pipe(

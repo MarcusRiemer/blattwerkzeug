@@ -2,10 +2,12 @@
      re-triggered when the drop placeholder is swapped out with
      the pre-rendered block.-->
 <div
-  *ngIf="(showAnything | async)"
+  *ngIf="(showAnything$ | async)"
   [@background-color]="targetState$ | async"
   (mouseover)="onMouseEnter($event)"
   (mouseout)="onMouseOut($event)"
+  [ngClass]="{holeIsSelected: _isSelected$ | async}"
+  (click)="onMouseClick($event)"
 >
   &nbsp;{{ displayText | async }}&nbsp;
 </div>

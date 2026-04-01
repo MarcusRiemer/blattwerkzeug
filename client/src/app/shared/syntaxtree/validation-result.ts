@@ -25,9 +25,9 @@ export enum ErrorCodes {
   InvalidMinOccurences = "INVALID_MIN_OCCURENCES",
   // A property was expected, but simply did not exist
   MissingProperty = "MISSING_PROPERTY",
-  // A child was present, but somehow it's type wasn't asked for
-  IllegalPropertyType = "ILLEGAL_PROPERTY_TYPE",
   // A property was present, but breached a restriction
+  IllegalPropertyType = "ILLEGAL_PROPERTY_TYPE",
+  // A child was present, but somehow it's type wasn't asked for
   IllegalChildType = "ILLEGAL_CHILD_TYPE",
   // A type mentions a child category that is not present in a node
   SuperflousChildCategory = "SUPERFLOUS_CHILD_CATEGORY",

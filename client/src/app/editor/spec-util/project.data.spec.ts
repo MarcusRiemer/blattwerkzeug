@@ -40,6 +40,10 @@ const DEFAULT_EMPTY_PROJECT: FullProjectNode = {
   public: false,
   indexPageId: null,
   slug: null,
+  user: {
+    id: "0ef4cd8c-ff0c-460a-abcb-ff026f982f77",
+    displayName: "Testy McTestface",
+  },
 };
 
 const wrapProjectData = (data: FullProjectNode): FullProjectGQLResponse => {
