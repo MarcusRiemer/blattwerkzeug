@@ -8,6 +8,7 @@
 \usepackage{minted}
 \usepackage{listings}
 \usepackage{caption}
+\usepackage{wrapfig}
 \usepackage{subcaption}
 \usepackage{todonotes}
 \usepackage{csquotes}
@@ -23,7 +24,7 @@
 ]{biblatex}
 \addbibresource{forreal.bib}
 
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{cleveref}
 
 \setminted{linenos,frame=leftline}
@@ -40,7 +41,7 @@
 
 \tableofcontents
 
-\chapter{Introduction: Bridging the Gap}
+\chapter{Introduction - Bridging the Gap}
 \label{sec:introduction-bridging-the-gap}
 
 First introduces the IDE from an end user perspective, some screenshots of block editors and their runtimes.
@@ -49,12 +50,12 @@ Explain augmentation as the chosen approach
 
 Then a brief explanation of the underlying grammar
 
-\chapter{Motivation: Why yet another system?}
+\chapter{Motivation - Why yet Another System?}
 \label{sec:motivation}
 
 This chapter shows how the chosen approach of augmenting existing programming languages with block based editors relates to existing teaching strategies.
 
-\section{Picking a language to teach}
+\section{Picking a Language to Teach}
 
 Picking a suitable programming language for teaching is a task that requires careful evaluation and comes with many tradeoffs depending on the target domain (e.g. games, embedded system, mobile apps, the web, desktop programs, ...) and the people to be teached (e.g. age, motivation, prior knowledge, ...). Broadly speaking there are two paths with regards to the programming language itself: Adapting a professional programming language or picking a specialised language for learners. Today many professional programming languages are available without charge or are open source. Learners therefore often have the possibility to use the exact same languages as in the wider industry \todo{Choice in block languages has also increased}.
 
@@ -89,23 +90,23 @@ Another concept that aims at reducing complexity by providing dedicated spaces i
 
 A proper didactical reduction is one of the fundamentals of teaching. In programming education this reduction can take many forms, but more often than not is an artificial restriction by teachers. Haskell has compiler features that can be enabled or disabled, but for testing purposes. Racket allows this on a language level.
 
-\section{Drag \& drop augmentation of real world programming languages}
+\section{Drag \& Drop Augmentation of Real World Programming Languages}
 
 Fundamental: This is not about inventing new languages, it is about teaching existing languages.
 
-\chapter{Blattwerkzeug: Grammar-based descriptions of block based IDEs}
+\chapter{Blattwerkzeug: Grammar-Based Descriptions of Block Based IDEs}
 
 This chapter describes a formal definition that can be used to generate block based subsets of existing programming languages as well as \enquote{artificial} languages with a custom runtime. We call this formal definition a grammar, because the mental model of modelling a language is very similar to constructing a context free grammar in compiler construction. But the purpose of the BlattWerkzeug-grammar is sort of inverse to those of grammars in compiler construction: Instead of aiding in the conversion from a raw string to an abstract syntax tree, the BlattWerkzeug grammar is used to validate existing abstract syntax trees and to convert these trees into a properly formatted string representation of the corresponding program.
 
 Augmenting existing programming languages as a block based variation requires the specification of a grammar that ultimately emits valid source code of the target language.
 
-\section{Syntax of data type definitions}
+\section{Syntax of Data Type Definitions}
 
 Ultimately all data structures described in this document will be stored in the form of a JSON document at some point. All formal data type definitions therefore take the form of TypeScript type specifications and are taken from the implementation, although sometimes slightly compacted to improve readability. For example the codebase follows the convention of using a \texttt{Description}-suffix to denote types which are data-only. This helpful to distinguish the domain of types when programming, but redundant when explaining.
 
-\section{Preliminary: Blattwerkzeug abstract syntax trees}
+\section{Blattwerkzeug Abstract Syntax Trees}
 
-Blattwerkzeugs abstract syntax trees are identified via a typename that consists of a language name and a local type name. Optionally a node stores atomic data as strings called \enquote{properties} and children in so called \enquote{named child groups}. A tree may be valid in the context of a specific grammar (see \cref{sec:grammar-specification}), but the tree itself has no concept of validity beyond the TypeScript type definition and in extension the JSON specifications when parsing a tree from it's string representation. The same goes for the visual representation: The tree itself requires a block language (see \cref{sec:block-language-specification}) in order to have a mapping to elements of a user interface. The formal data type definition is in \cref{lst:type-node-description}.
+BlattWerkzeugs abstract syntax trees are identified via a typename that consists of a language name and a local type name. Optionally a node stores atomic data as strings called \enquote{properties} and children in so called \enquote{named child groups}. A tree may be valid in the context of a specific grammar (see \cref{sec:grammar-specification}), but the tree itself has no concept of validity beyond the TypeScript type definition and in extension the JSON specifications when parsing a tree from it's string representation. The same goes for the visual representation: The tree itself requires a block language (see \cref{sec:block-language-specification}) in order to have a mapping to elements of a user interface. The formal data type definition is in \cref{lst:type-node-description}.
 
 \begin{listing}[!ht]
 \begin{minted}{typescript}
@@ -177,7 +178,7 @@ In order to address restrictions for certain groups of \textbf{child nodes} in t
 \label{ast:with-children}
 \end{figure}
 
-\section{Example: Boolean Expression Language}
+\section{Boolean Expression Language Example}
 
 This section implements a possible syntax for basic language to denote boolean expressions by providing a grammar.
 
@@ -325,7 +326,7 @@ grammar bool {
 
 Alternative: Use a single node with a boolean property.
 
-\section{Example: XML languages}
+\section{XML languages examples}
 
 Prior example focussed on ground rules for validation to define the structure of valid trees and barely touched the possibilities to control the representation of the text representation. This example will show how any XML language can be defined structurally, extended to a valid XML-text-representation and refined to follow more conventional code layout by using indentation in the textual representation.
 
@@ -421,14 +422,13 @@ interface QualifiedTypeName {
 
 \subsection{API overview}
 
-\section{Block language specification}
-\label{sec:block-language-specification}
-
-\section{Interpretation of block languages: The builtin block editor}
+\section{Interpretation of block languages -- The builtin block editor}
 
 The BlattWerkzeug IDE does not immediately use grammars to visualize syntax trees, instead it relies on a structure called block language which adds a few more fine tuning options not present on the grammar level.
 
 \subsection{Compiling a grammar to a block language}
+
+Shows the general process of mapping these definitions.
 
 \subsection{Block editor UI elements}
 
@@ -436,23 +436,64 @@ The BlattWerkzeug IDE does not immediately use grammars to visualize syntax tree
 
 Block language configuration allows to choose relevant editor modules.
 
-\section{The surrounding IDE: syntax trees as code resources}
+\section{Block language specification}
+\label{sec:block-language-specification}
+
+\subsection{block}
+
+\subsection{container}
+
+\subsection{interpolate}
+
+\subsection{input}
+
+\subsection{error}
+
+\section{The surrounding IDE -- Syntax Trees as Code Resources}
 
 AST representation stored in the database alongside a name.
 
+\newpage
+
 \section{Providing Blocks: The sidebar}
+
+\begin{wrapfigure}{r}{0.3\textwidth}
+  \includegraphics[width=\linewidth]{screenshots/sidebar-sql}
+  \caption{BlattWerkzeug showing two sidebars with partially opened categories}
+  \label{fig:sidebar-sql}
+\end{wrapfigure}
+
+On the surface the sidebar simply fulfills an elemental requirement in any block based environment: This is the source of the available blocks, the place where blocks are dragged from. And while this is obviously a hard requirement, it has an important secondary as a memory aid. In text based programming options available are usually learned in advance and have to be remembered. Looking at available blocks allows the learner to pick from a set of options, possibly by recalling their function once she or he sees them.
+
+As Blatt-Werkzeug is distinctly aiming to work with real world programming languages, the blocks are often resembling syntactic constructs like \texttt{if}, \texttt{for}, \texttt{SELECT}, \texttt{<h1></h1>}, ... These identifiers are not as self-explanatory as in for example Scratch and it's stage metaphor with things like \texttt{Move}, \texttt{Say}, \texttt{Play Sound}, ... But this is not an inherent shortcoming of the approach: Most of these easier to grasp operations are simply function calls under the hood.. The \nameref{sec:trucklino} runtime demonstrates a wide range of \enquote{natural} blocks to move a truck forward, set turn signals or to sense traffic lights.
+
+In BlattWerkzeug blocks in the sidebar are part of a three level hierarchy:
+
+\begin{itemize}
+\item The \textbf{top level sidebar} may appear multiple times and have a caption. \Cref{fig:sidebar-sql} shows examples named \enquote{Datenbank \texttt{default}} and \enquote{SQL}.
+\item Each sidebar defines collapsible \textbf{categories} which are also named. \Cref{fig:sidebar-sql} shows examples named \enquote{Auftritt}, \enquote{Charakter}, ... to list all tables and \enquote{Ausdrücke}, \enquote{Funktionen}, ... to group SQL blocks. In the state of the screenshot, only the category for table \enquote{Auftritt} and the category \enquote{Funktionen} are opened. Note that in the case of the tables, the category itself is also a draggable block.
+\item Below the category is where \textbf{blocks} themselves are defined and also display a caption.
+\end{itemize}
+
+\Cref{fig:sidebar-sql} also gives a hint, that there must be statically and dynamically populated sidebars: The syntactic elements of SQL are known in advance and can be specified using a grammar. But the schema of the database changes at runtime and can not meaningfully be defined by a grammar.
 
 \subsection{Manually Defined}
 
+Part of the block language.
+
 \subsection{Automatically Generated}
 
-\subsection{Generated via runtime}
+Can be inferred from grammar.
+
+\subsection{Generated via Runtime}
 \label{sec:generated-via-runtime}
 
-\subsection{Interacting with holes: filtering blocks}
+Require code to be written.
+
+\subsection{Interacting with holes -- filtering blocks}
 \label{sec:interacting-holes-filter}
 
-\section{Mutating the tree: A closer look at drag \& drop Operations}
+\section{Mutating the Tree -- A Closer Look at Drag \& Drop Operations}
 \label{sec:mutating-the-tree-drag-drop-operations}
 
 What to do when a block is moved inside a tree?
@@ -479,25 +520,25 @@ Allows nodes that introduce identifiers to change to a reference for that identi
 
 All examples so far readily used multiple \texttt{children} per node type, often interspersed with terminal symbols. But there is a more general rule: It is seldomly useful to represent sequences of valid types in a single \texttt{children} directive.
 
-\subsection{Why the EBNF does not suffice}
+\subsection{Why the EBNF is not sufficiant}
 \label{sec:why-the-ebnf-does-not-suffice}
 
 Modelling \texttt{allowed} with e.g. a cardinality of \texttt{?} in EBNF would be very tedious.
 
-\subsection{Example: Re-ordering regular expressions}
+\subsection{Re-ordering regular expressions}
 
 Work on sequences by Endri Memaj.
 
-\section{A way out: Custom Code generation for specific types}
+\section{A way out -- Custom Code Generation for Specific Types}
 \label{sec:possibility-custom-code-generation}
 
 What if the generated code must look different from the grammar representation?
 
-\subsection{Example: Omitting closing tags for empty HTML elements}
+\subsection{Omitting closing tags for empty HTML elements}
 
 \subsection{API overview}
 
-\section{Additional representations of a Blockwerzeug Syntax Tree}
+\section{Additional representations of a BlattWerkzeug Syntax Tree}
 
 The proposed grammar is not overly tightly associated with the block editor, it is also the basis for additional representations.
 
@@ -510,7 +551,7 @@ Useful when creating languages or dealing with odd errors.
 
 \subsection{A different approach to blocks via Google Blockly}
 
-\chapter{Case Studies: Self hosting \& real world Programming languages}
+\chapter{Case Studies -- Self hosting \& real world Programming languages}
 
 \section{BlattWerkzeug Meta Grammar}\label{sec:meta-grammar}
 
@@ -520,7 +561,7 @@ Shows bootstrapping / Self Hostedness
 
 \subsection{Omissions}
 
-\subsection{JSON Representation irrelevant because of tool}
+\subsection{Pretty Printing Provides the best Overview}
 \label{sec:json-representation-irrelevant-because-of-tool}
 
 \section{SQL}
@@ -528,7 +569,7 @@ Shows bootstrapping / Self Hostedness
 
 \subsection{SQLite Runtime}
 
-\subsection{Parameterisation}
+\subsection{Parameterisation of Queries}
 
 \subsection{Runtime block data from the database}
 
@@ -540,19 +581,19 @@ Shows bootstrapping / Self Hostedness
 \subsection{Browser Runtime}
 
 \subsection{Trucklino}
+\label{sec:trucklino}
 
 Special JavaScript runtime that emits generator code for stepwise execution.
 
 \chapter{Conclusion}
 \label{sec:conclusion}
 
-\section{Proven patterns when modelling languages with BlattWerkzeug}
+\section{Proven Patterns when Modelling Languages with BlattWerkzeug}
 
-\section{Informal user acceptance tests}
-
-\section{Grammar is convenient, no need for levels}
+\section{No Need for Language Levels -- Grammars are Convenient}
 \label{sec:no-need-for-levels}
 
+\section{Informal User Acceptance Tests}
 
 \appendix
 
