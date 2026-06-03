@@ -96,7 +96,7 @@ Fundamental: This is not about inventing new languages, it is about teaching exi
 
 \chapter{Blattwerkzeug: Grammar-Based Descriptions of Block Based IDEs}
 
-This chapter describes a formal definition that can be used to generate block based subsets of existing programming languages as well as \enquote{artificial} languages with a custom runtime. We call this formal definition a grammar, because the mental model of modelling a language is very similar to constructing a context free grammar in compiler construction. But the purpose of the BlattWerkzeug-grammar is sort of inverse to those of grammars in compiler construction: Instead of aiding in the conversion from a raw string to an abstract syntax tree, the BlattWerkzeug grammar is used to validate existing abstract syntax trees and to convert these trees into a properly formatted string representation of the corresponding program.
+This chapter describes a formal definition that can be used to generate block based subsets of existing programming languages as well as \enquote{artificial} languages with a custom runtime. We call this formal definition a grammar, because the mental model of modelling a language in Blatt\-Werkzeug is very similar to constructing a formal grammar in compiler construction. But the purpose of the BlattWerkzeug-grammar is sort of inverse to those of grammars in compiler construction: Instead of aiding in the conversion from a raw string to an abstract syntax tree, the BlattWerkzeug grammar is used to validate existing abstract syntax trees and to convert these trees into a properly formatted string representation of the corresponding program.
 
 Augmenting existing programming languages as a block based variation requires the specification of a grammar that ultimately emits valid source code of the target language.
 
@@ -322,9 +322,61 @@ grammar bool {
 \label{lst:bool-grammar-exp-bin-redundant}
 \end{listing}
 
-\subsection{Design: Truth values}
+In conventional grammars this can be solved by introducing a new nonterminal symbol which contains productions that may result in exactly the nonterminals which we expect in the place of an expression. In Blatt\-Werkzeug we can emulate this behaviour using a node with a single child, as demonstrated in \cref{lst:bool-grammar-exp-bin-avoid-redundancy-node}. Semantically this works fine, but for people working with the block editor it introduces an unwanted side effect: The \texttt{exp} block has no visualisation. For the text-only representation this is helpful: If the examples in \Cref{fig:boolean-expr-examples-neg} would be rendered using \cref{lst:bool-grammar-exp-bin-avoid-redundancy-node}, the results would be exactly as before.
 
-Alternative: Use a single node with a boolean property.
+\begin{listing}[!ht]
+\begin{minted}[escapeinside=§§,highlightlines={9,12,14,16-18}]{text}
+grammar bool {
+  node true  { "true" }
+  node false { "false" }
+  node var {
+    prop name string
+  }
+  node neg {
+    "¬"
+    children value ::= exp
+  }
+  node bin {
+    children left  ::= exp
+    prop op  string { enum "§$\land$§" "§$\lor$§" }
+    children right ::= exp
+  }
+  node exp {
+    children exp   ::= true | false | var | neg | bin
+  }
+}
+\end{minted}
+\caption{Boolean Expression Grammar: Unary and Binary expressions with node to avoid redundancy}
+\label{lst:bool-grammar-exp-bin-avoid-redundancy-node}
+\end{listing}
+
+But for the visual editor, the introduction of a block without any property or terminal symbol results in a confusing user interface.
+
+\todo{Screenshots of confusing blocks}
+
+\subsection{Designing Truth values}
+
+Modelling \texttt{true} and \texttt{false} as distinct nodes closely resembles their nature as classical keywords in grammars for conventional programming languages. Any object oriented programming language will most introduce the terminal symbol \texttt{class} in the respective grammar and in extension this idea of \enquote{surely these must be keywords} seems like a natural fit to the \texttt{boolean} datatype.
+
+But as BlattWerkzeug already implements data types for the \texttt{prop} values of nodes, there is also a \texttt{bool} type. An alternative way to model the \texttt{true} and \texttt{false} values would therefore be as shown in the following
+
+\begin{listing}[!ht]
+\begin{minted}[escapeinside=§§,highlightlines={2-4, 6}]{text}
+grammar bool {
+  node value {
+    prop value bool
+  }
+
+  typedef expr ::= value | var | neg | bin
+
+  // Rest of grammar as seen before
+}
+\end{minted}
+\caption{Boolean Expression Grammar: Single node truth value}
+\label{lst:bool-grammar-single-node-truth-value}
+\end{listing}
+
+This representation removes any direct mention of the terminal symbols \texttt{true} and \texttt{false} from the grammar and replaces it with a semantically equivalent property. It does not change the expressiveness of the modeled language, but the way the user perceives it: \texttt{bool} properties are rendered as checkboxes. This drastically changes to complexity to deal with such values at runtime: A single click turns a \texttt{true} value into a \texttt{false} value.
 
 \section{XML languages examples}
 
@@ -463,9 +515,9 @@ AST representation stored in the database alongside a name.
   \label{fig:sidebar-sql}
 \end{wrapfigure}
 
-On the surface the sidebar simply fulfills an elemental requirement in any block based environment: This is the source of the available blocks, the place where blocks are dragged from. And while this is obviously a hard requirement, it has an important secondary as a memory aid. In text based programming options available are usually learned in advance and have to be remembered. Looking at available blocks allows the learner to pick from a set of options, possibly by recalling their function once she or he sees them.
+On the surface the sidebar simply fulfills an elemental requirement in any block based environment: This is the source of available blocks, the place where blocks are dragged from. And while this is obviously a hard requirement, it has an important secondary function as a memory aid. In text based programming options available are usually learned in advance and have to be remembered. Looking at available blocks allows the learner to pick from a set of options, possibly by recalling their function once she or he sees them.
 
-As Blatt-Werkzeug is distinctly aiming to work with real world programming languages, the blocks are often resembling syntactic constructs like \texttt{if}, \texttt{for}, \texttt{SELECT}, \texttt{<h1></h1>}, ... These identifiers are not as self-explanatory as in for example Scratch and it's stage metaphor with things like \texttt{Move}, \texttt{Say}, \texttt{Play Sound}, ... But this is not an inherent shortcoming of the approach: Most of these easier to grasp operations are simply function calls under the hood.. The \nameref{sec:trucklino} runtime demonstrates a wide range of \enquote{natural} blocks to move a truck forward, set turn signals or to sense traffic lights.
+As Blatt\-Werkzeug is distinctly aiming to work with real world programming languages, the blocks are often resembling syntactic constructs like \texttt{if}, \texttt{for}, \texttt{SELECT}, \texttt{<h1></h1>}, ... These identifiers are not as self-explanatory as in for example Scratch and it's stage metaphor with things like \texttt{Move}, \texttt{Say}, \texttt{Play Sound}, ... But this is not an inherent shortcoming of the approach: Most of these easier to grasp operations are simply function calls under the hood.. The \nameref{sec:trucklino} runtime demonstrates a wide range of \enquote{natural} blocks to move a truck forward, set turn signals or to sense traffic lights.
 
 In BlattWerkzeug blocks in the sidebar are part of a three level hierarchy:
 
