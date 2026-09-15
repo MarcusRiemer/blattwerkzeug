@@ -31,7 +31,7 @@ gem 'redcarpet'
 gem 'jwt'
 
 # oAuth2 authentication
-gem 'omniauth', '1.9.1'
+gem 'omniauth', '2.0.0'
 
 # Integrate with the keycloak-server
 gem 'omniauth-keycloak'
