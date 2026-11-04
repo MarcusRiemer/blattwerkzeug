@@ -127,7 +127,7 @@ editor-block-host {
                 width: $relative-drop-hint-size;
             }
 
-            .begin-drop:hover {
+            .begin-drop {
                 background: linear-gradient(
                     to left,
                     rgba(255,255,255,0) 10%,
@@ -142,7 +142,7 @@ editor-block-host {
                 width: $relative-drop-hint-size;
             }
 
-            .end-drop:hover {
+            .end-drop {
                 background: linear-gradient(
                     to right,
                     rgba(255,255,255,0) 10%,
