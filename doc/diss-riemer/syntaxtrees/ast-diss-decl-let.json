@@ -1,0 +1,15 @@
+{
+  "language": "assign",
+  "name": "decl_let",
+  "properties": {
+    "name": "a"
+  },
+  "children": {
+    "init": [
+      {
+        "language": "assign",
+        "name": "opt_empty"
+      }
+    ]
+  }
+}

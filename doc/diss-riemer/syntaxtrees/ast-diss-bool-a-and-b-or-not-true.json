@@ -1,0 +1,52 @@
+{
+  "language": "bool",
+  "name": "bin",
+  "properties": {
+    "op": "∧"
+  },
+  "children": {
+    "left": [
+      {
+        "language": "bool",
+        "name": "var",
+        "properties": {
+          "name": "A"
+        }
+      }
+    ],
+    "right": [
+      {
+        "language": "bool",
+        "name": "bin",
+        "properties": {
+          "op": "∨"
+        },
+        "children": {
+          "left": [
+            {
+              "language": "bool",
+              "name": "var",
+              "properties": {
+                "name": "B"
+              }
+            }
+          ],
+          "right": [
+            {
+              "language": "bool",
+              "name": "neg",
+              "children": {
+                "value": [
+                  {
+                    "language": "bool",
+                    "name": "true"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

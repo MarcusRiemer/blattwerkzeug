@@ -1,0 +1,18 @@
+{
+  "language": "assign",
+  "name": "decl_let",
+  "properties": {
+    "name": "b"
+  },
+  "children": {
+    "init": [
+      {
+        "language": "assign",
+        "name": "opt_eq",
+        "properties": {
+          "value": "3"
+        }
+      }
+    ]
+  }
+}

@@ -4,14 +4,19 @@
 \usepackage[a4paper]{geometry}
 \usepackage[skip=5pt, indent=0pt]{parskip}
 \usepackage{acronym}
+\usepackage{amsmath}
+\usepackage[shortlabels]{enumitem}
 \usepackage{graphicx}
 \usepackage{minted}
+\usepackage{multicol}
 \usepackage{listings}
 \usepackage{caption}
 \usepackage{wrapfig}
 \usepackage{subcaption}
 \usepackage{todonotes}
 \usepackage{csquotes}
+\usepackage{tcolorbox}
+\usepackage[section]{placeins}
 
 \usepackage[
     backend=biber,
@@ -26,6 +31,11 @@
 
 \usepackage[hidelinks]{hyperref}
 \usepackage{cleveref}
+
+\DeclareCaptionSubType{listing}
+
+\newtcbox{\BlattWerkzeugBlock}[1][blue!30]{on line,
+    colback=#1, colframe=#1, boxsep=0pt, boxrule=0pt, size=small, arc=1mm}
 
 \setminted{linenos,frame=leftline}
 
@@ -64,7 +74,7 @@ Once a teacher has picked a programming language, the next choice arises. In pra
 \section{Block Based Programming}
 \label{sec:block-based-programming}
 
-Visual code editors that make use of drag and drop are commonly referred to as \enquote{block based} editors or programming languages. The probably most prominent example in the space is Scratch, which was released in 2007 \cite{clark_relax_2001} and implements its own programming language. Today Scrtach is available as a browser application \footnote{\url{https://scratch.mit.edu/}} and the block editor user interface is built upon Googles Blockly library\footnote{\url{https://developers.google.com/blockly}}.
+Visual code editors that make use of drag and drop are commonly referred to as \enquote{block based} editors or programming languages. The probably most prominent example in the space is Scratch, which was released in 2007 \cite{maloneyScratchProgrammingLanguage2010} and implements its own programming language. Today Scratch is available as a browser application \footnote{\url{https://scratch.mit.edu/}} and the block editor user interface is built upon Googles Blockly library\footnote{\url{https://developers.google.com/blockly}}.
 
 Scratch has demonstrated that visual programming environments are an excellent way for learners to take first steps in programming. It introduces a metaphor of \enquote{actors} acting out on a \enquote{stage} to describe a canvas on which objects can be moved around. Code is structured in terms of these actors and stages and can change their (often visual) properties. The concept of stacking and nesting blocks enforces proper indentation of code without the possibility of creating any syntactical errors. Having a sidebar to see available tools lowers the requirement to remember available options. It also adds the possibility to explore what options are provided by Scratch.
 
@@ -83,7 +93,7 @@ One common step after Scratch is the MIT App Inventor. It keeps the idea of bloc
 \section{Frames}
 \label{sec:frames}
 
-Another concept that aims at reducing complexity by providing dedicated spaces in which code should be inserted. One such implementation is presented by \textcite{kolling_frame-based_2015} as part of the Greenfoot IDE to teach and learn Java programming\footnote{\url{https://www.greenfoot.org/frames/}}.
+Another concept that aims at reducing complexity by providing dedicated spaces in which code should be inserted. One such implementation is presented by \textcite{kollingFrameBasedEditingEasing2015} as part of the Greenfoot IDE to teach and learn Java programming\footnote{\url{https://www.greenfoot.org/frames/}}.
 
 \section{Levels}
 \label{sec:levels}
@@ -94,21 +104,24 @@ A proper didactical reduction is one of the fundamentals of teaching. In program
 
 Fundamental: This is not about inventing new languages, it is about teaching existing languages.
 
-\chapter{Blattwerkzeug: Grammar-Based Descriptions of Block Based IDEs}
+\chapter{Blattwerkzeug: Grammar-based descriptions of block based development environments}
 
-This chapter describes a formal definition that can be used to generate block based subsets of existing programming languages as well as \enquote{artificial} languages with a custom runtime. We call this formal definition a grammar, because the mental model of modelling a language in Blatt\-Werkzeug is very similar to constructing a formal grammar in compiler construction. But the purpose of the BlattWerkzeug-grammar is sort of inverse to those of grammars in compiler construction: Instead of aiding in the conversion from a raw string to an abstract syntax tree, the BlattWerkzeug grammar is used to validate existing abstract syntax trees and to convert these trees into a properly formatted string representation of the corresponding program.
+This chapter describes a formal definition that can be used to generate block based subsets of existing programming languages as well as \enquote{artificial} languages with a custom runtime. We call this formal definition a grammar, because the mental model of modelling a language in Blatt\-Werkzeug is very similar to constructing a formal grammar in compiler construction. But the purpose of the BlattWerkzeug grammar is sort of inverse to those of grammars in compiler construction: Instead of aiding in the conversion from a raw string to an abstract syntax tree, the BlattWerkzeug grammar is used to validate existing abstract syntax trees and to convert these trees into a properly formatted string representation of the corresponding program.
 
-Augmenting existing programming languages as a block based variation requires the specification of a grammar that ultimately emits valid source code of the target language.
+The previous paragraph mentioned \enquote{subsets of existing programming languages}. This is not a technical limitation: The grammar is capable of expressing real world programming languages in their entirety, as long as they are expressible in a context free grammar. But the resulting editors would be very tedious to use. This might or might not be a solvable problem, but no matter what it is simply out of scope for this endeavour. So there is no hard limit like along the lines of \enquote{the tooling rejects grammars after defining X types}.
 
 \section{Syntax of Data Type Definitions}
 
-Ultimately all data structures described in this document will be stored in the form of a JSON document at some point. All formal data type definitions therefore take the form of TypeScript type specifications and are taken from the implementation, although sometimes slightly compacted to improve readability. For example the codebase follows the convention of using a \texttt{Description}-suffix to denote types which are data-only. This helpful to distinguish the domain of types when programming, but redundant when explaining.
+Ultimately all data structures described in this document (abstract syntax trees, grammars, block languages) will be stored in the form of a JSON document at some point. All formal data type definitions therefore take the form of TypeScript type specifications and are taken from the BlattWerkzeug source code. They are not verbatim copies, but slightly compacted to improve readability. For example the codebase follows the convention of using a \texttt{Description}-suffix to denote types which are data-only. This helpful to distinguish the domain of types when moving through the source code while programming, but redundant when explaining.
 
 \section{Blattwerkzeug Abstract Syntax Trees}
+\label{sec:blattwerkzeug-ast}
 
-BlattWerkzeugs abstract syntax trees are identified via a typename that consists of a language name and a local type name. Optionally a node stores atomic data as strings called \enquote{properties} and children in so called \enquote{named child groups}. A tree may be valid in the context of a specific grammar (see \cref{sec:grammar-specification}), but the tree itself has no concept of validity beyond the TypeScript type definition and in extension the JSON specifications when parsing a tree from it's string representation. The same goes for the visual representation: The tree itself requires a block language (see \cref{sec:block-language-specification}) in order to have a mapping to elements of a user interface. The formal data type definition is in \cref{lst:type-node-description}.
+The intended semantics of nodes in BlattWerkzeugs abstract syntax tree are always identifiable via a typename that consists of a language name and a local type name. Optionally a node stores atomic data as strings called \enquote{properties} and children in so called \enquote{named child groups}. A tree may be valid in the context of a specific grammar (see \cref{sec:grammar-specification}), but the tree itself has no concept of validity beyond the TypeScript type definition and in extension the JSON specifications when parsing a tree from it's string representation. The same goes for the visual representation: The tree itself requires a block language (see \cref{sec:block-language-specification}) in order to have a mapping to elements of a user interface. The formal data type definition is in \cref{lst:type-node-description}. \Cref{lst:example-grammar-html-typedef-content-model} shows an example grammar that introduces two \texttt{typedef}s: \texttt{metadata-content} which is meant to be used in \texttt{head} and \texttt{flow-content} which is meant to be used in \texttt{body}.
 
-\begin{listing}[!ht]
+
+
+\begin{listing}[H]
 \begin{minted}{typescript}
 interface NodeDescription {
   name: string
@@ -140,7 +153,7 @@ The structure itself and the intentions for properties and named child groups ar
 \label{ast:name-only}
 \end{figure}
 
-\textbf{Properties} are used to represent atomic data: values which are effectively leafs of the tree and may not have children of their own. They are always stored as strings, but the value stored may be subject to additional restrictions during validation. In the graphical representation properties are displayed as a table inside the box of the node. \Cref{ast:with-prop} shows how a node could represent the a name of a variable in an expression.
+\textit{Properties} are used to represent atomic data: values which are effectively leafs of the tree and may not have children of their own. They are always stored as strings, but the value stored may be subject to additional restrictions during validation. In the graphical representation properties are displayed as a table inside the box of the node. \Cref{ast:with-prop} shows how a node could represent the a name of a variable in an expression.
 
 \begin{figure}[p]
 \centering
@@ -159,7 +172,7 @@ The structure itself and the intentions for properties and named child groups ar
 \label{ast:with-prop}
 \end{figure}
 
-In order to address restrictions for certain groups of \textbf{child nodes} in the grammar, every child is associated with the name of a corresponding child group. The names of these groups should reflect their nature: \Cref{ast:with-children} shows a binary expression where the child groups are named \texttt{left} and \texttt{right} as this is vital information for operations that are not commutative.
+In order to address restrictions for certain groups of \textit{child nodes} in the grammar, every child is associated with the name of a corresponding child group. The names of these groups should reflect their nature: \Cref{ast:with-children} shows a binary expression where the child groups are named \texttt{left} and \texttt{right} as this is vital information for operations that are not commutative.
 
 \begin{figure}[p]
 \centering
@@ -179,6 +192,7 @@ In order to address restrictions for certain groups of \textbf{child nodes} in t
 \end{figure}
 
 \section{Boolean Expression Language Example}
+\label{sec:boolean-expression-language-example}
 
 This section implements a possible syntax for basic language to denote boolean expressions by providing a grammar.
 
@@ -188,7 +202,7 @@ This example language demonstrates the basic concepts for structural validation 
 
 In the abstract syntax tree, we want to represent the atomic values $true$ and $false$ as two distinct types of nodes. \Cref{lst:bool-grammar-true-false} shows the meta grammar representation for this use case. It defines the node types \texttt{bool.true} and \texttt{bool.false}. Therefore trees consisting of exactly these node types as a root could be validated by the grammar\footnote{Technically the meta grammar representation uses the first defined type as root, so in strict terms only a tree consisting of \texttt{bool.true} would validate.}.
 
-\begin{listing}[!ht]
+\begin{listing}[H]
 \begin{minted}{text}
 grammar bool {
   node true  { }
@@ -201,7 +215,7 @@ grammar bool {
 
 To introduce free variables, a node called \texttt{var} is introduced in \cref{lst:bool-grammar-var}. Different variables are distinguished by the property (\texttt{prop}) called \texttt{name} and for the moment any \texttt{string} (this includes unwanted characters such as newlines) is a valid identifier.
 
-\begin{listing}[!ht]
+\begin{listing}[H]
 \begin{minted}[highlightlines={4-6}]{text}
 grammar bool {
   node true  { }
@@ -217,7 +231,7 @@ grammar bool {
 
 So far successfully validated \enquote{trees} could only ever consisted of a root node. In order to support negation, another new node \texttt{neg} is introduced in \cref{lst:bool-grammar-neg-explicit}. This introduces a child group named \enquote{value} using the \texttt{children} specifier. The right hand side of the \texttt{::=} delimiter is in the style of the extended Backus-Naur form (EBNF). So in this specific example there may be a single child that is either of node type \texttt{true}, \texttt{false}, \texttt{var} or \texttt{neg}.
 
-\begin{listing}[!ht]
+\begin{listing}[H]
 \begin{minted}[highlightlines={7-9}]{text}
 grammar bool {
   node true  { }
@@ -266,6 +280,8 @@ In practice these kinds of errors about structurally invalid trees are not expec
 \label{fig:boolean-expr-examples-neg}
 \end{figure}
 
+\subsection{Terminal Symbols}
+
 We can take the two valid examples one step further and take a look on how they would be rendered in text form:
 
 \begin{enumerate}
@@ -273,9 +289,9 @@ We can take the two valid examples one step further and take a look on how they 
 \item \Cref{fig:boolean-expr-examples-neg-double-false} renders to an empty string, but should be $\neg \neg false$
 \end{enumerate}
 
-This incorrect result is due to missing information in the grammar, the trees itself are fine. So far the only aspect that was represented in the rendered output was the value of the \texttt{prop name} of \texttt{var} and the observation, that this \texttt{prop} was stored as a child node of the root \texttt{neg} node. This is because in addition to defining the structure of the data, the defined \texttt{node}s also contain instructions on how to visually represent them. But \cref{lst:bool-grammar-neg-explicit} does not define any instructions on how to represent the \texttt{true} and \texttt{false} nodes.  We therefore extend the grammar in \cref{lst:bool-grammar-neg-explicit-terminals} to include \textbf{terminal symbols}. Now the instructions for the \texttt{true} and \texttt{false} node convey the corresponding terminal symbols that should be used for the string representation. The unicode negation character \texttt{¬} is used for the \texttt{neg} node and demonstrates that the order of instructions is important: During text rendering the instructions in a node will be followed from top to bottom. These examples also demonstrate that \texttt{children} instructions do not have a representation of their own (unlike \texttt{prop}), but they do instruct the rendering process to recurse into the nodes in that named child group. After extending the grammar with the terminal symbols for \texttt{true}, \texttt{false} and \texttt{neg}, their text representation matches the expected representation exactly.
+This incorrect result is due to missing information in the grammar, the trees itself are fine. So far the only aspect that was represented in the rendered output was the value of the \texttt{prop name} of \texttt{var} and the observation, that this \texttt{prop} was stored as a child node of the root \texttt{neg} node. This is because in addition to defining the structure of the data, the defined \texttt{node}s also contain instructions on how to visually represent them. But \cref{lst:bool-grammar-neg-explicit} does not define any instructions on how to represent the \texttt{true} and \texttt{false} nodes.  We therefore extend the grammar in \cref{lst:bool-grammar-neg-explicit-terminals} to include \textit{terminal symbols}. Now the instructions for the \texttt{true} and \texttt{false} node convey the corresponding terminal symbols that should be used for the string representation. The unicode negation character \texttt{¬} is used for the \texttt{neg} node and demonstrates that the order of instructions is important: During text rendering the instructions in a node will be followed from top to bottom. These examples also demonstrate that \texttt{children} instructions do not have a representation of their own (unlike \texttt{prop}), but they do instruct the rendering process to recurse into the nodes in that named child group. After extending the grammar with the terminal symbols for \texttt{true}, \texttt{false} and \texttt{neg}, their text representation matches the expected representation exactly.
 
-\begin{listing}[!ht]
+\begin{listing}[H]
 \begin{minted}[highlightlines={2,3,8}]{text}
 grammar bool {
   node true  { "true" }
@@ -293,13 +309,16 @@ grammar bool {
 \label{lst:bool-grammar-neg-explicit-terminals}
 \end{listing}
 
+\subsection{Visualisation issues when avoiding redundancy}
+\label{sec:bool-grammar-visualise-redundancy}
+
 Building upon these principles \cref{lst:bool-grammar-exp-bin-redundant} introduces the binary expression \texttt{bin} with childgroups for \texttt{left} and \texttt{right}. This serves as another example on how the order of instructions inside a node are used during the rendering transformation: When rendered the \texttt{op} will visually separate the the \texttt{left} child from the \textrm{right} child.
 
 \Cref{lst:bool-grammar-exp-bin-redundant} on line 13 also showcases the \texttt{enum} restriction for properties: Instead of allowing any string value to be used as an \texttt{op}eration, the only permitted values are defined as the \enquote{and} and \enquote{or} operations in their respective mathematical notation.
 
 An unpleasant aspect of \cref{lst:bool-grammar-exp-bin-redundant} is the excessive redundancy regarding the \texttt{children} types: \texttt{left} and \textrm{right} both state \texttt{true | false | var | neg | bin} and the \texttt{value} of \texttt{neg} had to be updated to include \texttt{bin}. All of these occurences must be kept identical, as they represent the concept of \enquote{being able to use any expression here} that applies to all child groups in this example.
 
-\begin{listing}[!ht]
+\begin{listing}[H]
 \begin{minted}[escapeinside=§§,highlightlines={9,11-15}]{text}
 grammar bool {
   node true  { "true" }
@@ -324,7 +343,7 @@ grammar bool {
 
 In conventional grammars this can be solved by introducing a new nonterminal symbol which contains productions that may result in exactly the nonterminals which we expect in the place of an expression. In Blatt\-Werkzeug we can emulate this behaviour using a node with a single child, as demonstrated in \cref{lst:bool-grammar-exp-bin-avoid-redundancy-node}. Semantically this works fine, but for people working with the block editor it introduces an unwanted side effect: The \texttt{exp} block has no visualisation. For the text-only representation this is helpful: If the examples in \Cref{fig:boolean-expr-examples-neg} would be rendered using \cref{lst:bool-grammar-exp-bin-avoid-redundancy-node}, the results would be exactly as before.
 
-\begin{listing}[!ht]
+\begin{listing}[H]
 \begin{minted}[escapeinside=§§,highlightlines={9,12,14,16-18}]{text}
 grammar bool {
   node true  { "true" }
@@ -350,17 +369,23 @@ grammar bool {
 \label{lst:bool-grammar-exp-bin-avoid-redundancy-node}
 \end{listing}
 
-But for the visual editor, the introduction of a block without any property or terminal symbol results in a confusing user interface.
+\begin{wrapfigure}{r}{0.30\textwidth}
+  \includegraphics[width=\linewidth]{screenshots/blocks-redundant.png}
+  \includegraphics[width=\linewidth]{screenshots/blocks-redundant-coloured.png}
+  \caption{$A \lor B$ with \texttt{bool.exp} blocks, highlighted in red in bottom image}
+  \label{fig:blocks-redundant-coloured}
+\end{wrapfigure}
 
-\todo{Screenshots of confusing blocks}
 
-\subsection{Designing Truth values}
+But for the visual editor, the introduction of a block without any property or terminal symbol results in a confusing user interface: These blocks are visually represented by a seemingly additional border around each permitted child block, an example is shown in \cref{fig:blocks-redundant-coloured}. The areas with red background in that image are the \texttt{bool.exp} blocks to host the \texttt{bool.bin} at the top level, a \texttt{bool.var} for $A$ at the left hand side and two levels of nesting on the right hand side for \texttt{bool.neg} with a \texttt{bool.var} child for $B$.
+
+\subsection{Designing truth values}
 
 Modelling \texttt{true} and \texttt{false} as distinct nodes closely resembles their nature as classical keywords in grammars for conventional programming languages. Any object oriented programming language will most introduce the terminal symbol \texttt{class} in the respective grammar and in extension this idea of \enquote{surely these must be keywords} seems like a natural fit to the \texttt{boolean} datatype.
 
 But as BlattWerkzeug already implements data types for the \texttt{prop} values of nodes, there is also a \texttt{bool} type. An alternative way to model the \texttt{true} and \texttt{false} values would therefore be as shown in the following
 
-\begin{listing}[!ht]
+\begin{listing}[H]
 \begin{minted}[escapeinside=§§,highlightlines={2-4, 6}]{text}
 grammar bool {
   node value {
@@ -376,44 +401,340 @@ grammar bool {
 \label{lst:bool-grammar-single-node-truth-value}
 \end{listing}
 
+\begin{wrapfigure}{r}{0.3\textwidth}
+  \includegraphics[width=\linewidth]{screenshots/blocks-bool-checkbox}
+  \caption{Visualisation of $(\neg A \lor true)$ with a checkbox}
+  \label{fig:sidebar-sql}
+\end{wrapfigure}
+
 This representation removes any direct mention of the terminal symbols \texttt{true} and \texttt{false} from the grammar and replaces it with a semantically equivalent property. It does not change the expressiveness of the modeled language, but the way the user perceives it: \texttt{bool} properties are rendered as checkboxes. This drastically changes to complexity to deal with such values at runtime: A single click turns a \texttt{true} value into a \texttt{false} value.
 
-\section{XML languages examples}
+\subsection{Demonstration of Blockly and debug backend}
 
-Prior example focussed on ground rules for validation to define the structure of valid trees and barely touched the possibilities to control the representation of the text representation. This example will show how any XML language can be defined structurally, extended to a valid XML-text-representation and refined to follow more conventional code layout by using indentation in the textual representation.
+All example screenshots so far used the builtin BlattWerkzeug block editor which is meant to be a \enquote{block like} overlay for regular programming languages.
+
+\todo[inline]{Screenshots}
+
+\section{XML languages examples}
+\label{sec:xml-languages-example}
+
+Prior example focussed on ground rules for validation to define the structure of valid trees and barely touched the possibilities to control the representation of the text representation. This example will show how any XML language can be defined structurally at first, then extended to a valid XML-text-representation and at last refined to follow more conventional code layout by using indentation in the textual representation.
 
 \subsection{Validation: sequence / allowed}
 \label{sec:validation-sequence-allowed}
 
-Order independent text and child elements.
+Our initial XML tree implementation will provide nothing but elements that may have elements or text as children. You can think of something along the lines of the simple \texttt{HTML} to be representable. Readers familiar with \texttt{HTML} will recognise many possibilities of things to validate: A single \texttt{<html>}-element as the root that contains at most one of each \texttt{<head>} and \texttt{<body>}, \texttt{<li>} that must be children of \texttt{<ul>} or \texttt{<ol>}, ... Many of these will be adressed in later sections, but for the moment we will postpone all these details of \texttt{HTML} to focus on the core tree structure of the document: Named elements that may contain any amount of text or children.
 
-\subsection{Possibility: Separating visualisation from structure}
+But there is a catch: \cref{lst:example-xml-structure-with-attributes} shows the final structure that can be represented at the end of this example. It require text nodes to be available before, between or after any number of \texttt{element} nodes. The semantics of \mintinline{text}{children "elements" ::= text* element*} would be \enquote{any number oft \texttt{text} followed by any number of \texttt{element}} and therefore forbid a \texttt{element} to appear in front of a \texttt{text}.
+
+\begin{listing}[htb]
+\begin{minted}[escapeinside=§§,highlightlines={5-9}]{text}
+<p class="spaced">
+  This is some HTML with attributes. And it has text ...
+  <ul id="the-list">
+    <li>
+      ... that may be
+      <mark>nested</mark>
+      in
+      <em>interesting</em>
+      ways.
+    </li>
+  </ul>
+</p>
+\end{minted}
+\caption{Example HTML: Some attributes, mixed text and elements}
+\label{lst:example-xml-structure-with-attributes}
+\end{listing}
+
+\Cref{lst:xml-grammar-no-allowed-typedef} models around this by using a \texttt{typedef} to substitute both permitted values for a single reference in the \texttt{children} specification. As the \texttt{*}-cardinality is bound to the \texttt{typedef} and each instance of it may resolve to either \texttt{element} or \texttt{text} this changes the semantics in the desired way. In general this trick works if all substituted children share the same quantifier, no matter whether it was the implicit \texttt{1} or the explicit \texttt{?}, \texttt{+} and \texttt{*}.
+
+\begin{listing}[H]
+\begin{minted}[escapeinside=§§,highlightlines={5,10}]{text}
+grammar xml {
+  root = xml.element
+  node element {
+    prop "name" string
+    children "elements" ::= child*
+  }
+  node text {
+    prop "value" string
+  }
+  typedef child ::= element | text
+}
+\end{minted}
+\caption{XML Grammar: Using \texttt{typedef} for order independent children}
+\label{lst:xml-grammar-no-allowed-typedef}
+\end{listing}
+
+But mixing these cardinalities on children would need states like \texttt{child\_1\_seen} to be representable in the \texttt{node} definitions. In a normal grammar this would be a valid approach. But as we have already seen in \cref{sec:bool-grammar-visualise-redundancy} this approach falls flat when taking visualisation into account: The artificial \enquote{state} nodes would have no immediate visualisation and no meaning that could be conveyed for a typical user. Therefore BlattWerkzeug introduces the \texttt{allowed} specifier (\Cref{lst:xml-grammar-allowed}) for children that can be used in place of the implicit \texttt{sequence} modifier. When validating it checks the cardinality of the children without any respect for the order in which the child nodes appear in the syntax tree. This allows cardinalities to be mixed as required without resorting to some kind of encoding of state in the nodes themself.
+
+\begin{listing}[H]
+\begin{minted}[escapeinside=§§,highlightlines={5}]{text}
+grammar xml {
+  root = xml.element
+  node element {
+    prop "name" string
+    children "elements" allowed ::= text* element*
+  }
+  node text {
+    prop "value" string
+  }
+}
+\end{minted}
+\caption{XML Grammar: Explicitly \texttt{allowed} sequence}
+\label{lst:xml-grammar-allowed}
+\end{listing}
+
+\Cref{lst:xml-grammar-structure} shows how to extend this grammar to support key-value-pairs as attributes. There is not much of a surprise going on in that listing: The \texttt{node} has properties for exactly \texttt{key} and \texttt{value}. With this addition the grammar is capable of expressing the structure of arbitrary \texttt{XML} documents, including the example \texttt{HTML} of \cref{lst:example-xml-structure-with-attributes}.
+
+\begin{listing}[H]
+\begin{minted}[escapeinside=§§,highlightlines={5,8-11}]{text}
+grammar xml {
+  root = xml.element
+  node element {
+    prop "name" string
+    children "attributes"       ::= attribute*
+    children "elements" allowed ::= text* element*
+  }
+  node attribute {
+    prop "key"   string
+    prop "value" string
+  }
+  node text {
+    prop "value" string
+  }
+}
+\end{minted}
+\caption{XML Grammar: Structure including attributes}
+\label{lst:xml-grammar-structure}
+\end{listing}
+
+\subsection{XML terminal symbols and \texttt{visualises}}
 \label{sec:possibility-separating-visualisation-from-structure}
 
-visualises / interpolate / each
+The structural grammar from the previous chapter has no terminal symbols and will therefore render in a way that does not resemble \texttt{XML} at all, as it naturally misses all the pointy brackets for elements as well as the \texttt{key='value'} syntax for attributes. But even though the structure we have created so far is named \texttt{xml} in the grammar, it effectively describes quite a rather universal concept that could also be expressed in different syntactic ways like e.g. Slim\footnote{\url{https://slim-lang.com/}} or HAML\footnote{\url{https://haml.info/}}. We will use this possibility of different syntactic representations as an excuse to introduce visualisation grammars instead of directly coupling the structural information with syntactic information.
 
-\subsection{Visualisation in lines}
+Key to this variable representation of syntaxtrees is the BlattWerkzeug concept of purely visual grammars. These visual grammars refer to another grammar that defines the structure. The visualising grammar is not permitted to make changes to that structure. This is achieved by having a sibling set of grammar directives which only provide means to provide information for the rendering algorithm. These directive may therefore only reference existing nodes, properties or children and can not specify their type. The coorespondence of structural and visual directives are as follows:
+
+\begin{itemize}
+  \item \texttt{node} → \texttt{visualize}
+  \item \texttt{prop} → \texttt{interpolate}
+  \item \texttt{children} → \texttt{each}
+\end{itemize}
+
+\Cref{lst:xml-visualisation-no-containers} shows how these directives can be combined with terminal symbols to represent a tree in XML syntax. Note that even a single grammar combining structure and syntax would have required use of the \texttt{interpolate} directive, as the \texttt{name} property of \texttt{element} needs to be repeated for the closing tag.
+
+\begin{listing}[H]
+\begin{minted}[escapeinside=§§]{text}
+grammar xml visualises 3b919483-8a97-41a8-8798-a8bb386609ba {
+  visualise element {
+    "<"
+    interpolate "name"
+    each "attributes"
+    ">"
+    each "elements"
+    "</"
+    interpolate "name"
+    ">"
+  }
+  visualise attribute{
+    interpolate "name" space-before §\label{code:visual-xml.attribute.space-before}§
+    "="
+    interpolate "value" double-quote §\label{code:visual-xml.attribute.double-quote}§
+  }
+}
+\end{minted}
+\caption{XML Visualisation: \texttt{element} and \texttt{attribute}}
+\label{lst:xml-visualisation-no-containers}
+\end{listing}
+
+The visualisation of \texttt{attribute} reveals two special rendering instructions: \texttt{space-before} (line \ref{code:visual-xml.attribute.space-before}) and \texttt{double-quote} (line \ref{code:visual-xml.attribute.double-quote}). These are called \textit{tags} in BlattWerkzeug and come in two categories: Some ``known tags'' help to deal with whitespace and common balanced characters such as quotes. In general tags may be used on any directive to aid the visualisation algorithms, but in this example both usages happen to appear on an \texttt{interpolate}. These specific tags can be used by the backends to add spaces and ''double quotes''.
+
+\subsection{Visualisation with typical \texttt{XML} formatting}
 \label{sec:visualisation-in-lines}
 
-containers
+The visualisation presented in the previous section is sufficent to produce \texttt{XML} documents that are well formed on the syntactic level: Elements have the required opening and closing tags and attributes are key-value-pairs. But they are not exactly easy on the eyes: Everything is rendered in a single line, the convention of indenting children is not followed at all. Technically having everything in a single line works for a surprising number of programming languages: When following a C-Style syntax (Java, JavaScript, C++, Go, ...) there is often no syntactic requirement for linebreaks and sometimes not even for spaces. There are even tools for \enquote{Minification} that are used with scripting languages to shrink the filesize at the cost of readability.
 
-\section{Grammar specification}
+But as a learning tool, BlattWerkzeug values readability. And Blattwerkzeug therefore provides means to influence the visualisation of the abstract syntax tree that helps to properly understand it. People using BlattWerkzeug for learning are not required to understand indentation rules or similar styling concepts. The grammar for the used programming language is expected to provide properly indented text out of the box.
+
+This works by providing layout information in so called \texttt{container}s which come in two possible orientations: \texttt{vertical} and \texttt{horizontal}. The natural layout of BlattWerkzeug is to arrange everything horizontally, but \Cref{lst:xml-visual} demonstrates how \texttt{xml.element} uses a top level vertical container to change the default orientation in a way that puts every child in its own row. To keep the \texttt{<element key="value">}-output on a single line, this top level \texttt{vertical} container is followed immediately by a \texttt{horizontal} container. Otherwise the \texttt{"<"} and \texttt{">"} would be placed in their own line respectively. The same reasoning applies to the closing tag in the last nested \texttt{horizontal} container of \texttt{xml.element}.
+
+\begin{listing}[H]
+\begin{minted}[escapeinside=§§,highlightlines={3,4,10,13}]{text}
+grammar xml visualises 3b919483-8a97-41a8-8798-a8bb386609ba{
+  visualise element {
+    container vertical {
+      container horizontal {
+        "<"
+        interpolate "name" keyword
+        each "attributes"
+        ">"
+      }
+      container vertical indent {
+        each "elements"
+      }
+      container horizontal {
+        "</"
+        interpolate "name" keyword
+        ">"
+      }
+    }
+  }
+  visualise attribute{
+    interpolate "name" space-before
+    "="
+    interpolate "value" double-quote
+  }
+}
+\end{minted}
+\caption{XML Visualisation: With containers for proper indentation and line breaks}
+\label{lst:xml-visual}
+\end{listing}
+
+The elements in line 11 of \cref{lst:xml-visual} are also wrapped in a \texttt{horizontal} container that seems superfluous at first sight. But besides repeating the same orientation definition as its parent, it also adds the \texttt{indent} tag. This will add one level of indentation for all children rendered between \texttt{<element>} and \texttt{</element>} without the rendered children even knowing about this.
+
+
+A valid syntaxtree and a possible block editor for the given grammar are shown in \cref{ast:xml-html-example}. It shows how opening and closing tags are rendered on their own line and children that are indented.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.98\textwidth]{syntaxtrees/ast-diss-xml-html-example.pdf}
+    \caption{Syntaxtree}
+  \end{subfigure}
+
+  \begin{subfigure}{0.7\textwidth}
+    \centering
+    \includegraphics[width=0.98\textwidth]{screenshots/blocks-xml-html-example.png}
+    \caption{Rendered Block Editor}
+  \end{subfigure}
+  \caption{XML resembling a HTML document}
+  \label{ast:xml-html-example}
+\end{figure}
+
+\section{Foundations of the generated editors}
+
+Previous sections have shown examples of block editors that could be generated by a grammar. But it did not specify how exactly the visualisation works or what operations the resulting editors allow This section will give a brief overview on how this editor can be used, the components it is surrounded by and how \enquote{files} are represented in BlattWerkzeug.
+
+\subsection{Visualisation algorithm}
+\label{sec:visualisation-algorithm}
+
+No matter whether a syntaxtree is visualised using the builtin BlattWerkzeug block editor, the blockly editor or pretty printed: The basic algorithm for visualisation is always following the same recursive model. The procedure is called with the root node. From there the tree is walked recursively according to the order of the attributes in the grammar.
+
+\begin{enumerate}
+  \item \label{vis:given}
+    Given: A \texttt{node} and a \texttt{grammar}
+  \item \label{vis:attributes}
+    \texttt{node\_type} $\gets$ On \texttt{grammar}, look up the type of \texttt{node}
+  \item For each \texttt{attribute} defined on the \texttt{node\_type}, in the order that was given when defining the grammar:
+    \begin{enumerate}
+      \item \label{vis:terminal}
+        A terminal emits the symbol written in the grammar.
+      \item \label{vis:property}
+        A property, or an interpolation of a property, emits the value stored on the node.
+      \item \label{vis:children}
+        A child group takes the children of its category in stored order. Each child is passed to a recursive call of this procedure. That call walks the attribute list of the child's own type.
+      \item \label{vis:container}
+        A container stays on the current node and applies rules~\ref{vis:attributes}--\ref{vis:children} to the attributes listed inside it. A horizontal container lays those fragments in one row, a vertical container inserts a line break between successive fragments that produced text, and the tag \texttt{indent} indents the group.
+    \end{enumerate}
+\end{enumerate}
+
+This high level description omits a few details which are discussed in later chapters:
+
+\subsubsection{Example: $A \land (B \lor \neg true)$}
+
+The boolean expression grammar defined in \Cref{lst:bool-grammar-exp-bin-redundant} was the more or less final example. It accepty binary expressions, unary expressions, constants and variables. The tree in \cref{fig:bool-a-and-b-or-not-true} is valid according to that specification. The following example demonstrates how the visualisation algorithm will turn this tree into the matching string representation. The walk starts at the root \texttt{bin}.
+
+\begin{enumerate}
+  \item Rule~\ref{vis:attributes} reads attributes \texttt{left}, \texttt{op} and \texttt{right}.
+  \item Rule~\ref{vis:children}, applied to \texttt{left}, calls the procedure on the \texttt{var} child. Rule~\ref{vis:property} emits $A$.
+  \item Rule~\ref{vis:property}, applied to \texttt{op}, emits $\land$.
+  \item Rule~\ref{vis:children}, applied to \texttt{right}, calls the procedure on the inner \texttt{bin}:
+    \begin{enumerate}
+      \item Rule~\ref{vis:children}, applied to \texttt{left}, emits $B$.
+      \item Rule~\ref{vis:property}, applied to \texttt{op}, emits $\lor$.
+      \item Rule~\ref{vis:children}, applied to \texttt{right}, calls the procedure on \texttt{neg}:
+        \begin{enumerate}
+          \item Rule~\ref{vis:terminal} emits $\neg$.
+          \item Rule~\ref{vis:children}, applied to \texttt{value}, calls the procedure on \texttt{true}. Rule~\ref{vis:terminal} emits \texttt{true}.
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.85\linewidth]{syntaxtrees/ast-diss-bool-a-and-b-or-not-true.pdf}
+  \caption{$(A \land (B \lor \neg true))$ according to \cref{lst:bool-grammar-exp-bin-redundant}}
+  \label{fig:bool-a-and-b-or-not-true}
+\end{figure}
+
+\subsection{Dragging \& dropping blocks}
+
+\subsection{Providing Blocks: The sidebar}
+\label{sec:block-language-sidebar}
+
+\begin{wrapfigure}{r}{0.3\textwidth}
+  \includegraphics[width=\linewidth]{screenshots/sidebar-sql}
+  \caption{BlattWerkzeug showing two sidebars with partially opened categories}
+  \label{fig:sidebar-sql}
+\end{wrapfigure}
+
+On the surface the sidebar simply fulfills an elemental requirement in any block based environment: This is the source of available blocks, the place where blocks are dragged from. And while this is obviously a hard requirement, it has an important secondary function as a memory aid. In text based programming options available are usually learned in advance and have to be remembered. Looking at available blocks allows the learner to pick from a set of options, possibly by recalling their function once she or he sees them. This concept was introduced
+
+As Blatt\-Werkzeug is distinctly aiming to work with real world programming languages, the blocks are often resembling syntactic constructs like \texttt{if}, \texttt{for}, \texttt{SELECT}, \texttt{<h1></h1>}, ... These identifiers are not as self-explanatory as in for example Scratch and it's stage metaphor with things like \texttt{Move}, \texttt{Say}, \texttt{Play Sound}, ... But this is not an inherent shortcoming of the approach: Most of these easier to grasp operations are simply function calls under the hood.. The \nameref{sec:trucklino} runtime demonstrates a wide range of \enquote{natural} blocks to move a truck forward, set turn signals or to sense traffic lights.
+
+In BlattWerkzeug blocks in the sidebar are part of a three level hierarchy:
+
+\begin{itemize}
+\item The top level sidebar may appear multiple times and have a caption. \Cref{fig:sidebar-sql} shows examples named \enquote{Datenbank \texttt{default}} and \enquote{SQL}.
+\item Each sidebar defines collapsible categories which are also named. \Cref{fig:sidebar-sql} shows examples named \enquote{Auftritt}, \enquote{Charakter}, ... to list all tables and \enquote{Ausdrücke}, \enquote{Funktionen}, ... to group SQL blocks. In the state of the screenshot, only the category for table \enquote{Auftritt} and the category \enquote{Funktionen} are opened. Note that in the case of the tables, the category itself is also a draggable block.
+\item Below the category is where blocks themselves are defined and also display a caption.
+\end{itemize}
+
+\Cref{fig:sidebar-sql} also gives a hint, that there must be statically and dynamically populated sidebars: The syntactic elements of SQL are known in advance and can be specified using a grammar. But the schema of the database changes at runtime and can not meaningfully be defined by a grammar.
+
+\section{Grammar specification \& design}
 \label{sec:grammar-specification}
 
-The previous examples have demonstrated the practical capabilities of the implemented grammar system. This section serves as a complete overview of all grammar elements and provides a formal specification of the validation semantics of the grammar. The visualisation aspects of grammars, such as terminal symbols, containers, ... are described in principal, but their visualisation semantics may slightly differ depending on the backend that is used for visualisation.
+The previous examples have demonstrated the grammars practical capabilities to visualise and validate common textual structures of programming languages. When devising this grammar (or even earlier: when deciding whether to devise a new grammar at all) the following principles emerged over time and guided what to include and what to cut:
 
-The validation semantics are a subset of XML schema. Where applicable, this specification will therefore link to the corresponding specification the semantics are borrowed from. The text representation of the grammar is loosely inspired by the RelaxNG compact notation \textcite{clark_relax_2001}.
+\begin{description}
+\item[Validate trees] \hfill\\
+  This grammar is used to elegantly express ways to work with syntax trees in block based structures.
+\item[Terminal symbols to represent syntax, not for parsing] \hfill\\
+  Rendering a syntax tree should result in a valid text representation of the target language and this requires syntactic elements. Parsing a text and converting it to a BlattWerkzeug syntax tree is explicitly not considered to keep the grammar small.
+\item[Augmenting real world programming languages] \hfill\\
+  Most programming languages are described via a context free grammar and should therefore be expressable as a block language in BlattWerkzeug.
+%\item[Rapid Prototyping] \hfill\\
+%  Creating a block variation for a subset of existing programming language should be possible in a matter of minutes. The first creatable programs in a new grammar should be able to express expressions and basic output.
+\item[Extensions for meaningful block based programming] \hfill\\
+  A grammar that is validating and textually representing syntax trees accurately is a good baseline, but the goal is to make the resulting block languages easy to use as well.
+\end{description}
 
-The grammar itself is a collection of type definitions and a root specification. It may be referred to by using either a name or a UUID. As it is customary in tree structures, validation starts from the root, so the grammar needs to specify what that root is. This root specification comes in an indirect form, it denotes the fully qualified type name that must match the fully qualified typename of the root in the abstract syntax tree.
+This section serves as a complete overview of all grammar elements, provides a formal specification of the validation semantics and provides origination as well as reasoning for certain features. The visualisation aspects of grammars, such as terminal symbols, containers, ... are described in principal, but their visualisation semantics may slightly differ depending on the backend that is used for visualisation.
 
-For practical purposes the \texttt{root} must be described as being optional: Grammars can be edited through either a text based or a drag \& drop editor in the BlattWerkzeug IDE itself and it would be very inconvenient if grammars without root specifications couldn't be saved due to a too strict type system. This has the minor inconvenience of adding the need for a \texttt{UNSPECIFIED\_ROOT} type of error that can occur during runtime and signals an error in the grammar instead of a problem with the given abstract syntax tree.
+All sections will use slightly edited TypeScript data type definitions of the stored \texttt{JSON} representation as the basis for the specification. The actual definitions follow a naming schema where all serialized types hava a \texttt{Description} suffix and there are accompanying types for validation, serialization, pretty printing, ... As none of these implementation details are helpful to understand the core data structures they are left out.
 
+Initial implementations of provided programming languages have been written directly as \texttt{JSON} documents. But later on the block based so called \textit{Meta-Grammar} as is described in \cref{sec:meta-grammar}. BlattWerkzeug is therefore sort of self hosting: It would be possible to describe its grammar in its own grammar specification language. The resulting output however would look like the textual representation of the meta grammar and there is no parser / interpreter to work with this representation.
+
+\subsection{Root: \texttt{grammar} itself}
+
+\begin{listing}[H]
 \begin{minted}{typescript}
-interface Grammar {
+type Grammar = {
   id: string;
   name: string;
 
   types: NamedLanguages;
+  foreignTypes: NamedLanguages;
+
+  visualisations: VisualisedLanguages;
+  foreignVisualisations: VisualisedLanguages;
+
+  includes?: string[];
+  visualizes?: string[];
+
   root?: QualifiedTypeName;
 }
 
@@ -426,116 +747,937 @@ interface QualifiedTypeName {
   typeName: string;
   languageName: string;
 }
+\end{minted}
+\caption{Type definitions of BlattWerkzeug Grammar and accompanying core types}
+\label{lst:grammar-and-core-types-description}
+\end{listing}
+
+\texttt{id} and \texttt{name} from lines 2 \& 3 are straightforward: They denote the internal primary key and the human readable way to convey what the grammar is about, this will typically be a programming language like Ruby, Elixir or Kotlin. Multiple grammars may have the same name. Or in other terms: There may be different implementations of the same programming language.
+
+Following on lines 5 to 9 are basically four different buckets of type definitions: \texttt{types}, \texttt{foreign\-Types}, \texttt{visuali\-sations} and \texttt{foreignVisualisations}. Note that the \texttt{NodeType} definitions inside these are an unordered map and therefore there can't be any reliable precedence and also no duplication inside each bucket. This also explains why there are the \texttt{foreign} and unnamed \enquote{native} buckets: This distinction allows types in the grammar itself to override those that are imported (\enquote{foreign}). \Cref{sec:combining-grammars} explains the mechanisms and semantics that apply when grammars are combined. The distinction between \texttt{visualisation} and \texttt{type} is explained in \Cref{sec:visualising-grammars}, but essentially visualisations are a subset of types. Lines 11 \& 12 are ID references to other grammars that must be respected when either grammar is updated.
+
+The \texttt{root} field on line 14 is only technically optional: It must be possible to save a grammar that has no root defined. In practice a grammar that does not define a root isn't very helpful. It could technically validate any given tree by trusting it to have a sensible root, but this opens a problem space so wide, that it is simply unfeasible. The field does not directly store any type information, but instead points to the type that must be used as root in the form of a \texttt{QualifiedTypename}. The root being optional has the minor inconvenience of adding the need for a \texttt{UNSPECIFIED\_ROOT} type of error that can occur during runtime and signals an error in the grammar instead of a problem with the given abstract syntax tree.
+
+By convention the \texttt{name} of the grammar (like \texttt{XML}) will also be used for the node definitions of the defined languages. This is inteded to support workflows with embedded languages, the most common example would probably be \texttt{HTML} that may contain inline \texttt{JavaScript} and \texttt{CSS}. In practice this is intended do be done by combining grammars, but it is possible for a single grammar to define node type definitions for multiple languages.
+
+Referencing a grammar nevertheless happens with both identifiers: A grammar may be referred to by using either a the technical name or a ID\footnote{Usually this will be a \texttt{UUID}, but for practical reasons this document will use more memorable IDs.}. In practice this can lead to like \texttt{xml} with ID 22 and \texttt{xml-0.9} with ID 13. This duality provides the flexibility to either reference an exact (and possibly immutable) specific grammar by ID or to reference a probably changing version by name.
+
+
+The data structure and validation semantics are effectively a subset of \texttt{XML} schema\cite{W3CXMLSchema}: Every Blattwerkzeug abstract syntax tree could be expressed as an equivalent \texttt{XML} document. A BlattWerkzeug grammar could be transformed into an equivalent \texttt{XML} schema and both validations should produce a semantically equivalent result. Where applicable, this specification will therefore link to the corresponding specification the semantics are borrowed from.
+
+The textual representation of the grammar semantics described in the following sections (which was used in the examples at \cref{sec:boolean-expression-language-example} and \cref{sec:xml-languages-example}) is loosely inspired by the RelaxNG compact notation \cite{clarkRELAXNGSpecification2001}. This notation and how it is a subset of the larger model is discussed in \cref{sec:meta-grammar}.
+
+\subsection{Type level: \texttt{node}}
+\label{sec:grammar-type-node}
+
+\begin{listing}[H]
+\begin{minted}{typescript}
+type NodeConcreteType = {
+  type: "concrete";
+  attributes?: NodeAttribute[];
+  tags?: TagDescription[];
+}
+
+type NodeAttribute =
+  | NodePropertyType
+  | NodeChildrenGroup
+  | NodeTerminalSymbol
+  | NodeVisualContainer
+  | NodeInterpolateProperty
+  | NodeInterpolateChildren;
 
 \end{minted}
+\caption{Type definition of \texttt{node} specification}
+\label{lst:grammar-container-description}
+\end{listing}
 
-\subsection{node}
+A \texttt{node} is used to describe a valid node of an abstract syntax tree (\texttt{NodeConcreteTyp}) and corresponds to a draggable block in a block editor. It hosts children and properties as outlined in \ref{sec:blattwerkzeug-ast} and ensures their correctness via \texttt{property} and \texttt{children} directives. Ultimately a \texttt{node} in a grammar therefore strongly resembles the definition of a datatype. The distinction in tree-like \texttt{children} and atomic \texttt{property} was inspired by the \texttt{xs:element} specification of \texttt{XML} schema\cite[§3.3 - Element declarations]{W3CXMLSchema}.
 
-A \texttt{node} is used to describe a valid node of an abstract syntax tree (\texttt{NodeConcreteTyp}) and corresponds to a draggable block in a block editor. When walking through the syntax tree. The qualified type name of a node
+As a datatype definition a node it must be reusable and referenceable, one such example could be seen with the grammar definition itself: It refers to the definition of the root node by giving a \texttt{QualifiedTypename}
 
+
+\subsection{Node attribute: \texttt{property}}
+
+\begin{listing}[H]
 \begin{minted}{typescript}
-interface QualifiedTypeName {
-  typeName: string;
-  languageName: string;
+type NodePropertyType =
+  | NodePropertyBoolean
+  | NodePropertyInteger
+  | NodePropertyString
+  | NodePropertyReference;
+
+type BaseNodeProperty = {
+  type: "property";
+  name: string;
+  isOptional?: boolean;
+  tags?: string[];
+};
+
+type NodePropertyBoolean = BaseNodeProperty & {
+  base: "boolean";
+};
+
+type NodePropertyString = BaseNodeProperty & {
+  base: "string";
+  restrictions?: NodeStringTypeRestrictions[];
+};
+
+type NodePropertyInteger = BaseNodeProperty & {
+  base: "integer";
+  restrictions?: NodeIntegerTypeRestrictions[];
+};
+
+type NodePropertyReference = BaseNodeProperty & {
+  base: "grammarReference" | "codeResourceReference";
+};
+\end{minted}
+\caption{Type definition of \texttt{property} specification}
+\label{lst:grammar-property-description}
+\end{listing}
+
+Properties are used to introduce a new named field to a node. In \texttt{XML} schema these correspond to attributes: Atomic values that may impose restrictions, but can't be refined in terms of having children\cite[§3.2 - Attributes]{W3CXMLSchema}.
+
+The \texttt{JSON} representation of the abstract syntax  tree stores these values as strings no matter the defined type (\cref{lst:type-node-description}). Validation of the value inside the tree is then made based upon the \texttt{base} field of the \texttt{NodeProperty}. The types \texttt{boolean}, \texttt{string} and \texttt{integer} correspond to their common counterparts. \texttt{boolean}, \texttt{string} and \texttt{integer} correspond to their common counterparts. \Cref{tab:grammar-property-restrictions} lists every further restriction the property validators accept. The bases \texttt{grammarReference} and \texttt{codeResourcereference} are used within BlattWerkzeug to allow referencing between different \enquote{files}.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lll}
+\hline
+\texttt{base} & Restriction & Constraint \\ \hline
+\texttt{string} & \texttt{length} & Exact number of characters \\
+\texttt{string} & \texttt{minLength} & Minimum number of characters \\
+\texttt{string} & \texttt{maxLength} & Maximum number of characters \\
+\texttt{string} & \texttt{enum} & Value must be one of a given set of strings \\
+\texttt{string} & \texttt{regex} & Value must match a regular expression \\
+\texttt{integer} & \texttt{minInclusive} & Minimum value, inclusive \\
+\texttt{integer} & \texttt{maxInclusive} & Maximum value, inclusive \\
+\hline
+\end{tabular}
+\caption{Restrictions applicable to node properties, as implemented by the property validators}
+\label{tab:grammar-property-restrictions}
+\end{table}
+
+Having regular expressions alongside enumerations and length descriptions may seem redundant. Technically it is possible to express any length restriction as well as a list of allowed values using a regular expression. But as BlattWerkzeug is a tool for learners, the importance of easily understood error messages is higher than in professional contexts. Providing error messages beyond \enquote{input does not satisfy <regex>} for free form regular expressions would have ultimately required much more code than simply introducing some special cases.
+
+\subsection{Node attribute: \texttt{children} with \texttt{sequence} and \texttt{allowed}}
+\label{sec:attribute-children}
+
+\begin{listing}[H]
+\begin{minted}[escapeinside=§§]{typescript}
+type NodeTypesChildren = {
+  type: "sequence" | "allowed"; §\label{code:NodeTypesChildren.type}§
+  name: string; §\label{code:NodeTypesChildren.name}§
+  nodeTypes: NodeTypesChildReference[]; §\label{code:NodeTypesChildren.nodeTypes}§
+  between?: NodeTerminalSymbolDescription;
+  tags?: string[];
+}
+
+type NodeTypesChildReference =
+  | TypeReference
+  | ChildCardinality;
+
+type TypeReference =
+  | QualifiedTypeName
+  | string;
+
+type ChildCardinality = {
+  nodeType: TypeReference;
+  occurs: Occurs;
+}
+
+type Occurs = "1" | "?" | "*" | "+" | OccursSpecific;
+
+type OccursSpecific = {
+  minOccurs: number;
+  maxOccurs: number;
 }
 \end{minted}
+\caption{Type definitions of \texttt{children} specification with \texttt{allowed} and \texttt{sequence}}
+\label{lst:grammar-children-description}
+\end{listing}
+
+Restricting the types of permitted children is done via the \texttt{children} directive. In the actual codebase these are different types for \texttt{sequence} and \texttt{allowed}, but the effective type describing the for both (see \cref{lst:grammar-children-description}) shows that they share the exact same structure with the only difference being in the \texttt{type} discriminator on line \ref{code:NodeTypesChildren.type}. The must have a \texttt{name} provided (line \ref{code:NodeTypesChildren.name}) which will correspond to the child groups name in the abstract syntax tree.
+
+Permitted children are defined via the \texttt{nodeTypes} on line 4. The \texttt{NodeTypesChildReference} permits various shorthands that are technically redundant: Other types may be referred to by just a string (without language name) and cardinalities default to \texttt{1} but can also be expressed using their common shorthands (\texttt{1}, \texttt{?}, \texttt{*} and \texttt{+}) or by explicitly giving both bounds. \Cref{lst:grammar-children-no-shorthand} shows the data as it is used in the internal processing: Every reference explicitly defines the fully qualified type and the explicit form of the cardinality. This results in a quite vebose listing with some redundancy. Alternatively \Cref{lst:grammar-children-shorthand} makes use of both shorthands and expresses a type in the same language as a string and uses the default cardinality of 1: \mintinline{typescript}{["unaryOperator", "exp"]}. This brings the number of lines down and allows readers to focus on aspects that are actually different. Maintaining both variations has proven to be a very valuable aid for the grammars that are still defined as \texttt{JSON} documents and also in debugging.
+
+\begin{listing}[p]
+\begin{minted}{typescript}
+{
+  "type": "sequence",
+  "name": "unary",
+  "nodeTypes": [
+    {
+      "nodeType": { "typeName": "unaryOperator", "languageName": "exp" },
+      "cardinality": { "minOccurs": 1, "maxOccurs": 1 }
+    },
+    {
+      "nodeType": { "typeName": "exp", "languageName": "exp" },
+      "cardinality": { "minOccurs": 1, "maxOccurs": 1 }
+    }
+  ]
+}
+\end{minted}
+\caption{Example of children specification without any improvements for readability}
+\label{lst:grammar-children-no-shorthand}
+\end{listing}
+
+\begin{listing}[p]
+\begin{minted}{typescript}
+{
+  "type": "sequence",
+  "name": "binary",
+  "nodeTypes": ["unaryOperator", "exp"]
+}
+\end{minted}
+\caption{Example of children specification with implicit \texttt{languageName} and 1 cardinality}
+\label{lst:grammar-children-shorthand}
+\end{listing}
+
+\begin{table}[p]
+\centering
+\begin{tabular}{llll}
+\hline
+  Permitted \texttt{nodeTypes} & given & sequence? & allowed? \\ \hline
+{\ttfamily ["A", "B"]}
+& A, B & true & true \\
+{\ttfamily ["A", "B"]}
+& B, A & false & true \\
+{\ttfamily [\{nodeType:"A", cardinality:"?"\}, "B"]}
+& A, B & true & true\\
+{\ttfamily [\{nodeType:"A", cardinality:"?"\}, "B"]}
+& B & true & true \\
+{\ttfamily [\{nodeType:"A", cardinality:"?"\}, "B"]}
+& B, A & false & true \\
+{\ttfamily\begin{tabular}[c]{@{}l@{}}
+[\\
+\hspace{1em}\{nodeType:"A", cardinality: \{\\
+\hspace{2.5em}minOccurs: 2, maxOccurs: 3\}\},\\
+\hspace{1em}"B"\\
+]
+\end{tabular}}
+& A, B, A & false & true \\
+{\ttfamily\begin{tabular}[c]{@{}l@{}}
+[\\
+\hspace{1em}\{nodeType:"A", cardinality: \{\\
+\hspace{2.5em}minOccurs: 2, maxOccurs: 3\}\},\\
+\hspace{1em}"B"\\
+]
+\end{tabular}}
+& A, A, B & true & true \\
+\end{tabular}
+\caption{Some examples for valid and invalid \texttt{sequence}s}
+\label{tab:grammar-children-sequence}
+\end{table}
+
+So ultimately these permitted children are a list of references to other types with a cardinality, no matter the notation. In the case of \texttt{sequence} this list also specifies the order in which children must occur inside this childgroup. Semantics here follow what one would expect from the BNF or regular expressions. In case of the \texttt{allowed} type the semantics follow the \texttt{xs:all} semantics of XML schema: This effectively lifts the ordering requirement from a \texttt{sequence}, but still ensures that the cardinality for each child is respected. With regards to validity the \texttt{allowed} semantics are a subset of the \texttt{sequence} semantics: Everything that is permitted as a \texttt{sequence} is also permitted a \texttt{allowed}. \Cref{tab:grammar-children-sequence} illustrates these behaviours with a few examples, it partially also demonstrates the \texttt{JSON}-notation.
+
+As these child types are always references, there are no issues with recursive types or those that are syntactically defined later in the surrounding \texttt{grammar}. Building e.g. a self-referential, recursive and infinite list structure is trivially possible, as \Cref{lst:grammar-children-recursive-endless-list} demonstrates: It immediately uses the type \texttt{example.endless} as a required child with a cardinality of 1 when defining the \texttt{example.endless} type.
+
+\begin{listing}[H]
+\begin{minted}{typescript}
+{
+  "typeName": "endless",
+  "languageName": "example",
+  "children": {
+    "value": {
+      "type": "sequence",
+      "name": "example",
+      "nodeTypes": ["endless"]
+    }
+  }
+}
+\end{minted}
+\caption{Example of recursive, endless list structure in \texttt{JSON}-representation}
+\label{lst:grammar-children-recursive-endless-list}
+\end{listing}
+
+The common need to separate lists of children with other characters than whitespace is made possible with the \texttt{between} property.
+
+\cite[Chapter 8: Interleaving]{clarkRELAXNGSpecification2001}
+
+\subsection{Node attribute: \texttt{choice} (legacy)}
+
+\begin{listing}[H]
+\begin{minted}{typescript}
+type NodeTypesChoice = {
+  type: "choice";
+  name: string;
+  choices: TypeReference[];
+  tags?: string[];
+}
+\end{minted}
+\caption{Type definition of \texttt{choice} child specification}
+\label{lst:grammar-children-description}
+\end{listing}
+
+Allows a single child to be used in the place of this child node specification. The basic semantics follow the choice semantics as in e.g. regular expressions or the Backus-Naur form. The permitted choices however all have a cardinality of 1. This essentially allows to express constructs as \texttt{(A | B | C)} and is functionally equivalent to having an inline \texttt{typedef}.
+
+The cardinality of 1 was initialy meant to be circumvented by allowing cardinalities on grouped expressions, see \cref{sec:grammar-spec-parentheses} for details.
+
+\subsection{Node attribute: Grouping expressions with \texttt{parentheses} (legacy)}
+\label{sec:grammar-spec-parentheses}
+
+An implementation of explicit grouping for expressions as an attempt to allow cardinalities on these. In a natural notation this allows to express something allong the lines of \texttt{(key value)*} for \enquote{any number of repetitions of a \texttt{key} followed by a \texttt{value}}. It was introduced quite early during grammar design under the following two impressions:
+
+\begin{itemize}
+\item There is plenty of precedent: Regular expressions, some BNF variations, \texttt{XML} schema allows to nest \texttt{xs:sequence} and \texttt{xs:choice}, ....
+\item Blattwerkzeug grammar is motivated to not introduce nodes without any representation or natural meaning.
+\end{itemize}
+
+Initial versions of the BlattWerkzeug grammar explored options on how to keep the notation very compact. An envisioned syntax for \texttt{SQL}s \texttt{SELECT} statements was along the lines of \texttt{'SELECT' select 'FROM' from ('WHERE' where)? ('GROUP BY' group\_by)?}.
+
+In practice the possibility to group expressions introduced loads of unpleasant edgecases when mixing \texttt{sequence} and \texttt{allowed} or deciding on greedyness semantics for \texttt{allowed}. As it ultimately did not show up in real world usage, it is now an unused artifact only used for some counter examples in the spirit \enquote{how to not model for BlattWerkzeug}.
+
+\subsection{Type level: \texttt{typedef}}
+\label{sec:grammar-typedef}
+
+\begin{listing}[H]
+\begin{minted}{typescript}
+type NodeOneOfType = {
+  type: "oneOf";
+  oneOf: TypeReference[];
+}
+\end{minted}
+\caption{Type definition of \texttt{choice} child specification}
+\label{lst:grammar-children-description}
+\end{listing}
+
+As shown in the data type definition of the grammar itself (\cref{lst:grammar-and-core-types-description}), the \texttt{typedef} (or \texttt{oneOf} as it is called in the code) elements exist on the same level as the \texttt{node}. These are therefore part the oft \texttt{languageName.typeName} namespace and may be referenced interchangeibly with \texttt{node} names. But unlike a \texttt{node} these types may never appear in an abstract syntax tree. When the validation of an abstract syntax tree encounters a node of such type anyway, the tree is invalid.
+
+The term \texttt{oneOf} used throughout the \texttt{type}
+
+\subsection{Resolving type names}
+\label{sec:resolving-typenames}
+
+Previous sections have been a little lenient on the details of the typename resolving mechanism. This section formalises the semantics and illustrates some edgecases.
+
+At this point we have seen both possibilities to introduce a fully qualified typename consisting of a \texttt{languageName} and a \texttt{typeName}, namely \texttt{node} (\cref{sec:grammar-type-node}) and \texttt{typedef} (\cref{sec:grammar-typedef}).
+
+Most contexts in which a type reference can occur have also been discussed: The \texttt{root} of a grammar (\cref{sec:grammar-specification}) and \texttt{children} attributes (\cref{sec:attribute-children}).
+
+\todo[inline]{Überhaupt nötig? Kann möglicherweise auch in den jeweiligen Kapiteln erklärt werden.}
+
+\subsection{Node attribute: \texttt{terminal}}
+\begin{listing}[H]
+\begin{minted}{typescript}
+type NodeTerminalSymbol = {
+  type: "terminal";
+  symbol: string;
+  tags?: TagDescription[];
+}
+\end{minted}
+\caption{Type definition of \texttt{terminal} specification}
+\label{lst:grammar-terminal-description}
+\end{listing}
+
+The definition of the terminal symbol itself is as straightforward as one could expect: It contains the symbol to render and can be tagged for special use cases.
+
+\subsection{\texttt{container} and layouting}
+\label{sec:grammar-container}
+
+\begin{listing}[H]
+\begin{minted}{typescript}
+NodeVisualContainerDescription {
+  type: "container";
+  tags?: string[];
+  orientation: Orientation;
+  children: NodeAttributeDescription[];
+}
+
+type Orientation = "horizontal" | "vertical";
+\end{minted}
+\caption{Type definition of \texttt{container} specification}
+\label{lst:grammar-container-description}
+\end{listing}
+
+Containers are used to explicitly group child attributes together and to control the orientation of their children to be vertical or horizontal. The mental model behind the layouting is \enquote{thinking in lines and where they are broken}. It was designed to be close to programming language code layout terminology describing text flows instead of widget based systems designed for user interfaces that deal with measurements in percentages, pixels or typographic details. The baseline of what layouting options are available is given by the text based nature of the targeted programming language: There is nothing but characters, every layouting must use whitespace. The minimal requirement is to turn any given abstract syntaxtree into a \texttt{string} consisting of syntactically correct source code, including whitespace sensitive languages like Python.
+
+\todo[inline]{Too foundational to burrow here?}
+
+With this background knowledge the definition for \enquote{horizontal grouping} is less surprising: It's a guarantee to keep items together without having a linebreak in between them. This will commonly correspond to a line, but can mean any kind of code unit.
+
+In BlattWerkzeug the layout of a rendered item is controlled by its parent, not by the item itself. Implicitly (or more precisely: without containers) the layout follows a horizontal flow, as one would write a line of code.
+
+\subsection{Influencing representation via \texttt{tags}}
+
+The BlattWerkzeug grammar is intended to be as identical as possible over the various backends. All core concepts work the same, no matter whether the syntaxtree is represented using the builtin block editor, the Blockly editor or is rendered using the text representation. But at times there are concepts that are not applicable to all backends. Therefore there is an escape hatch to communicate free-form strings as additional instruction to the specific backends. As you have seen in the previous type definition listings, the \texttt{tags?: TagDescription[]} attribute is available on everything that is renderable. \texttt{TagDescription} is ultimately a \texttt{string} with a few optional type hints.
+
+This consciously lax typing makes tags a good field for experimentation. Whitespace handling (see \Cref{sec:grammar-whitespace}) has been built on top of tags, is understood by all backends and could theoretically be pulled into another representation. The sections about the specific backends contain details about the tags they are supporting.
+
+\subsection{Common requirement: controlling horizontal whitespace}
+\label{sec:grammar-whitespace}
+
+BlattWerkzeug started out by representing whitespace in the rendered output via literal whitespace terminal symbols \texttt{"~"} and \texttt{"\textbackslash n"}). Working with literal non-line-break whitespace characters is still supported today, the support for newline characters has been removed in favor of vertical containers (\cref{sec:grammar-container}). Instead of using literal whitespace in the grammar, it is preferable to communicate the need for whitespace via the following tags:
+
+\begin{multicols}{2}
+\begin{itemize}
+\item \texttt{space-after}
+\item \texttt{space-before}
+\item \texttt{space-around}
+\item \texttt{newline-after}
+\item \texttt{newline-before}
+\end{itemize}
+\end{multicols}
+
+When rendered, these tags expand to the corresponding whitespace or newlines with respect to the immediate sibling nodes: A \texttt{space-after} followed by a \texttt{space-before} is collapsed into a single space instead of two spaces. The \texttt{newline} tags are seldomly used directly, linebreaks are usually introduced by vertical containers.
+
+The tags are attached to the attributes that emit text: terminals, properties, interpolated properties, and child groups (\texttt{sequence}, \texttt{allowed}, \texttt{parentheses}, \texttt{each}). A \texttt{between} separator is a terminal of its own and takes the same tags. Each of these attributes carries a single separator tag; \texttt{space-around} is the tag that requests a space on both edges. On a terminal, property, or interpolation the tag surrounds that value. On a child group it surrounds the group: \texttt{space-before} and \texttt{newline-before} meet the first rendered token, \texttt{space-after} and \texttt{newline-after} meet the last. A group that renders no tokens, for example an optional child that is absent, drops its tags along with its text, so the hole leaves no whitespace behind.
+
+The same collapse happens wherever two edges meet while the tree is walked. Neighbouring attributes of one node merge, and so do a \texttt{between} separator and the child that follows it. A horizontal container keeps the leading whitespace of its first attribute and the trailing whitespace of its last attribute visible to whatever stands outside the container, so those edges merge as well. A vertical container inserts a linebreak between its children, and a facing \texttt{newline-before} or \texttt{newline-after} merges with that linebreak into a single line break. A space written as the symbol of a terminal stays part of that symbol. Whitespace that would sit at the very start or end of the generated text is discarded.
+
+This mechanism was introduced to address issues when e.g. combining blocks that mix requirements for leading and trailing whitespace. \Cref{lst:grammar-explicit-whitespace-return} demonstrates how a \texttt{return}-like statement could be written to express \enquote{the \texttt{return} keyword is separated from the following expression using a space character} in both ways. The explicit space seems fine in the isolation of the \texttt{return}-node, but if we take a look at the \texttt{expr}-node this turns into a problem: That parenting node also ensures that there is a space character in front of every expression. When combined, this results in two spaces separating the \texttt{return} keyword from its expression. In this tiny example the error and the solution seem obvious: The \texttt{expr}-node should rely on its parent \texttt{return} node to define the whitespace.
+
+\begin{listing}[H]
+\centering
+\begin{sublisting}[t]{0.46\linewidth}
+\begin{minted}[highlightlines={4,8},escapeinside=§§]{text}
+grammar whitespace-example {
+  node return {
+    "return"
+    " "
+    children "value" ::= expr
+  }
+  node expr {
+    " "
+    prop "name" string
+  }
+}
+\end{minted}
+  \caption{Results in \texttt{return␣␣var} (double spaces) }
+\end{sublisting}%
+\hfill
+\begin{sublisting}[t]{0.46\linewidth}
+\begin{minted}[highlightlines={3,9},escapeinside=§§]{text}
+grammar whitespace-example {
+  node return {
+    "return" space-after
+
+    children "value" ::= expr
+  }
+  node expr {
+
+    prop "name" string space-before
+  }
+}
+\end{minted}
+  \caption{Results \texttt{return␣var} }
+\end{sublisting}%
+  \label{lst:grammar-explicit-whitespace-return}
+\end{listing}
+
+But there are scenarios in which the responsibility can not be split up this clearly between parent and child. One of these occurs when dealing with optional children. \Cref{lst:grammar-explicit-whitespace-sql-select} shows a grammar to express something along the lines of \texttt{SELECT DISTINCT *} or \texttt{SELECT *}. Because the \texttt{distinct} node is optional, the whitespace must itself be optional or be kept alongside the \texttt{distinct} node.
+
+\begin{listing}[H]
+\centering
+\begin{sublisting}[t]{0.46\linewidth}
+\begin{minted}[highlightlines={4,6},escapeinside=§§]{text}
+grammar sql {
+  node select {
+    "SELECT"
+    " "
+    children "d" ::= distinct?
+    " "
+    children "c" ::= column
+  }
+  node distinct { "DISTINCT" }
 
 
-\subsection{property / interpolate}
+  node column { "*" }
+}
+\end{minted}
+  \caption{node \texttt{select} tries to ensure proper spacing, renders \texttt{SELECT␣␣*} without a \texttt{DISTINCT} node}
+\end{sublisting}%
+\hfill
+\begin{sublisting}[t]{0.46\linewidth}
+\begin{minted}[highlightlines={10,12},escapeinside=§§]{text}
+grammar sql {
+  node select {
+    "SELECT"
 
-\subsection{children / each}
+    children "d" ::= distinct?
 
-\begin{enumerate}
-\item Recursive usage of introduced type possible
-\item No regards for order of referenced types
-\end{enumerate}
+    children "c" ::= column
+  }
+  node distinct {
+    "DISTINCT" space-around
+  }
+  node column { "*" space-around }
+}
+\end{minted}
+  \caption{Spacing part of all child nodes}
+\end{sublisting}%
+  \label{lst:grammar-explicit-whitespace-sql-select}
+\end{listing}
 
-\subsection{terminal}
+Where to place the spaces in overlapping scenarios is easy for the pure text rendering: It does not matter, a space is a space no matter which node it originated from. But this is different for the block backends: The visual representation can make the space either a part of the draggable child block or the parent. Or in a more visual representation:
 
-\subsection{container}
+\begin{center}
+  It is important that \BlattWerkzeugBlock{DISTINCT} and \BlattWerkzeugBlock{␣DISTINCT␣} are both representable.
+\end{center}
 
-\subsection{choice}
+The collapsible spacing mechanism of BlattWerkzeug allows users to define grammars that can move the whitespace around as it seems most fitting for the block based editor. Parent and children can even both define their whitespace requirements to make them as versatile as possible.
 
-\subsection{typedef}
-
-\subsection{Common style: Keywords}
+\subsection{Common requirement: indentation}
 
 \subsection{Common requirement: Balanced quotes \& parentheses}
 
-\subsection{Visualizing grammars}
+\subsection{Separating visualization from structure: \texttt{visualize}, \texttt{each} \& \texttt{interpolate}}
+\label{sec:visualising-grammars}
 
-\subsection{Extending grammars}
+\subsection{Combining grammars}
+\label{sec:combining-grammars}
 
-\subsection{Visualisation algorithm}
+\subsection{Mapping from context free grammars}
+\label{sec:cfg-mapping}
+To illustrate the strong correspondence of context free grammars and Blattwerkzeug grammars this section shows a formal mapping from a given context free grammar to a BlattWerkzeug grammar. It is important to keep in mind that these grammars serve different purposes: The context free grammar is used for parsing, the BlattWerkzeug grammar is used to prettyprint. What they have in common is the derivation tree of the context-free grammar, which is the abstract syntax tree when each production is already a construct worth editing\footnote{Or more practically speaking: A context free grammar that is strictly converted to a BlattWerkzeug grammar following these rules will be very unpleasant to use.}. When prettyprinting such a tree using the corresponding BlattWerkzeug grammar, the output may differ in syntactic details such as whitespace, but will stay semantically equivalent. In whitespace sensitive languages this requires the whitespace to be part of the formal grammar.
+
+For a context-free grammar $G = (N, \Sigma, P, S)$ the grammar $B(G)$ is built in two phases. The setup in rules~\ref{map:sigma}, \ref{map:pi} and \ref{map:nu} is followed once. The emission rules~\ref{map:root}, \ref{map:typedef} and \ref{map:node} are then applied in sequence.
+
+To keep this proof short, the examples below write $G$ in Backus-Naur form and the terminals in $\Sigma$ are the tokens of an input that has already been lexed: a keyword such as \texttt{const} is one fixed symbol, while an identifier or a number is one symbol whose spelling is carried along, rather than an explicit production over the characters \texttt{a}$\,\cdots\,$\texttt{z} or \texttt{0}$\,\cdots\,$\texttt{9}.
+
+\begin{enumerate}[(a)]
+  \item \label{map:sigma}
+    Divide $\Sigma$ into the symbols that are emitted as terminal symbols and the symbols that are emitted as properties:
+    $\Sigma = \Sigma_{\mathrm{terminal}} \cup \Sigma_{\mathrm{property}}$,
+    with the two sets disjoint. A quoted symbol belongs to $\Sigma_{\mathrm{terminal}}$. A name that occurs on a right-hand side and has no explicit production of its own (effectively hidden by the lexer) belongs to $\Sigma_{\mathrm{property}}$.
+  \item \label{map:nu}
+    Let $\nu$ be a map from $\Sigma_{\mathrm{property}}$ to property names.
+    For each token $t \in \Sigma_{\mathrm{property}}$, $\nu(t)$ is the name of the property that stores the spelling of an occurrence of $t$.
+    Two tokens that occur in the same production receive different names.
+  \item \label{map:pi}
+    Let $\pi$ be an injective map from $P$ to type names whose image is disjoint from $N$.
+    For each $A \in N$, enumerate $\{(A, \alpha) \in P\}$ as an indexed list
+    $P_A = \bigl((A, \alpha_1), \ldots, (A, \alpha_k)\bigr)$.
+    Position $i$ receives the type name $\pi(A, \alpha_i)$.
+    Names from different positions, including positions in different lists, are distinct.
+\end{enumerate}
+
+With the setup in place, the following rules are used to emit $B(G)$.
+
+\begin{enumerate}
+  \item \label{map:root}
+    The \texttt{root} of $B(G)$ is $S$.
+\item \label{map:typedef}
+  For each $A \in N$, emit
+  \texttt{typedef A ::= $\pi(A, \alpha_1)$ | $\cdots$ | $\pi(A, \alpha_k)$}
+  from the list $P_A$ of rule~\ref{map:pi}.
+\item \label{map:node}
+  For each position $(A, \alpha_i)$ of each list $P_A$, emit a \texttt{node} named $\pi(A, \alpha_i)$.
+  Read $\alpha_i = X_1 \cdots X_n$ from left to right and emit one attribute per symbol, in that order:
+  \begin{enumerate}
+      \item \label{map:terminal}
+        If $X_i \in \Sigma_{\mathrm{terminal}}$, emit the terminal symbol \texttt{"$X_i$"}.
+      \item \label{map:property}
+        If $X_i \in \Sigma_{\mathrm{property}}$, emit \texttt{prop} $\nu(X_i)$ \texttt{string}. The value of that property is the spelling of this occurrence of $X_i$, and $\nu$ assigns it a property name.
+      \item \label{map:nonterminal}
+        If $X_i \in N$, emit a \texttt{sequence} child group of cardinality 1 that references $X_i$. The compact notation leaves the cardinality implicit.
+      \item \label{map:epsilon}
+        If $\alpha = \varepsilon$, the node body is empty.
+    \end{enumerate}
+\end{enumerate}
+
+\subsubsection{Example 1: Simple declarations}
+
+\Cref{lst:cfg-mapping-decl-bnf} is a grammar for declarations such as \texttt{const a = 2;}. \texttt{Decl} is the start symbol. The following example demonstrates how the rules are applied and what they emit.
+
+\begin{listing}[H]
+\begin{minted}{text}
+Decl ::= "const" ident "=" number ";"
+\end{minted}
+\caption{Simple declaration grammar in Backus-Naur form.}
+\label{lst:cfg-mapping-decl-bnf}
+\end{listing}
+
+\begin{enumerate}
+  \item Rule~\ref{map:sigma} reads \texttt{"const"}, \texttt{"="} and \texttt{";"} as members of $\Sigma_{\mathrm{terminal}}$, and \texttt{ident} and \texttt{number} as members of $\Sigma_{\mathrm{property}}$.
+  \item Rule~\ref{map:nu} assigns $\nu(\mathit{ident}) = \texttt{name}$ and $\nu(\mathit{number}) = \texttt{value}$.
+  \item Rule~\ref{map:pi}, applied to \texttt{Decl}, builds the list
+    \[
+      P_{\mathit{Decl}} = \bigl(\,(\mathit{Decl},\; \texttt{"const"}\,\mathit{ident}\,\texttt{"="}\,\mathit{number}\,\texttt{";"}\,)\,\bigr)
+    \]
+    and assigns $\pi(\mathit{Decl}, \texttt{"const"}\,\mathit{ident}\,\texttt{"="}\,\mathit{number}\,\texttt{";"}) = \texttt{decl}$.
+  \item Rule~\ref{map:root}, applied to $S = \mathit{Decl}$, emits \mintinline{text}{root = Decl}.
+  \item Rule~\ref{map:typedef}, applied to $P_{\mathit{Decl}}$, emits \mintinline{text}{typedef Decl ::= decl}.
+  \item Rule~\ref{map:node}, applied to the single position of $P_{\mathit{Decl}}$, opens \mintinline{text}{node decl}. Its right-hand side is read left to right:
+    \begin{enumerate}
+      \item Rule~\ref{map:terminal}, applied to \texttt{"const"}, emits \mintinline{text}{"const"}.
+      \item Rule~\ref{map:property}, applied to \texttt{ident}, emits \mintinline{text}{prop name string}.
+      \item Rule~\ref{map:terminal}, applied to \texttt{"="}, emits \mintinline{text}{"="}.
+      \item Rule~\ref{map:property}, applied to \texttt{number}, emits \mintinline{text}{prop value string}.
+      \item Rule~\ref{map:terminal}, applied to \texttt{";"}, emits \mintinline{text}{";"}.
+    \end{enumerate}
+\end{enumerate}
+\noindent
+Rules~\ref{map:nonterminal} and \ref{map:epsilon} do not apply: the right-hand side contains no nonterminal and is not empty. The emitted grammar is \cref{lst:cfg-mapping-assign}. The program \texttt{const a = 2;} is a \texttt{decl} node with \texttt{name} $= \texttt{a}$ and \texttt{value} $= \texttt{2}$, see \cref{fig:cfg-mapping-assign-tree}.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{.55\textwidth}
+  \centering
+  \begin{minted}{text}
+grammar assign {
+  root = Decl
+  typedef Decl ::= decl
+  node decl {
+    "const"
+    prop name string
+    "="
+    prop value string
+    ";"
+  }
+}
+  \end{minted}
+  \caption{Blattwerkzeug grammar for \cref{lst:cfg-mapping-decl-bnf}}
+  \label{lst:cfg-mapping-assign}
+\end{subfigure}%
+\begin{subfigure}{.45\textwidth}
+  \centering
+  \includegraphics[width=.5\linewidth]{syntaxtrees/ast-diss-decl.pdf}
+  \caption{Tree for \texttt{const a = 2;}}
+  \label{fig:cfg-mapping-assign-tree}
+\end{subfigure}
+\caption{The declaration grammar and one tree it accepts}
+\end{figure}
+
+\subsubsection{Example 2: Every mapping rule applied}
+
+\Cref{lst:cfg-mapping-decl-ext-bnf} extends that grammar far enough so that every rule is applied at least once. The \texttt{const} production is unchanged. Additionally a \texttt{let} declaration may omit its initialiser, and that optional part is the nonterminal \texttt{OptInit}.
+
+\begin{listing}[H]
+\begin{minted}[escapeinside=§§]{text}
+Decl    ::= "let" ident OptInit ";"
+          | "const" ident "=" number ";"
+OptInit ::= "=" number
+          | §$\epsilon$§
+\end{minted}
+\caption{Extended declaration grammar. The second alternative of \texttt{Decl} is \cref{lst:cfg-mapping-decl-bnf}}
+\label{lst:cfg-mapping-decl-ext-bnf}
+\end{listing}
+
+\begin{enumerate}
+  \item Rule~\ref{map:sigma} reads \texttt{"let"}, \texttt{"const"}, \texttt{"="} and \texttt{";"} as members of $\Sigma_{\mathrm{terminal}}$, and \texttt{ident} and \texttt{number} as members of $\Sigma_{\mathrm{property}}$.
+  \item Rule~\ref{map:nu} assigns $\nu(\mathit{ident}) = \texttt{name}$ and $\nu(\mathit{number}) = \texttt{value}$.
+  \item Rule~\ref{map:pi} builds the lists
+    \begin{align*}
+      P_{\mathit{Decl}} &= \bigl(
+        (\mathit{Decl},\; \texttt{"let"}\,\mathit{ident}\,\mathit{OptInit}\,\texttt{";"}),\;
+        (\mathit{Decl},\; \texttt{"const"}\,\mathit{ident}\,\texttt{"="}\,\mathit{number}\,\texttt{";"})
+      \bigr), \\
+      P_{\mathit{OptInit}} &= \bigl(
+        (\mathit{OptInit},\; \texttt{"="}\,\mathit{number}),\;
+        (\mathit{OptInit},\; \varepsilon)
+      \bigr)
+    \end{align*}
+    and assigns the type names \texttt{decl\_let}, \texttt{decl\_const}, \texttt{opt\_eq} and \texttt{opt\_empty}.
+  \item Rule~\ref{map:root}, applied to $S = \mathit{Decl}$, emits \mintinline{text}{root = Decl}.
+  \item Rule~\ref{map:typedef}, applied to $P_{\mathit{Decl}}$, emits \mintinline{text}{typedef Decl ::= decl_let | decl_const}.
+  \item Rule~\ref{map:typedef}, applied to $P_{\mathit{OptInit}}$, emits \mintinline{text}{typedef OptInit ::= opt_eq | opt_empty}.
+  \item Rule~\ref{map:node}, applied to the first position of $P_{\mathit{Decl}}$, opens \mintinline{text}{node decl_let}. Its right-hand side is read left to right:
+    \begin{enumerate}
+      \item Rule~\ref{map:terminal}, applied to \texttt{"let"}, emits \mintinline{text}{"let"}.
+      \item Rule~\ref{map:property}, applied to \texttt{ident}, emits \mintinline{text}{prop name string}.
+      \item Rule~\ref{map:nonterminal}, applied to \texttt{OptInit}, emits \mintinline{text}{children init ::= OptInit}.
+      \item Rule~\ref{map:terminal}, applied to \texttt{";"}, emits \mintinline{text}{";"}.
+    \end{enumerate}
+  \item Rule~\ref{map:node}, applied to the second position of $P_{\mathit{Decl}}$, opens \mintinline{text}{node decl_const}. Rules~\ref{map:terminal} and \ref{map:property} emit \mintinline{text}{"const"}, \mintinline{text}{prop name string}, \mintinline{text}{"="}, \mintinline{text}{prop value string} and \mintinline{text}{";"}.
+  \item Rule~\ref{map:node}, applied to the first position of $P_{\mathit{OptInit}}$, opens \mintinline{text}{node opt_eq}. Rule~\ref{map:terminal} emits \mintinline{text}{"="} and rule~\ref{map:property} emits \mintinline{text}{prop value string}.
+  \item Rule~\ref{map:node}, applied to the second position of $P_{\mathit{OptInit}}$, opens \mintinline{text}{node opt_empty}. Rule~\ref{map:epsilon} gives that node an empty body.
+\end{enumerate}
+\noindent
+The emitted grammar is \cref{lst:cfg-mapping-decl-ext}. The program \texttt{let a;} uses \texttt{decl\_let} with an \texttt{opt\_empty} child. The program \texttt{let b = 3;} uses \texttt{decl\_let} with an \texttt{opt\_eq} child.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{.58\textwidth}
+  \vspace{0pt}
+  \centering
+  \begin{minted}{text}
+grammar assign {
+  root = Decl
+  typedef Decl ::= decl_let | decl_const
+  node decl_let {
+    "let"
+    prop name string
+    children init ::= OptInit
+    ";"
+  }
+  node decl_const {
+    "const"
+    prop name string
+    "="
+    prop value string
+    ";"
+  }
+  typedef OptInit ::= opt_eq | opt_empty
+  node opt_eq {
+    "="
+    prop value string
+  }
+  node opt_empty { }
+}
+  \end{minted}
+  \caption{BlattWerkzeug grammar for BNF in \cref{lst:cfg-mapping-decl-ext-bnf}}
+  \label{lst:cfg-mapping-decl-ext}
+\end{subfigure}%
+\begin{minipage}[b]{.42\textwidth}
+  \begin{subfigure}{\linewidth}
+    \centering
+    \includegraphics[width=.6\linewidth]{syntaxtrees/ast-diss-decl-let.pdf}
+    \caption{\texttt{let a;}}
+    \label{fig:cfg-mapping-decl-let}
+  \end{subfigure}
+  \vspace{4mm}
+  \begin{subfigure}{\linewidth}
+    \centering
+    \includegraphics[width=.6\linewidth]{syntaxtrees/ast-diss-decl-let-eq.pdf}
+    \caption{\texttt{let b = 3;}}
+    \label{fig:cfg-mapping-decl-let-eq}
+  \end{subfigure}
+\end{minipage}
+\caption{The extended declaration grammar and the two trees it accepts}
+\end{figure}
+
+\section{Evolution of the grammars design}
+
+\subsubsection{Initially: Close to common grammar syntax}
+
+\subsubsection{Detour: Directly based on a schema language}
+
+\subsubsection{Layouting with linebreaks}
 
 \section{Custom validation rules}
 
-\subsection{Example: HTML validation rules for XML}
+The presented grammar allows to define rules for immediate parent-child relationships and data types for properties. This is sufficent to describe the structure of many different documents, but can be cumbersome or outright impractical when describing relationships over more levels. BlattWerkzeug therefore also offers an API to define validators via custom TypeScript-code. This can't be done in the user-facing grammar-editor, but must be part of the compiled editor itself.
 
-\subsection{API overview}
+As the grammer is purpose built for the resulting editor, deciding on the scope of the grammar requires careful justification. As often in computer science, it would of course be possible to devise a grammar-system that could express arbitrary validation logic. And as the grammar borrows some inspiration of RelaxNG, there is precedence that could have been followed thoroughly (or RelaxNG could have been used directly).
 
-\section{Interpretation of block languages -- The builtin block editor}
+Instead the grammar focussed on figuring out a small subset that can express the majority of programming language structures without leaving too many gaping validation holes. Over time, two main scenarios have occured again and again that defied general solutions. Under these circumstances the BlattWerkzeug grammar purposefully delegates to custom code solutions for validation:
 
-The BlattWerkzeug IDE does not immediately use grammars to visualize syntax trees, instead it relies on a structure called block language which adds a few more fine tuning options not present on the grammar level.
+\begin{enumerate}
+\item Dependencies between nodes that introduce some kind of naming. The most common case are identifiers for variables and the like: Depending on the language they may have rules that include scoping, various typechecks, or the may be introduced outside the edited document. Seemingly more often than not a program can not be checked in isolation. The following list of examples is not complete, but gives an impression why not much energy was invested to describe a truly general solution to this problem space:
 
-\subsection{Compiling a grammar to a block language}
+  \begin{itemize}
+  \item Identifiers might be introduced by other syntaxtrees in the same project: Global variables, available functions, specified \texttt{CSS} classes, ...
+  \item The correctness of an \texttt{SQL}-query is undecidable without knowing the schema of the database involved.
+  \item Surrounding code including things like the Ssandard libraries for programming languages are change over time, a grammar may specify
+  \item Depending on compiler configuration certain aspects of a language may be enable or prohibited.
+  \end{itemize}
 
-Shows the general process of mapping these definitions.
+  All of these aspects are highly dependent on the specific programming languages beeing augmented. The general advice for BlattWerkzeug language creators is to model the grammar as strictly and close to a specific version (with possibly specific compiler instructions) as possible: Regarding the audience there does not seem to be much merit in making the grammar for e.g. \texttt{JavaScript} flexible enough to accomodate everything from version 1 (1997) to the version of 2026. Instead just pick the relevant features that are in focus of being teached and ensure them to be present. Or to phrase it in a positive way: Having multiple grammar variations for the same language is encouraged for didactic purposes.
 
-\subsection{Block editor UI elements}
+  In some cases it seems promising to do some simple checks directly on the AST, \cref{sec:sql} does this to give immediate feedback about the correctness of a query in the light of a certain schema. But in general running the compiler or interpreter and providing its output to the user seems like a fallback that must be available.
+\item The dependencies inside the tree are more complex than simple parent-child relationships. Examples for this include e.g. \texttt{HTML} that expects to have \texttt{<input>}-elements inside \texttt{<form>}-elements
+\end{enumerate}
+
+\Cref{sec:validate-html-rules-for-xml} shows an example how the rules for \texttt{HTML} could be expressed by the type system alone and then shows how custom validation rules are a preferable approach.
+
+The BlattWerkzeug runtime defines a general validation API that takes an AST and a validation context that is the mutable validation state. \Cref{lst:typescript-specializedvalidator} shows the exact \texttt{class} that must be derived from. Earlier versions of the validator have been implemented using a simpler function interface that acted as a visitor being invoked, returning the validation issues it found on a certain node. But practical development showed that this approach came with major drawbacks:
+
+\begin{enumerate}
+\item Most validation requires building an extensive context: A certain node is only valid, if other nodes exist elsewhere in the tree. This would have to be rebuilt again and again when validation focusses on each node in isolation.
+\item Having constructors available to formalize a two phase binding was very helpful: This way construction of validators can be as specific as the programming runtime requires it and the actual validation can then rely on that data.
+\end{enumerate}
+
+\begin{listing}[p]
+\begin{minted}{typescript}
+export abstract class SpecializedValidator {
+  /**
+   * @param ast The root node where the validation should start.
+   * @param context Main point of interaction during validation.
+   */
+  abstract validateFromRoot(
+    ast: AST.SyntaxNode,
+    context: ValidationContext
+  ): void;
+}
+\end{minted}
+\caption{API to be implemented for a validator}
+\label{lst:typescript-specializedvalidator}
+\end{listing}
+
+\begin{listing}[p]
+\begin{minted}{typescript}
+const allFroms = ast.getNodesOfType({
+  languageName: "sql",
+  typeName: "from",
+});
+allFroms.forEach((from) => {
+  const allIntroduced = from.getNodesOfType({
+    languageName: "sql",
+    typeName: "tableIntroduction",
+  });
+  allIntroduced.forEach((introduced) => {
+    const introducedTableName = introduced.properties["name"];
+
+    if (!schema.hasTable(introducedTableName)) {
+      context.addError("UNKNOWN_TABLE", introduced);
+    }
+  });
+});
+\end{minted}
+\caption{Validation example for \texttt{SQL}: Ensuring that each table introduced exists in the schema }
+\label{lst:sql-validator-table-names}
+\end{listing}
+
+Grammar validation is also implemented using this API. In this case the constructor takes the \texttt{JSON}-grammar definition and creates an extensive map of available validators for all types that are defined. As hinted earlier, the grammar validator used to be some kind of special case that provided iteration over the syntaxtree and invoked validation functions.
+
+In the current design the only thing that is special about the grammar validator is that it is guaranteed to run first. This ordering gives precedence to structural errors which are an indication for either incomplete or possibly malformed trees. Custom code validation is usually more concerned with semantic errors and depending on the context it may not be desireable to attempt to detect these on incomplete trees. By running later compared to the structural analysis, this kind of reaction is possible.
+
+In general the validation code is very tightly coupled to the grammar.
+
+Validation is one of the reasons why the quite simple structure of the AST is wrapped in a class: Having all sorts of query methods available felt like a good way to make them discoverable. \Cref{lst:sql-validator-table-names} gives a good impression how validation code looks like. It should make as little assumptions about the tree as possible, it therefore queries for any number of \texttt{sql.from} nodes. In practice this will most likely be either no node or one node, but the validation code then also works with queries that have multiple \texttt{FROM}, e.g. when they do sub-\texttt{SELECT}s.
+
+The code does first gather all \texttt{FROM} nodes and searches this sub-tree for \texttt{sql.tableIntroduction} nodes. Limiting the search in this way is not strictly necessary, but in case of wildly malformed trees it attempts to not add semantic errors on nodes that are alredy marked as structural errors. Actually adding the error then checks the property \texttt{name} against the schema. Most validation code works in a similar fashion: It repeatedly uses \texttt{getNodesOfType(...)} to carve out sub-tree strucures and then calls \texttt{contex.addError(...)} in case some problem is detected.
+
+Other common patterns include:
+
+\begin{itemize}
+\item Building sets of names known to be defined in certain sub-trees and checking identifiers against these, instead of checking against the context.
+\item Doing basic checks on arguments for functions of the standard libraries.
+\end{itemize}
+
+\subsection{Example: HTML ancestry validation rules for XML}
+\label{sec:validate-html-rules-for-xml}
+
+For this example we will concentrate on common type of rule around ancestors found in HTML: The requirement that a certain element may only occur if there is a certain parent somewhere in the hierarchy. In HTML-terms this is called the \textit{content-model}: \enquote{A normative description of what content must be included as children and descendants of the element.} \cite[§3.2.5 Content models]{whatwgHTMLLivingStandard} The most obvious example is the distinction between permitted children in \texttt{<head>}- and \texttt{<body>}-elements: Everything in \texttt{<head>} is so called \textit{metadata-content}, everything in \texttt{<body>} is so called \textit{flow-content}. And inside the flow content there are (broadly speaking) markup elements intended to be used inside paragraphs: Think of elements like \texttt{<a>}, \texttt{<small>}, \texttt{<span>}, ... At a first glance, this distinction can be expressed nicely in the type system with three \texttt{typedef} declarations. \Cref{lst:example-grammar-html-typedef-content-model} follows this idea and shows a grammar that is capable of expressing the following basic \texttt{HTML} structures:
+
+\begin{itemize}
+\item \texttt{html}, has exactly two children in order:
+  \begin{enumerate}
+  \item \texttt{head}, specific occurences of \textit{metadata-content} in any order:
+    \begin{itemize}
+    \item Exactly one \texttt{title}
+    \item Any number of \texttt{script}
+    \end{itemize}
+  \item \texttt{body}, any occurences of \textit{flow content} in any order:
+    \begin{itemize}
+    \item \texttt{h1}, \texttt{h2}, \texttt{h3}, \texttt{h4}, \texttt{h5}, \texttt{h6}, \texttt{p}, \texttt{div}, \texttt{a}
+    \item \texttt{<div>} and \texttt{<a>} permit any \textit{flow-content}
+    \item Everything except \texttt{<div>} permits any \textit{phrasing-content}, this refers to \texttt{<span>}, \texttt{<a>} and also includes text that is meant to be displayed
+    \end{itemize}
+  \end{enumerate}
+\end{itemize}
+
+\begin{listing}[p]
+\begin{minted}{text}
+grammar diss-html {
+  root = html
+  node html {
+    children "document" sequence ::= head body
+  }
+
+  node title {
+    prop "value" string
+  }
+  node script {
+    prop "value" string
+  }
+  typedef metadata-content ::= title | script
+  node head {
+    children "children" allowed ::= title? script*
+  }
+
+  node hX {
+    prop "level" integer
+    children "children" allowed ::= phrasing-content*
+  }
+  node p {
+    children "children" allowed ::= phrasing-content*
+  }
+  node span {
+    children "children" allowed ::= phrasing-content*
+  }
+  node a {
+    prop "href" string
+    children "children" allowed ::= phrasing-content* | flow-content*
+  }
+  node text {
+    prop "value" string
+  }
+  node div {
+    children "children" allowed ::= flow-content*
+  }
+  typedef flow-content     ::= hX | p | div | a
+  typedef phrasing-content ::= span | a | text
+  node body {
+    children "children" allowed ::= flow-content*
+  }
+}
+\end{minted}
+\caption{Minimal example for an HTML grammar using \texttt{typedef} for different content models}
+\label{lst:example-grammar-html-typedef-content-model}
+\end{listing}
+
+
+After the structure of the resulting permitted documents is understood, we can now work through various shortcomings and interesting aspects of this approach from top to bottom.
+
+The grammar is a structural grammar that does not define any terminal symbols. The visualisation can be externalised nicely in principle, but for this structure it will contain lots of repetetion as the fundamental HTML-syntax needs to be re-specified for every \texttt{node}.
+
+The \texttt{HTML}-specification only allows a single \texttt{<title>}-element to be present in the \texttt{<head>}-element: \enquote{Zero or more elements of metadata content, of which no more than one is a title element and no more than one is a base element} \cite[§4.2.1 The head element]{whatwgHTMLLivingStandard}. The grammar itself is able to express this via the \texttt{?}-cardinality. But as the semantics of a \texttt{typedef} are a substitution, this can't express the required differences in cardinality. Instead the \texttt{children} definition of \texttt{head} resorts to \texttt{diss-html.title? diss-html.script*} to explicitly represent the mixed cardinalities.
+
+\section{Block language specification}
+\label{sec:block-language-specification}
+
+\begin{listing}[H]
+\begin{minted}{typescript}
+type BlockLanguage = {
+  id: string;
+  name: string;
+  grammarId: string;
+  sidebars: BlockLanguageSidebars;
+  editorBlocks: BlockLanguageEditorBlocks;
+  editorComponents: BlockLanguageEditorComponents;
+}
+\end{minted}
+\caption{Type definition of a block language}
+\label{lst:block-language-definition}
+\end{listing}
+
+A working development environment needs more information than the grammar alone provides. The block editor that can be distilled from the grammar is a crucial part of the editor user interface. But the sidebar which provides a source of blocks to drag on the editor is not part of that grammar, but the block language instead (see ). And depending on the language there are additional runtime components that are available or required: \texttt{SQL} has the table view of the executed query, \texttt{JavaScript} shows the console output of the running program, the \texttt{GraphViz} language shows the graph, ... These kinds of connections are made using the block language.
+
+The builtin BlattWerkzeug block editor does not immediately use grammars to visualize syntax trees, instead it relies on an intermediate structure called block language which adds a few more fine tuning options not present on the grammar level. These options concern representation matters: Details about colouring, the way the block structure should be made visible and the overall layout of the development environment.
+
+\subsection{Manually defined sidebar blocks}
+
+Part of the block language.
+
+\subsection{Automatically generated sidebar blocks}
+
+Can be inferred from grammar.
 
 \subsection{Editor components / Runtimes}
 
 Block language configuration allows to choose relevant editor modules.
 
-\section{Block language specification}
-\label{sec:block-language-specification}
+\subsection{Compiling a grammar to a block language}
 
-\subsection{block}
+Shows the general process of mapping these definitions.
 
-\subsection{container}
+\subsection{\texttt{block}}
 
-\subsection{interpolate}
+\subsection{\texttt{container}}
 
-\subsection{input}
+\subsection{\texttt{interpolate}}
+
+\subsection{\texttt{input}}
 
 \subsection{error}
+
+\section{Visualisation Backends}
+
+\section{The builtin block editor}
+
+\todo[inline]{Tag: keyword}
+
+\section{Pretty Printing via \texttt{prettier}}
+
+\section{Blockly}
 
 \section{The surrounding IDE -- Syntax Trees as Code Resources}
 
 AST representation stored in the database alongside a name.
 
 \newpage
-
-\section{Providing Blocks: The sidebar}
-
-\begin{wrapfigure}{r}{0.3\textwidth}
-  \includegraphics[width=\linewidth]{screenshots/sidebar-sql}
-  \caption{BlattWerkzeug showing two sidebars with partially opened categories}
-  \label{fig:sidebar-sql}
-\end{wrapfigure}
-
-On the surface the sidebar simply fulfills an elemental requirement in any block based environment: This is the source of available blocks, the place where blocks are dragged from. And while this is obviously a hard requirement, it has an important secondary function as a memory aid. In text based programming options available are usually learned in advance and have to be remembered. Looking at available blocks allows the learner to pick from a set of options, possibly by recalling their function once she or he sees them.
-
-As Blatt\-Werkzeug is distinctly aiming to work with real world programming languages, the blocks are often resembling syntactic constructs like \texttt{if}, \texttt{for}, \texttt{SELECT}, \texttt{<h1></h1>}, ... These identifiers are not as self-explanatory as in for example Scratch and it's stage metaphor with things like \texttt{Move}, \texttt{Say}, \texttt{Play Sound}, ... But this is not an inherent shortcoming of the approach: Most of these easier to grasp operations are simply function calls under the hood.. The \nameref{sec:trucklino} runtime demonstrates a wide range of \enquote{natural} blocks to move a truck forward, set turn signals or to sense traffic lights.
-
-In BlattWerkzeug blocks in the sidebar are part of a three level hierarchy:
-
-\begin{itemize}
-\item The \textbf{top level sidebar} may appear multiple times and have a caption. \Cref{fig:sidebar-sql} shows examples named \enquote{Datenbank \texttt{default}} and \enquote{SQL}.
-\item Each sidebar defines collapsible \textbf{categories} which are also named. \Cref{fig:sidebar-sql} shows examples named \enquote{Auftritt}, \enquote{Charakter}, ... to list all tables and \enquote{Ausdrücke}, \enquote{Funktionen}, ... to group SQL blocks. In the state of the screenshot, only the category for table \enquote{Auftritt} and the category \enquote{Funktionen} are opened. Note that in the case of the tables, the category itself is also a draggable block.
-\item Below the category is where \textbf{blocks} themselves are defined and also display a caption.
-\end{itemize}
-
-\Cref{fig:sidebar-sql} also gives a hint, that there must be statically and dynamically populated sidebars: The syntactic elements of SQL are known in advance and can be specified using a grammar. But the schema of the database changes at runtime and can not meaningfully be defined by a grammar.
-
-\subsection{Manually Defined}
-
-Part of the block language.
-
-\subsection{Automatically Generated}
-
-Can be inferred from grammar.
 
 \subsection{Generated via Runtime}
 \label{sec:generated-via-runtime}
@@ -572,7 +1714,7 @@ Allows nodes that introduce identifiers to change to a reference for that identi
 
 All examples so far readily used multiple \texttt{children} per node type, often interspersed with terminal symbols. But there is a more general rule: It is seldomly useful to represent sequences of valid types in a single \texttt{children} directive.
 
-\subsection{Why the EBNF is not sufficiant}
+\subsection{Why the EBNF is not sufficent}
 \label{sec:why-the-ebnf-does-not-suffice}
 
 Modelling \texttt{allowed} with e.g. a cardinality of \texttt{?} in EBNF would be very tedious.
@@ -605,7 +1747,8 @@ Useful when creating languages or dealing with odd errors.
 
 \chapter{Case Studies -- Self hosting \& real world Programming languages}
 
-\section{BlattWerkzeug Meta Grammar}\label{sec:meta-grammar}
+\section{BlattWerkzeug Meta Grammar}
+\label{sec:meta-grammar}
 
 Shows bootstrapping / Self Hostedness
 

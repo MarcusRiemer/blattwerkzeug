@@ -1,0 +1,64 @@
+{
+  "name": "element",
+  "language": "dxml",
+  "properties": {
+    "name": "p"
+  },
+  "children": {
+    "elements": [
+      {
+        "name": "text",
+        "language": "dxml",
+        "properties": {
+          "value": "Hier geht es zum"
+        }
+      },
+      {
+        "name": "element",
+        "language": "dxml",
+        "properties": {
+          "name": "a"
+        },
+        "children": {
+          "elements": [
+            {
+              "name": "text",
+              "language": "dxml",
+              "properties": {
+                "value": "Werkzeug holen"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "attribute",
+              "language": "dxml",
+              "properties": {
+                "name": "href",
+                "value": "https://blattwerkzeug.de/"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "attributes": [
+      {
+        "name": "attribute",
+        "language": "dxml",
+        "properties": {
+          "name": "id",
+          "value": "a"
+        }
+      },
+      {
+        "name": "attribute",
+        "language": "dxml",
+        "properties": {
+          "name": "class",
+          "value": "important"
+        }
+      }
+    ]
+  }
+}

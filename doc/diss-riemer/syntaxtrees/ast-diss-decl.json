@@ -1,0 +1,8 @@
+{
+  "language": "assign",
+  "name": "decl",
+  "properties": {
+    "name": "a",
+    "value": "2"
+  }
+}
