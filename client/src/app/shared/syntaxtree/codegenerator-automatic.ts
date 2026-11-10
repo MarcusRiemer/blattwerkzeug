@@ -15,6 +15,11 @@ import {
 } from "./grammar.description";
 import { SyntaxNode } from "./syntaxtree";
 
+const SEPARATOR_BEFORE =
+  OutputSeparator.SPACE_BEFORE | OutputSeparator.NEW_LINE_BEFORE;
+const SEPARATOR_AFTER =
+  OutputSeparator.SPACE_AFTER | OutputSeparator.NEW_LINE_AFTER;
+
 /**
  * Various things may specify that the require indentation. This helper
  * method wraps the given action to be indented if needed.
@@ -97,6 +102,14 @@ function processAttributes(
       case "each": {
         const children = node.getChildrenInCategory(a.name);
         const between = "between" in a ? a.between : undefined;
+        const sep = tagToSeparator(node, a.tags);
+        const before = sep & SEPARATOR_BEFORE;
+        const after = sep & SEPARATOR_AFTER;
+
+        // Empty fragments let emit() merge this space with a neighbour's.
+        if (children.length > 0 && before !== OutputSeparator.NONE) {
+          process.addConvertedFragment("", node, before);
+        }
 
         // Possibly end the vertical container with a break
         children.forEach((c, i) => {
@@ -114,6 +127,10 @@ function processAttributes(
 
           process.generateNode(c);
         });
+
+        if (children.length > 0 && after !== OutputSeparator.NONE) {
+          process.addConvertedFragment("", node, after);
+        }
 
         break;
       }

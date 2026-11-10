@@ -317,6 +317,331 @@ describe(`Automatic code generation`, () => {
     });
   });
 
+  describe(`sequence with spacing tags`, () => {
+    const types: NamedLanguages = {
+      l: {
+        r: {
+          type: "concrete",
+          attributes: [
+            { type: "terminal", symbol: "L" },
+            {
+              type: "sequence",
+              name: "a1",
+              tags: ["space-around"],
+              nodeTypes: [{ occurs: "*", nodeType: "t1" }],
+            },
+            { type: "terminal", symbol: "R" },
+          ],
+        },
+        t1: {
+          type: "concrete",
+          attributes: [{ type: "terminal", symbol: "t1" }],
+        },
+      },
+    };
+
+    const g = new CodeGenerator([], types, "legacy");
+
+    it(`emits nothing for an empty group`, () => {
+      const t = new SyntaxTree({ language: "l", name: "r" });
+      expect(g.emit(t)).toEqual("LR");
+    });
+
+    it(`wraps the whole group once`, () => {
+      const t = new SyntaxTree({
+        language: "l",
+        name: "r",
+        children: {
+          a1: [
+            { language: "l", name: "t1" },
+            { language: "l", name: "t1" },
+          ],
+        },
+      });
+      expect(g.emit(t)).toEqual("L t1t1 R");
+    });
+  });
+
+  describe(`facing separator tags`, () => {
+    const emit = (types: NamedLanguages | VisualisedLanguages, tree: {}) =>
+      new CodeGenerator([], types, "legacy").emit(new SyntaxTree(tree as any));
+
+    it(`merges a space-after terminal with a space-before terminal`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "a", tags: ["space-after"] },
+              { type: "terminal", symbol: "b", tags: ["space-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("a b");
+    });
+
+    it(`merges a space-after terminal with a space-before property`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "a", tags: ["space-after"] },
+              {
+                type: "property",
+                name: "name",
+                base: "string",
+                tags: ["space-before"],
+              },
+            ],
+          },
+        },
+      };
+
+      expect(
+        emit(types, {
+          language: "l",
+          name: "r",
+          properties: { name: "b" },
+        })
+      ).toEqual("a b");
+    });
+
+    it(`merges a space-after terminal with a space-before interpolate`, () => {
+      const types: VisualisedLanguages = {
+        l: {
+          r: {
+            type: "visualise",
+            attributes: [
+              { type: "terminal", symbol: "a", tags: ["space-after"] },
+              { type: "interpolate", name: "name", tags: ["space-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(
+        emit(types, {
+          language: "l",
+          name: "r",
+          properties: { name: "b" },
+        })
+      ).toEqual("a b");
+    });
+
+    it(`merges two space-around child groups into one space`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "sequence",
+                name: "left",
+                tags: ["space-around"],
+                nodeTypes: ["ta"],
+              },
+              {
+                type: "sequence",
+                name: "right",
+                tags: ["space-around"],
+                nodeTypes: ["tb"],
+              },
+            ],
+          },
+          ta: {
+            type: "concrete",
+            attributes: [{ type: "terminal", symbol: "a" }],
+          },
+          tb: {
+            type: "concrete",
+            attributes: [{ type: "terminal", symbol: "b" }],
+          },
+        },
+      };
+
+      expect(
+        emit(types, {
+          language: "l",
+          name: "r",
+          children: {
+            left: [{ language: "l", name: "ta" }],
+            right: [{ language: "l", name: "tb" }],
+          },
+        })
+      ).toEqual("a b");
+    });
+
+    it(`merges a between space-after with the next child's space-before`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "sequence",
+                name: "items",
+                nodeTypes: [{ occurs: "+", nodeType: "t" }],
+                between: {
+                  type: "terminal",
+                  symbol: ",",
+                  tags: ["space-after"],
+                },
+              },
+            ],
+          },
+          t: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "x", tags: ["space-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(
+        emit(types, {
+          language: "l",
+          name: "r",
+          children: {
+            items: [
+              { language: "l", name: "t" },
+              { language: "l", name: "t" },
+            ],
+          },
+        })
+      ).toEqual("x, x");
+    });
+
+    it(`merges a space-after terminal with a space-before inside a horizontal container`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "return", tags: ["space-after"] },
+              {
+                type: "container",
+                orientation: "horizontal",
+                children: [
+                  { type: "terminal", symbol: "x", tags: ["space-before"] },
+                ],
+              },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("return x");
+    });
+
+    it(`merges a space-after inside a horizontal container with a space-before terminal`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "container",
+                orientation: "horizontal",
+                children: [
+                  { type: "terminal", symbol: "f", tags: ["space-after"] },
+                ],
+              },
+              { type: "terminal", symbol: "(", tags: ["space-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("f (");
+    });
+
+    it(`merges a newline-after terminal with a newline-before inside a horizontal container`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "return", tags: ["newline-after"] },
+              {
+                type: "container",
+                orientation: "horizontal",
+                children: [
+                  { type: "terminal", symbol: "x", tags: ["newline-before"] },
+                ],
+              },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("return\nx");
+    });
+
+    it(`merges a newline-after inside a horizontal container with a newline-before terminal`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "container",
+                orientation: "horizontal",
+                children: [
+                  { type: "terminal", symbol: "f", tags: ["newline-after"] },
+                ],
+              },
+              { type: "terminal", symbol: "(", tags: ["newline-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("f\n(");
+    });
+
+    it(`merges newline-after with newline-before`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "a", tags: ["newline-after"] },
+              { type: "terminal", symbol: "b", tags: ["newline-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("a\nb");
+    });
+
+    it(`uses a single newline when a vertical container follows a newline-after`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "container",
+                orientation: "vertical",
+                children: [
+                  { type: "terminal", symbol: "a", tags: ["newline-after"] },
+                  { type: "terminal", symbol: "b" },
+                ],
+              },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("a\nb");
+    });
+  });
+
   describe(`sequence with between`, () => {
     const types: NamedLanguages = {
       l: {

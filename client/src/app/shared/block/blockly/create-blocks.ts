@@ -116,6 +116,9 @@ export function createBlocksFromGrammar(g: GrammarDocument): BlocklyBlock[] {
           case "sequence":
           case "parentheses":
           case "choice":
+            if (anyTag(attr, "space-before", "space-around")) {
+              messageString += " ";
+            }
             args.push({
               type:
                 orientation === "vertical" ? "input_statement" : "input_value",
@@ -123,6 +126,9 @@ export function createBlocksFromGrammar(g: GrammarDocument): BlocklyBlock[] {
             });
             // Possibly prepend the name of the childgroup
             addPlaceholder(multipleChildgroups ? attr.name : undefined);
+            if (anyTag(attr, "space-after", "space-around")) {
+              messageString += " ";
+            }
             break;
           case "property":
             switch (attr.base) {

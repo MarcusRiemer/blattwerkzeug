@@ -198,6 +198,7 @@ export function visualizeChildGroup(
           {
             blockType: "iterator",
             childGroupName: t.name,
+            ...(t.tags?.length ? { cssClasses: [...t.tags] } : {}),
           },
         ],
       },

@@ -25,10 +25,100 @@ type GeneratorState = {
   holes: EmittedHole[];
 };
 
-function joinPrettierDocuments(docs: Doc[], between: Doc[] | Doc): Doc[] {
-  between = Array.isArray(between) ? builders.concat(between) : between;
+const LEADING = OutputSeparator.SPACE_BEFORE | OutputSeparator.NEW_LINE_BEFORE;
+const TRAILING = OutputSeparator.SPACE_AFTER | OutputSeparator.NEW_LINE_AFTER;
 
-  return [builders.join(between, docs)];
+/**
+ * A concrete document plus the separator tags that still have to be merged
+ * with whatever is emitted beside it. Prettier itself prints every break it
+ * is given, so overlapping tags are resolved before a doc is built.
+ */
+type Separated = {
+  leading: OutputSeparator;
+  parts: Doc[];
+  trailing: OutputSeparator;
+};
+
+function piece(
+  parts: Doc[],
+  leading = OutputSeparator.NONE,
+  trailing = OutputSeparator.NONE
+): Separated {
+  return { leading, parts, trailing };
+}
+
+function mergeLeading(
+  previousTrailing: OutputSeparator,
+  leading: OutputSeparator
+): OutputSeparator {
+  let next = leading;
+  if (
+    (previousTrailing & OutputSeparator.SPACE_AFTER) > 0 &&
+    (next & OutputSeparator.SPACE_BEFORE) > 0
+  ) {
+    next &= ~OutputSeparator.SPACE_BEFORE;
+  }
+  if (
+    (previousTrailing & OutputSeparator.NEW_LINE_AFTER) > 0 &&
+    (next & OutputSeparator.NEW_LINE_BEFORE) > 0
+  ) {
+    next &= ~OutputSeparator.NEW_LINE_BEFORE;
+  }
+  return next;
+}
+
+function appendSeparated(out: Separated[], next: Separated) {
+  if (out.length === 0) {
+    out.push(next);
+    return;
+  }
+
+  const previous = out[out.length - 1];
+  out.push({
+    leading: mergeLeading(previous.trailing, next.leading),
+    parts: next.parts,
+    trailing: next.trailing,
+  });
+}
+
+function appendAll(out: Separated[], parts: Separated[]) {
+  parts.forEach((part) => appendSeparated(out, part));
+}
+
+function mergeGroups(groups: Separated[][]): Separated[] {
+  const out: Separated[] = [];
+  groups.forEach((group) => appendAll(out, group));
+  return out;
+}
+
+function sideBreaks(sep: OutputSeparator, side: "leading" | "trailing"): Doc[] {
+  const docs: Doc[] = [];
+  if (side === "leading") {
+    if ((sep & OutputSeparator.NEW_LINE_BEFORE) > 0) {
+      docs.push(builders.hardline);
+    }
+    if ((sep & OutputSeparator.SPACE_BEFORE) > 0) {
+      docs.push(" ");
+    }
+  } else {
+    if ((sep & OutputSeparator.SPACE_AFTER) > 0) {
+      docs.push(" ");
+    }
+    if ((sep & OutputSeparator.NEW_LINE_AFTER) > 0) {
+      docs.push(builders.hardline);
+    }
+  }
+  return docs;
+}
+
+function realize(parts: Separated[]): Doc[] {
+  const docs: Doc[] = [];
+  parts.forEach((part) => {
+    docs.push(...sideBreaks(part.leading, "leading"));
+    docs.push(...part.parts);
+    docs.push(...sideBreaks(part.trailing, "trailing"));
+  });
+  return docs;
 }
 
 function isPrettierGroup(obj: unknown): obj is builders.Group {
@@ -72,43 +162,231 @@ export function hasAnyNonWhitespace(obj: Doc[]): boolean {
   );
 }
 
+function hasContent(parts: Separated[]): boolean {
+  return hasAnyNonWhitespace(parts.flatMap((part) => part.parts));
+}
+
 /**
- * Converts a terminal, with respect to all tags that may affect a terminal.
- *
- * @param newLine Used for separators
+ * Puts a child group's own spacing tags on the outer edges. Bits on the
+ * same edge collapse, and an empty group contributes nothing.
  */
-function convertTerminal(
+function applyEdgeTags(
+  parts: Separated[],
+  tags: string[] | undefined,
+  node: SyntaxNode
+): Separated[] {
+  if (parts.length === 0) {
+    return parts;
+  }
+
+  const sep = tagToSeparator(node, tags);
+  const out = parts.map((part) => ({ ...part }));
+  out[0] = {
+    ...out[0],
+    leading: out[0].leading | (sep & LEADING),
+  };
+  const last = out.length - 1;
+  out[last] = {
+    ...out[last],
+    trailing: out[last].trailing | (sep & TRAILING),
+  };
+  return out;
+}
+
+function terminalPiece(
   t:
     | NodeTerminalSymbolDescription
     | NodeInterpolatePropertyDescription
     | NodePropertyTypeDescription,
   node: SyntaxNode
-): Doc {
-  const toReturn: Doc[] = [];
-  const val = t.type === "terminal" ? t.symbol : node.properties[t.name];
+): Separated {
   const sep = tagToSeparator(node, t.tags);
+  const val = t.type === "terminal" ? t.symbol : node.properties[t.name];
+  return piece(
+    [valueToPossiblyQuote(val, t.tags)],
+    sep & LEADING,
+    sep & TRAILING
+  );
+}
 
-  if ((sep & OutputSeparator.NEW_LINE_BEFORE) > 0) {
-    toReturn.push(builders.hardline);
+/**
+ * A newline requested by a vertical container. Merging drops it when the
+ * previous piece already ends with newline-after.
+ */
+function verticalBreak(): Separated {
+  return piece([], OutputSeparator.NEW_LINE_BEFORE);
+}
+
+/**
+ * An indented group already opens with a hardline inside the indent, and a
+ * piece may carry its own newline-before. A second break in front of either
+ * would be a blank line.
+ */
+function groupOpensWithBreak(group: Separated[]): boolean {
+  const first = group[0];
+  if (!first) {
+    return false;
   }
-  if ((sep & OutputSeparator.SPACE_BEFORE) > 0) {
-    toReturn.push(" ");
+  if ((first.leading & OutputSeparator.NEW_LINE_BEFORE) > 0) {
+    return true;
+  }
+  const doc = first.parts[0];
+  if (!isPrettierIndent(doc)) {
+    return false;
+  }
+  const contents = doc.contents;
+  if (isPrettierConcat(contents)) {
+    return contents.parts.length > 0 && isPrettierLine(contents.parts[0]);
+  }
+  return isPrettierLine(contents);
+}
+
+function stackVertical(groups: Separated[][]): Separated[] {
+  const out: Separated[] = [];
+  groups.forEach((group) => {
+    if (!hasContent(group)) {
+      return;
+    }
+    if (out.length > 0 && !groupOpensWithBreak(group)) {
+      appendSeparated(out, verticalBreak());
+    }
+    appendAll(out, group);
+  });
+  return out;
+}
+
+function indentPiece(list: Separated[]): Separated {
+  const body = list.map((part, index) =>
+    index === 0
+      ? { ...part, leading: part.leading & ~OutputSeparator.NEW_LINE_BEFORE }
+      : { ...part }
+  );
+  const last = body.length - 1;
+  const trailing = body[last].trailing;
+  body[last] = { ...body[last], trailing: OutputSeparator.NONE };
+
+  return piece(
+    [builders.indent(builders.concat([builders.hardline, ...realize(body)]))],
+    OutputSeparator.NONE,
+    trailing
+  );
+}
+
+function renderChildGroup(
+  a: NodeAttributeDescription & { name: string; tags?: string[] },
+  types: NamedLanguages | VisualisedLanguages,
+  node: SyntaxNode,
+  state: GeneratorState,
+  orientation: Orientation
+): Separated[] {
+  const hole = state.holes.find(
+    (candidate) => candidate.node === node && candidate.categoryName === a.name
+  );
+  if (hole) {
+    return applyEdgeTags([piece([hole.holeText])], a.tags, node);
   }
 
-  toReturn.push(valueToPossiblyQuote(val, t.tags));
+  const children = node.getChildrenInCategory(a.name);
+  const between = "between" in a ? a.between : undefined;
+  const collected: Separated[] = [];
+  children.forEach((childNode) => {
+    const childType = ensureCodeGenType(types, childNode);
+    const rendered = processBlock(
+      childType.attributes,
+      types,
+      childNode,
+      state
+    );
+    // An empty child contributes no line, so it contributes no break either.
+    if (!hasContent(rendered)) {
+      return;
+    }
+    if (collected.length > 0) {
+      if (between) {
+        appendSeparated(collected, terminalPiece(between, node));
+      }
+      if (orientation === "vertical") {
+        appendSeparated(collected, verticalBreak());
+      }
+    }
+    appendAll(collected, rendered);
+  });
 
-  if ((sep & OutputSeparator.SPACE_AFTER) > 0) {
-    toReturn.push(" ");
+  // An optional group that produced no tokens must not leave its own space.
+  if (!hasContent(collected)) {
+    return [];
   }
+  return applyEdgeTags(collected, a.tags, node);
+}
 
-  if ((sep & OutputSeparator.NEW_LINE_AFTER) > 0) {
-    toReturn.push(builders.hardline);
+function renderContainer(
+  a: NodeAttributeDescription & {
+    orientation: Orientation;
+    children: NodeAttributeDescription[];
+    tags?: string[];
+  },
+  types: NamedLanguages | VisualisedLanguages,
+  node: SyntaxNode,
+  state: GeneratorState
+): Separated[] {
+  const groups = a.children.map((child) =>
+    renderAttribute(child, types, node, state, a.orientation)
+  );
+  const stacked =
+    a.orientation === "vertical" ? stackVertical(groups) : mergeGroups(groups);
+  if (!hasContent(stacked)) {
+    return [];
   }
+  if (a.tags?.includes("indent")) {
+    return [indentPiece(stacked)];
+  }
+  if (a.orientation === "horizontal") {
+    return [horizontalGroup(stacked)];
+  }
+  return stacked;
+}
 
-  if (toReturn.length === 1) {
-    return toReturn[0];
-  } else {
-    return builders.concat(toReturn);
+/**
+ * The group's contents are realized, but the first leading break and the
+ * last trailing break stay on the piece so a sibling outside the container
+ * can merge with them.
+ */
+function horizontalGroup(stacked: Separated[]): Separated {
+  const lastIndex = stacked.length - 1;
+  const body = stacked.map((part, index) => ({
+    ...part,
+    leading: index === 0 ? OutputSeparator.NONE : part.leading,
+    trailing: index === lastIndex ? OutputSeparator.NONE : part.trailing,
+  }));
+
+  return piece(
+    [builders.group(builders.concat(realize(body)))],
+    stacked[0].leading,
+    stacked[lastIndex].trailing
+  );
+}
+
+function renderAttribute(
+  a: NodeAttributeDescription,
+  types: NamedLanguages | VisualisedLanguages,
+  node: SyntaxNode,
+  state: GeneratorState,
+  orientation: Orientation = "horizontal"
+): Separated[] {
+  switch (a.type) {
+    case "terminal":
+    case "property":
+    case "interpolate":
+      return [terminalPiece(a, node)];
+    case "allowed":
+    case "sequence":
+    case "parentheses":
+    case "each":
+      return renderChildGroup(a, types, node, state, orientation);
+    case "container":
+      return renderContainer(a, types, node, state);
+    default:
+      return [];
   }
 }
 
@@ -121,113 +399,13 @@ function processBlock(
   attributes: NodeAttributeDescription[],
   types: NamedLanguages | VisualisedLanguages,
   node: SyntaxNode,
-  parentOrientation: Orientation,
   state: GeneratorState
-): Doc[] {
-  const toReturn: Doc[] = [];
-
-  attributes.forEach((a, _idx) => {
-    switch (a.type) {
-      // Are converted by directly printing out some strings
-      case "terminal":
-      case "property":
-      case "interpolate": {
-        toReturn.push(convertTerminal(a, node));
-        break;
-      }
-
-      // All of the following types have child nodes which will be delegated
-      // to the running emit process
-      case "allowed":
-      case "sequence":
-      case "parentheses":
-      case "each": {
-        const hole = state.holes.find(
-          (h) => h.node === node && h.categoryName === a.name
-        );
-        if (hole) {
-          toReturn.push(hole.holeText);
-        } else {
-          const children = node.getChildrenInCategory(a.name);
-          const between =
-            "between" in a ? convertTerminal(a.between, node) : null;
-
-          const childDocs = children.flatMap((childNode) => {
-            const t = ensureCodeGenType(types, childNode);
-            // A block is always considered to work horizontally
-            return processBlock(
-              t.attributes,
-              types,
-              childNode,
-              "horizontal",
-              state
-            );
-          });
-
-          // Only actually build the subtree if there are any children inside
-          // it. Otherwise we possibly introduce a hardline without having any
-          // content
-          if (hasAnyNonWhitespace(childDocs)) {
-            if (between != null) {
-              toReturn.push(...joinPrettierDocuments(childDocs, between));
-            } else {
-              toReturn.push(...childDocs);
-            }
-          }
-        }
-
-        break;
-      }
-
-      // Containers are similar to nodes with children, but they
-      // iteratore over something different: The node stays the same
-      // while the attribute changes. This requires recursion and is
-      // therefore handled in a separate case although it looks sort
-      // of similar to syntax tree recursion.
-      case "container": {
-        let childDocs: Doc[] = processBlock(
-          a.children,
-          types,
-          node,
-          a.orientation,
-          state
-        );
-
-        // Did we add more than possibly newlines?
-        if (hasAnyNonWhitespace(childDocs)) {
-          if (a.orientation === "vertical") {
-            childDocs = childDocs
-              .filter((c) => hasAnyNonWhitespace([c]))
-              .map((c, i) =>
-                i > 0 ? builders.concat([builders.hardline, c]) : c
-              );
-          }
-
-          // Vertical containers must start and end on their own line
-          const doIndent = a.tags?.includes("indent");
-          if (doIndent) {
-            childDocs = [
-              builders.indent(
-                builders.concat([builders.hardline, ...childDocs])
-              ),
-            ];
-          }
-
-          switch (a.orientation) {
-            case "horizontal":
-              toReturn.push(builders.group(builders.concat(childDocs)));
-              break;
-            case "vertical":
-              toReturn.push(...childDocs);
-              break;
-          }
-        }
-        break;
-      }
-    }
-  });
-
-  return toReturn;
+): Separated[] {
+  return mergeGroups(
+    attributes.map((attribute) =>
+      renderAttribute(attribute, types, node, state)
+    )
+  );
 }
 
 /**
@@ -243,9 +421,9 @@ export function prettierCodeGeneratorFromGrammar(
   holes: EmittedHole[] = []
 ): string {
   const t = ensureCodeGenType(types, node);
-  const prettierTree = processBlock(t.attributes, types, node, "horizontal", {
-    holes,
-  });
+  const prettierTree = realize(
+    processBlock(t.attributes, types, node, { holes })
+  );
 
   const printed = printer.printDocToString(
     // Don't leave last lines with nothing but whitespace

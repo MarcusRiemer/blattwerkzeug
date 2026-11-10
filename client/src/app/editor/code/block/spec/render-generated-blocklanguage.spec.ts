@@ -318,4 +318,54 @@ describe(`Render Generated BlockLanguages`, () => {
         .toMatch(/noder/);
     });
   });
+
+  describe(`Grammar 2: Empty child group with space-around`, () => {
+    const grammarDesc: GrammarDocument = mkGrammarDoc(
+      { languageName: "l", typeName: "r" },
+      {
+        foreignTypes: {},
+        types: {
+          l: {
+            r: {
+              type: "concrete",
+              attributes: [
+                {
+                  type: "allowed",
+                  name: "c",
+                  tags: ["space-around"],
+                  nodeTypes: [{ languageName: "l", typeName: "t1" }],
+                },
+              ],
+            },
+            t1: {
+              type: "concrete",
+              attributes: [{ type: "terminal", symbol: "t1" }],
+            },
+          },
+        },
+      }
+    );
+
+    it(`Empty group still hosts space-around`, async () => {
+      const treeDesc: NodeDescription = {
+        language: "l",
+        name: "r",
+        children: {
+          c: [],
+        },
+      };
+
+      const c = await createComponent(treeDesc, grammarDesc);
+      const hosts = c.element.querySelectorAll(
+        "editor-block-render-drop-target"
+      );
+
+      expect(hosts.length)
+        .withContext("An empty group keeps its trailing drop target")
+        .toBe(1);
+      expect(hosts[0].classList)
+        .withContext("The grammar tag is painted on that host")
+        .toContain("space-around");
+    });
+  });
 });

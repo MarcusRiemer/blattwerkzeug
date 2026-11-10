@@ -441,6 +441,336 @@ describe(`Prettier code generator`, () => {
     });
   });
 
+  describe(`sequence with spacing tags`, () => {
+    const types: NamedLanguages = {
+      l: {
+        r: {
+          type: "concrete",
+          attributes: [
+            { type: "terminal", symbol: "L" },
+            {
+              type: "sequence",
+              name: "a1",
+              tags: ["space-around"],
+              nodeTypes: [{ occurs: "*", nodeType: "t1" }],
+            },
+            { type: "terminal", symbol: "R" },
+          ],
+        },
+        t1: {
+          type: "concrete",
+          attributes: [{ type: "terminal", symbol: "t1" }],
+        },
+      },
+    };
+
+    it(`emits nothing for an empty group`, () => {
+      const t = new SyntaxTree({ language: "l", name: "r" });
+      expect(prettierCodeGeneratorFromGrammar(types, t.rootNode)).toEqual(
+        "LR"
+      );
+    });
+
+    it(`wraps the whole group once`, () => {
+      const t = new SyntaxTree({
+        language: "l",
+        name: "r",
+        children: {
+          a1: [
+            { language: "l", name: "t1" },
+            { language: "l", name: "t1" },
+          ],
+        },
+      });
+      expect(prettierCodeGeneratorFromGrammar(types, t.rootNode)).toEqual(
+        "L t1t1 R"
+      );
+    });
+  });
+
+  describe(`facing separator tags`, () => {
+    const emit = (types: NamedLanguages | VisualisedLanguages, tree: {}) =>
+      prettierCodeGeneratorFromGrammar(
+        types,
+        new SyntaxTree(tree as any).rootNode
+      );
+
+    it(`collapses a space-after terminal and a space-before terminal`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "a", tags: ["space-after"] },
+              { type: "terminal", symbol: "b", tags: ["space-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("a b");
+    });
+
+    it(`collapses a space-after terminal and a space-before property`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "a", tags: ["space-after"] },
+              {
+                type: "property",
+                name: "name",
+                base: "string",
+                tags: ["space-before"],
+              },
+            ],
+          },
+        },
+      };
+
+      expect(
+        emit(types, {
+          language: "l",
+          name: "r",
+          properties: { name: "b" },
+        })
+      ).toEqual("a b");
+    });
+
+    it(`collapses a space-after terminal and a space-before interpolate`, () => {
+      const types: VisualisedLanguages = {
+        l: {
+          r: {
+            type: "visualise",
+            attributes: [
+              { type: "terminal", symbol: "a", tags: ["space-after"] },
+              { type: "interpolate", name: "name", tags: ["space-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(
+        emit(types, {
+          language: "l",
+          name: "r",
+          properties: { name: "b" },
+        })
+      ).toEqual("a b");
+    });
+
+    it(`collapses two space-around child groups into one space`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "sequence",
+                name: "left",
+                tags: ["space-around"],
+                nodeTypes: ["ta"],
+              },
+              {
+                type: "sequence",
+                name: "right",
+                tags: ["space-around"],
+                nodeTypes: ["tb"],
+              },
+            ],
+          },
+          ta: {
+            type: "concrete",
+            attributes: [{ type: "terminal", symbol: "a" }],
+          },
+          tb: {
+            type: "concrete",
+            attributes: [{ type: "terminal", symbol: "b" }],
+          },
+        },
+      };
+
+      expect(
+        emit(types, {
+          language: "l",
+          name: "r",
+          children: {
+            left: [{ language: "l", name: "ta" }],
+            right: [{ language: "l", name: "tb" }],
+          },
+        })
+      ).toEqual("a b");
+    });
+
+    it(`collapses a between space-after with the next child's space-before`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "sequence",
+                name: "items",
+                nodeTypes: [{ occurs: "+", nodeType: "t" }],
+                between: {
+                  type: "terminal",
+                  symbol: ",",
+                  tags: ["space-after"],
+                },
+              },
+            ],
+          },
+          t: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "x", tags: ["space-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(
+        emit(types, {
+          language: "l",
+          name: "r",
+          children: {
+            items: [
+              { language: "l", name: "t" },
+              { language: "l", name: "t" },
+            ],
+          },
+        })
+      ).toEqual("x, x");
+    });
+
+    it(`collapses a space-after terminal with a space-before inside a horizontal container`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "return", tags: ["space-after"] },
+              {
+                type: "container",
+                orientation: "horizontal",
+                children: [
+                  { type: "terminal", symbol: "x", tags: ["space-before"] },
+                ],
+              },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("return x");
+    });
+
+    it(`collapses a space-after inside a horizontal container with a space-before terminal`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "container",
+                orientation: "horizontal",
+                children: [
+                  { type: "terminal", symbol: "f", tags: ["space-after"] },
+                ],
+              },
+              { type: "terminal", symbol: "(", tags: ["space-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("f (");
+    });
+
+    it(`collapses a newline-after terminal with a newline-before inside a horizontal container`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "return", tags: ["newline-after"] },
+              {
+                type: "container",
+                orientation: "horizontal",
+                children: [
+                  { type: "terminal", symbol: "x", tags: ["newline-before"] },
+                ],
+              },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("return\nx");
+    });
+
+    it(`collapses a newline-after inside a horizontal container with a newline-before terminal`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "container",
+                orientation: "horizontal",
+                children: [
+                  { type: "terminal", symbol: "f", tags: ["newline-after"] },
+                ],
+              },
+              { type: "terminal", symbol: "(", tags: ["newline-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("f\n(");
+    });
+
+    it(`collapses newline-after with newline-before`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              { type: "terminal", symbol: "a", tags: ["newline-after"] },
+              { type: "terminal", symbol: "b", tags: ["newline-before"] },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("a\nb");
+    });
+
+    it(`uses a single newline when a vertical container follows a newline-after`, () => {
+      const types: NamedLanguages = {
+        l: {
+          r: {
+            type: "concrete",
+            attributes: [
+              {
+                type: "container",
+                orientation: "vertical",
+                children: [
+                  { type: "terminal", symbol: "a", tags: ["newline-after"] },
+                  { type: "terminal", symbol: "b" },
+                ],
+              },
+            ],
+          },
+        },
+      };
+
+      expect(emit(types, { language: "l", name: "r" })).toEqual("a\nb");
+    });
+  });
+
   describe(`vertical container with two child groups`, () => {
     const types: NamedLanguages = {
       l: {
@@ -542,7 +872,7 @@ describe(`Prettier code generator`, () => {
       });
 
       const res = prettierCodeGeneratorFromGrammar(types, t.rootNode);
-      expect(res).toEqual("t1;t1");
+      expect(res).toEqual("t1;\nt1");
     });
   });
 
@@ -622,7 +952,121 @@ describe(`Prettier code generator`, () => {
       });
 
       const res = prettierCodeGeneratorFromGrammar(types, t.rootNode);
-      expect(res).toEqual("t1#t1");
+      expect(res).toEqual("t1#\nt1");
+    });
+  });
+
+  describe(`vertical container applies its orientation to the children of a group`, () => {
+    const types: NamedLanguages = {
+      l: {
+        r: {
+          type: "concrete",
+          attributes: [
+            {
+              type: "container",
+              orientation: "vertical",
+              children: [
+                {
+                  type: "sequence",
+                  name: "s",
+                  nodeTypes: [
+                    {
+                      occurs: "*",
+                      nodeType: "t1",
+                    },
+                  ],
+                },
+                {
+                  type: "allowed",
+                  name: "a",
+                  nodeTypes: [
+                    {
+                      occurs: "*",
+                      nodeType: "t1",
+                    },
+                  ],
+                },
+                {
+                  type: "parentheses",
+                  name: "p",
+                  cardinality: "*",
+                  group: {
+                    type: "sequence",
+                    nodeTypes: [
+                      {
+                        occurs: "*",
+                        nodeType: "t1",
+                      },
+                    ],
+                  },
+                },
+                {
+                  type: "each",
+                  name: "s",
+                },
+              ],
+            },
+          ],
+        },
+        t1: {
+          type: "concrete",
+          attributes: [
+            {
+              type: "terminal",
+              symbol: "t1",
+            },
+          ],
+        },
+      },
+    };
+
+    it(`places each child on its own line`, () => {
+      const t = new SyntaxTree({
+        language: "l",
+        name: "r",
+        children: {
+          s: [
+            { language: "l", name: "t1" },
+            { language: "l", name: "t1" },
+          ],
+          a: [
+            { language: "l", name: "t1" },
+            { language: "l", name: "t1" },
+          ],
+          p: [
+            { language: "l", name: "t1" },
+            { language: "l", name: "t1" },
+          ],
+        },
+      });
+
+      const res = prettierCodeGeneratorFromGrammar(types, t.rootNode);
+      expect(res).toEqual("t1\nt1\nt1\nt1\nt1\nt1\nt1\nt1");
+    });
+
+    it(`empty groups`, () => {
+      const t = new SyntaxTree({
+        language: "l",
+        name: "r",
+      });
+
+      const res = prettierCodeGeneratorFromGrammar(types, t.rootNode);
+      expect(res).toEqual("");
+    });
+
+    it(`single child in each group`, () => {
+      const t = new SyntaxTree({
+        language: "l",
+        name: "r",
+        children: {
+          s: [{ language: "l", name: "t1" }],
+          a: [{ language: "l", name: "t1" }],
+          p: [{ language: "l", name: "t1" }],
+        },
+      });
+
+      const res = prettierCodeGeneratorFromGrammar(types, t.rootNode);
+      expect(res).toEqual("t1\nt1\nt1\nt1");
     });
   });
 
@@ -707,7 +1151,7 @@ describe(`Prettier code generator`, () => {
       });
 
       const res = prettierCodeGeneratorFromGrammar(types, t.rootNode);
-      expect(res).toEqual("c:\n  t1,t1");
+      expect(res).toEqual("c:\n  t1,\n  t1");
     });
   });
 
@@ -776,7 +1220,7 @@ describe(`Prettier code generator`, () => {
       expect(res).toEqual("=>\n<=");
     });
 
-    xit(`single child`, () => {
+    it(`single child`, () => {
       const t = new SyntaxTree({
         language: "l",
         name: "r",
@@ -789,7 +1233,7 @@ describe(`Prettier code generator`, () => {
       expect(res).toEqual("=>\n  t1\n<=");
     });
 
-    xit(`two children`, () => {
+    it(`two children`, () => {
       const t = new SyntaxTree({
         language: "l",
         name: "r",
@@ -953,7 +1397,7 @@ describe(`Prettier code generator`, () => {
     expect(res).toEqual("l1-1 l1-2 l1-3\nl2-1\nl2-2\nl2-3\nl3-1 l3-2 l3-3");
   });
 
-  xit(`Vertical container with indented terminals and horizontal containers`, () => {
+  it(`Vertical container with indented terminals and horizontal containers`, () => {
     const types: NamedLanguages = {
       l: {
         r: {
@@ -1036,5 +1480,41 @@ describe(`Prettier code generator`, () => {
     expect(res).toEqual(
       "l1-1 l1-2 l1-3\n  l2-1\n  l2-2\n  l2-3\nl3-1 l3-2 l3-3"
     );
+  });
+
+  it(`trims the leading break when an indented group is the first attribute`, () => {
+    const types: NamedLanguages = {
+      l: {
+        r: {
+          type: "concrete",
+          attributes: [
+            {
+              type: "container",
+              orientation: "vertical",
+              children: [
+                {
+                  type: "container",
+                  orientation: "vertical",
+                  tags: ["indent"],
+                  children: [
+                    { type: "terminal", symbol: "t1" },
+                    { type: "terminal", symbol: "t1" },
+                  ],
+                },
+                { type: "terminal", symbol: "end" },
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    const t = new SyntaxTree({
+      language: "l",
+      name: "r",
+    });
+
+    const res = prettierCodeGeneratorFromGrammar(types, t.rootNode);
+    expect(res).toEqual("t1\n  t1\nend");
   });
 });
