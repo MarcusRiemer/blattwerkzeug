@@ -4,6 +4,7 @@ services:
     image: postgres:15-bullseye
     ports:
       - 127.0.0.1:5432:5432
+      - "[::1]:5432:5432"
     environment:
       - POSTGRES_USER=esqulino
       - POSTGRES_HOST_AUTH_METHOD=trust
