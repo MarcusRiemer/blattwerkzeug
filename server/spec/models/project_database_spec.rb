@@ -474,6 +474,69 @@ RSpec.describe ProjectDatabase, type: :model do
       expect(res['totalCount']).to eq 20
       expect(res['rows'].length).to eq 10
     end
+
+    describe 'connection lockdown' do
+      def connection_handles
+        [@db.send(:db_connection, false), @db.send(:db_connection, true)]
+      end
+
+      it 'opens a writable handle and a readonly handle' do
+        write_db, read_db = connection_handles
+
+        expect(write_db.readonly?).to be false
+        expect(read_db.readonly?).to be true
+      end
+
+      it 'refuses ATTACH and VACUUM INTO on both handles' do
+        destination = "#{@db.sqlite_file_path}-vacuum-probe"
+        vacuum_sql = "VACUUM INTO '#{destination.gsub("'", "''")}'"
+
+        connection_handles.each do |handle|
+          expect { handle.execute("ATTACH DATABASE ':memory:' AS extra") }
+            .to raise_exception(SQLite3::AuthorizationException)
+          expect { handle.execute(vacuum_sql) }
+            .to raise_exception(SQLite3::AuthorizationException)
+        end
+
+        expect(File.exist?(destination)).to be false
+      end
+
+      it 'keeps trusted_schema off and refuses to turn safety pragmas back on' do
+        connection_handles.each do |handle|
+          expect(handle.execute("PRAGMA trusted_schema")).to eq [[0]]
+          expect { handle.execute("PRAGMA trusted_schema=ON") }
+            .to raise_exception(SQLite3::AuthorizationException)
+          expect { handle.execute("PRAGMA writable_schema=ON") }
+            .to raise_exception(SQLite3::AuthorizationException)
+        end
+      end
+
+      it 'refuses load_extension' do
+        connection_handles.each do |handle|
+          expect { handle.execute("SELECT load_extension('/does/not/exist')") }
+            .to raise_exception(SQLite3::SQLException, /not authorized to use function: load_extension/)
+        end
+      end
+
+      it 'writes the opened database and refuses those writes on the readonly handle' do
+        write_db, read_db = connection_handles
+
+        write_db.execute("INSERT INTO numbers (number) VALUES (9999)")
+        write_db.execute("UPDATE numbers SET number = 9998 WHERE number = 9999")
+        expect(write_db.execute("SELECT number FROM numbers WHERE number = 9998")).to eq [[9998]]
+        expect(read_db.execute("SELECT number FROM numbers WHERE number = 9998")).to eq [[9998]]
+
+        write_db.execute("DELETE FROM numbers WHERE number = 9998")
+        expect(write_db.execute("SELECT COUNT(*) FROM numbers WHERE number = 9998")).to eq [[0]]
+
+        expect { read_db.execute("INSERT INTO numbers (number) VALUES (9997)") }
+          .to raise_exception(SQLite3::ReadOnlyException)
+        expect { read_db.execute("UPDATE numbers SET number = 9996 WHERE number = 1") }
+          .to raise_exception(SQLite3::ReadOnlyException)
+        expect { read_db.execute("DELETE FROM numbers WHERE number = 1") }
+          .to raise_exception(SQLite3::ReadOnlyException)
+      end
+    end
   end
 
   it 'properly generates foreign_key references' do

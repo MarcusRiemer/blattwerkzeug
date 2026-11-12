@@ -22,8 +22,6 @@ RSpec.describe "Database Schema" do
   describe "sqlite3" do
     it 'sequence_db' do
       db = SchemaTools::sqlite_open_augmented(':memory:')
-      db.default_temp_store = 'memory'
-      db.journal_mode = 'memory'
       db.execute_batch(SCHEMA_SEQUENCE_DB)
 
       schema = SchemaTools::database_describe_schema(db)

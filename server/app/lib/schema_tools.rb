@@ -1,12 +1,58 @@
 require 'sqlite3'
 
 module SchemaTools
+  # sqlite3_set_authorizer action codes. The sqlite3 gem does not expose them.
+  # Return only ALLOW or DENY. nil is SQLITE_IGNORE and turns a denied read into NULL.
+  # See https://www.sqlite.org/c3ref/c_alter_table.html
+  ALLOW = 0
+  DENY = 1
+  ATTACH = 24
+  DETACH = 25
+  PRAGMA = 19
+  FUNCTION = 31
+  READ = 20
+  INSERT = 18
+  UPDATE = 23
+  DELETE = 9
+
+  # Pragmas the server itself issues after the connection is locked.
+  # Assignments to trusted_schema, query_only, temp_store, writable_schema,
+  # and journal_mode are denied once the authorizer is installed.
+  ALLOWED_PRAGMAS = %w[
+    foreign_keys
+    foreign_key_list
+    foreign_key_check
+    table_info
+    short_column_names
+    full_column_names
+  ].freeze
+
+  DENIED_FUNCTIONS = %w[
+    load_extension
+    readfile
+    writefile
+    edit
+    fts3_tokenizer
+  ].freeze
+
   # Opens an SQLite3-connection that has access to an implementation
-  # of the REGEXP-function
+  # of the REGEXP-function.
+  #
+  # The connection can read and write the opened database file. It cannot
+  # ATTACH another file, VACUUM INTO another path, or call functions that
+  # read or write the surrounding filesystem.
   #
   # @param sqlite_file_path [string] The path to open
-  # @return [Sqlite3::Database]
+  # @param options [Hash]
+  #   :readonly opens the file with SQLITE_OPEN_READONLY.
+  #   :synchronous is ignored; writable connections use PRAGMA synchronous=FULL.
+  # @return [SQLite3::Database]
   def self.sqlite_open_augmented(sqlite_file_path, options = {})
+    options = options.dup
+    readonly = options.delete(:readonly)
+    options.delete(:synchronous)
+    options[:readonly] = true if readonly
+
     db = SQLite3::Database.open(sqlite_file_path, options)
 
     # Define the regular expressions using ruby
@@ -21,6 +67,38 @@ module SchemaTools
       end
     end
 
+    # These must run before the authorizer, which then refuses to change them.
+    db.execute("PRAGMA trusted_schema = OFF")
+    db.execute("PRAGMA temp_store = MEMORY")
+    if db.readonly?
+      db.execute("PRAGMA query_only = ON")
+    else
+      db.execute("PRAGMA synchronous = FULL")
+    end
+
+    db.authorizer = lambda do |action, arg1, arg2, _db_name, _source|
+      case action
+      when ATTACH, DETACH
+        DENY
+      when FUNCTION
+        DENIED_FUNCTIONS.include?(arg2.to_s.downcase) ? DENY : ALLOW
+      when PRAGMA
+        name = arg1.to_s.downcase
+        if ALLOWED_PRAGMAS.include?(name)
+          ALLOW
+        elsif name == "trusted_schema" && arg2.nil?
+          # Reading the lockdown setting back is allowed. Assignments are denied.
+          ALLOW
+        else
+          DENY
+        end
+      when READ, INSERT, UPDATE, DELETE
+        arg1.to_s.casecmp("sqlite_dbpage").zero? ? DENY : ALLOW
+      else
+        ALLOW
+      end
+    end
+
     return db
   end
 
@@ -32,7 +110,7 @@ module SchemaTools
   # @return [Hash] A hash of SchemaTable instances
   def self.database_describe_schema(sqlite_db)
     db = if sqlite_db.is_a? String then
-           SQLite3::Database.new(sqlite_db)
+           sqlite_open_augmented(sqlite_db, readonly: true)
          else
            sqlite_db
          end

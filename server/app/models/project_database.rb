@@ -264,20 +264,20 @@ class ProjectDatabase < ApplicationRecord
   # @return
   #   The database connection instance that should be used for all communication
   #   with the database-instance behind this model.
-  def db_connection(read_only = true)
-    if read_only
+  def db_connection(readonly = true)
+    if readonly
       db_connection_readonly
     else
-      # Writing connections need to be in synchronous mode so that the readonly
-      # connection can see any changes immediately.
-      @db_connection ||= SchemaTools::sqlite_open_augmented(sqlite_file_path, :synchronous => "full")
+      # sqlite_open_augmented opens writable connections with synchronous=FULL
+      # so that the readonly connection can see any changes immediately.
+      @db_connection ||= SchemaTools::sqlite_open_augmented(sqlite_file_path)
     end
   end
 
   # @return
   #   A database connection that does not allow any changes to the underlying data or structure.
   def db_connection_readonly
-    @db_connection_readonly ||= SchemaTools::sqlite_open_augmented(sqlite_file_path, :read_only => true)
+    @db_connection_readonly ||= SchemaTools::sqlite_open_augmented(sqlite_file_path, readonly: true)
   end
 
   # @return
@@ -289,8 +289,8 @@ class ProjectDatabase < ApplicationRecord
   private
 
   # Prepares a properly constructed database object.
-  def execute_sql_raw(read_only = true)
-    db = db_connection(read_only)
+  def execute_sql_raw(readonly = true)
+    db = db_connection(readonly)
     db.execute("PRAGMA foreign_keys = ON")
     # This is deprecated, but for our use case it is mightily handy to get back
     # fully qualified columnnames from SQLite
