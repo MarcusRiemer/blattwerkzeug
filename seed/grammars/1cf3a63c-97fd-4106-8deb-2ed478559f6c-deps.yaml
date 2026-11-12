@@ -1,0 +1,4 @@
+---
+- - "../seed/programming_language"
+  - meta-grammar
+  - !ruby/class 'Seed::ProgrammingLanguageSeed'

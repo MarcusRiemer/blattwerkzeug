@@ -193,7 +193,9 @@ module Seed
     def store_seed
       FileUtils.mkdir_p seed_directory
       File.open(seed_file_path, "w") do |file|
-        YAML::dump(seed, file)
+        visitor = PrettyJsonTree.create
+        visitor << seed
+        visitor.tree.yaml(file)
       end
     end
 
@@ -326,6 +328,40 @@ module Seed
       else
         yield
       end
+    end
+  end
+
+  # Psych dumps ActiveModel::Attribute through encode_with, which writes the
+  # compact JSON string Postgres returned. This visitor pretty-prints that
+  # string so the seed file gets a literal block.
+  class PrettyJsonTree < Psych::Visitors::YAMLTree
+    def accept(target)
+      return super unless target.is_a?(ActiveModel::Attribute)
+
+      @coders << target
+      coder = Psych::Coder.new(attribute_tag(target))
+      target.encode_with(coder)
+      pretty_print_json(coder)
+      emit_coder(coder, target)
+    end
+
+    private
+
+    def attribute_tag(target)
+      Psych.dump_tags[target.class] || "!ruby/object:#{target.class.name}"
+    end
+
+    def pretty_print_json(coder)
+      raw = coder["value_before_type_cast"]
+      return unless raw.is_a?(String)
+
+      parsed = JSON.parse(raw)
+      return unless parsed.is_a?(Hash) || parsed.is_a?(Array)
+      return if parsed.empty?
+
+      coder["value_before_type_cast"] = JSON.pretty_generate(parsed)
+    rescue JSON::ParserError
+      nil
     end
   end
 end

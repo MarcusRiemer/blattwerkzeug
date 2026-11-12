@@ -1,0 +1,93 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: bfb202fe-2e09-42ef-bb35-6ce74ebf7830
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'Blocks: SQL'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: b2458013-6a2a-4887-8fff-d9ba58040910
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: |-
+    {
+      "name": "Document",
+      "children": {
+        "RootCssClasses": [
+          {
+            "name": "CssClass",
+            "language": "MetaBlockLang",
+            "properties": {
+              "Name": "activate-block-outline"
+            }
+          },
+          {
+            "name": "CssClass",
+            "language": "MetaBlockLang",
+            "properties": {
+              "Name": "activate-keyword"
+            }
+          }
+        ],
+        "EditorComponents": [
+          {
+            "name": "EditorComponents",
+            "children": {
+              "Values": [
+                {
+                  "name": "EditorComponent",
+                  "language": "MetaBlockLang",
+                  "properties": {
+                    "Name": "block-root"
+                  }
+                },
+                {
+                  "name": "EditorComponent",
+                  "language": "MetaBlockLang",
+                  "properties": {
+                    "Name": "query-preview"
+                  }
+                },
+                {
+                  "name": "EditorComponent",
+                  "language": "MetaBlockLang",
+                  "properties": {
+                    "Name": "generated-code"
+                  }
+                },
+                {
+                  "name": "EditorComponent",
+                  "language": "MetaBlockLang",
+                  "properties": {
+                    "Name": "json-ast"
+                  }
+                }
+              ]
+            },
+            "language": "MetaBlockLang"
+          }
+        ]
+      },
+      "language": "MetaBlockLang"
+    }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-15 07:56:28.748386000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-11-04 11:27:37.660261000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: 81430cc2-bcff-4304-8cfd-6f05cf249a53
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: generic
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: Generic Language without code generator
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+new_record: false
+active_record_yaml_version: 2

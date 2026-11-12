@@ -64,6 +64,37 @@ RSpec.describe Seed::GrammarSeed do
       end
     end
 
+    context "jsonb columns" do
+      it "stores them as pretty-printed JSON and loads the same document" do
+        g_orig = FactoryBot.create(:grammar, :model_single_type)
+        g_orig.reload
+
+        Seed::GrammarSeed.new(g_orig).start_store
+
+        path = File.join(seed_data_dir, "grammars", "#{g_orig.id}.yaml")
+        stored = YAML.unsafe_load_file(path)
+        raw_types = stored.read_attribute_before_type_cast("types")
+        raw_root = stored.read_attribute_before_type_cast("root")
+
+        expect(raw_types).to include("\n")
+        expect(raw_types).to eq JSON.pretty_generate(JSON.parse(raw_types))
+        expect(raw_root).to include("\n")
+        expect(raw_root).to eq JSON.pretty_generate(JSON.parse(raw_root))
+        expect(stored.read_attribute_before_type_cast("name")).not_to include("\n")
+        expect(stored.read_attribute_before_type_cast("foreign_types")).to eq("{}")
+
+        original_types = g_orig.types
+        original_root = g_orig.root
+        g_orig.destroy!
+
+        Seed::GrammarSeed.new(g_orig.id).start_load
+
+        reloaded = Grammar.find(g_orig.id)
+        expect(reloaded.types).to eq original_types
+        expect(reloaded.root).to eq original_root
+      end
+    end
+
     context "stores and reloads " do
       it "an empty grammar (CREATE)" do
         g_orig = FactoryBot.create(:grammar, name: "Test Grammar")

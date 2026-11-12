@@ -1,0 +1,543 @@
+--- !ruby/object:CodeResource
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: project_id
+  value_before_type_cast: bfb202fe-2e09-42ef-bb35-6ce74ebf7830
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: 'Grammar: SQL'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 3e174d5b-42c1-4818-8842-ce2a05c6904c
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: ast
+  value_before_type_cast: |-
+    {
+      "name": "grammar",
+      "children": {
+        "root": [
+          {
+            "name": "nodeRefOne",
+            "language": "MetaGrammar",
+            "properties": {
+              "typeName": "select",
+              "languageName": "sql"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "name": "typedef",
+            "children": {
+              "references": [
+                {
+                  "name": "nodeRefOne",
+                  "language": "MetaGrammar",
+                  "properties": {
+                    "typeName": "star",
+                    "languageName": "sql"
+                  }
+                }
+              ]
+            },
+            "language": "MetaGrammar",
+            "properties": {
+              "typeName": "expr",
+              "languageName": "sql"
+            }
+          },
+          {
+            "name": "concreteNode",
+            "children": {
+              "attributes": [
+                {
+                  "name": "container",
+                  "children": {
+                    "attributes": [
+                      {
+                        "name": "container",
+                        "children": {
+                          "attributes": [
+                            {
+                              "name": "terminal",
+                              "children": {
+                                "tags": [
+                                  {
+                                    "name": "tag",
+                                    "language": "MetaGrammar",
+                                    "properties": {
+                                      "name": "space-after"
+                                    }
+                                  },
+                                  {
+                                    "name": "tag",
+                                    "language": "MetaGrammar",
+                                    "properties": {
+                                      "name": "keyword"
+                                    }
+                                  }
+                                ]
+                              },
+                              "language": "MetaGrammar",
+                              "properties": {
+                                "symbol": "SELECT"
+                              }
+                            },
+                            {
+                              "name": "children",
+                              "children": {
+                                "tags": [
+                                  {
+                                    "name": "tag",
+                                    "language": "MetaGrammar",
+                                    "properties": {
+                                      "name": "space-around"
+                                    }
+                                  }
+                                ],
+                                "references": [
+                                  {
+                                    "name": "nodeRefCardinality",
+                                    "children": {
+                                      "references": [
+                                        {
+                                          "name": "nodeRefOne",
+                                          "language": "MetaGrammar",
+                                          "properties": {
+                                            "typeName": "distinct",
+                                            "languageName": "sql"
+                                          }
+                                        }
+                                      ],
+                                      "cardinality": [
+                                        {
+                                          "name": "knownCardinality",
+                                          "language": "MetaGrammar",
+                                          "properties": {
+                                            "cardinality": "?"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "language": "MetaGrammar"
+                                  }
+                                ]
+                              },
+                              "language": "MetaGrammar",
+                              "properties": {
+                                "base": "sequence",
+                                "name": "distinct"
+                              }
+                            },
+                            {
+                              "name": "children",
+                              "children": {
+                                "references": [
+                                  {
+                                    "name": "nodeRefCardinality",
+                                    "children": {
+                                      "references": [
+                                        {
+                                          "name": "nodeRefOne",
+                                          "language": "MetaGrammar",
+                                          "properties": {
+                                            "typeName": "expr",
+                                            "languageName": "sql"
+                                          }
+                                        }
+                                      ],
+                                      "cardinality": [
+                                        {
+                                          "name": "knownCardinality",
+                                          "language": "MetaGrammar",
+                                          "properties": {
+                                            "cardinality": "+"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "language": "MetaGrammar"
+                                  }
+                                ]
+                              },
+                              "language": "MetaGrammar",
+                              "properties": {
+                                "base": "sequence",
+                                "name": "exprs"
+                              }
+                            }
+                          ],
+                          "orientation": [
+                            {
+                              "name": "orientation",
+                              "language": "MetaGrammar",
+                              "properties": {
+                                "orientation": "horizontal"
+                              }
+                            }
+                          ]
+                        },
+                        "language": "MetaGrammar"
+                      },
+                      {
+                        "name": "children",
+                        "children": {
+                          "references": [
+                            {
+                              "name": "nodeRefOne",
+                              "language": "MetaGrammar",
+                              "properties": {
+                                "typeName": "from",
+                                "languageName": "sql"
+                              }
+                            }
+                          ]
+                        },
+                        "language": "MetaGrammar",
+                        "properties": {
+                          "base": "sequence",
+                          "name": "from"
+                        }
+                      }
+                    ],
+                    "orientation": [
+                      {
+                        "name": "orientation",
+                        "language": "MetaGrammar",
+                        "properties": {
+                          "orientation": "vertical"
+                        }
+                      }
+                    ]
+                  },
+                  "language": "MetaGrammar"
+                }
+              ]
+            },
+            "language": "MetaGrammar",
+            "properties": {
+              "typeName": "select",
+              "languageName": "sql"
+            }
+          },
+          {
+            "name": "concreteNode",
+            "children": {
+              "attributes": [
+                {
+                  "name": "terminal",
+                  "children": {
+                    "tags": [
+
+                    ]
+                  },
+                  "language": "MetaGrammar",
+                  "properties": {
+                    "symbol": "DISTINCT"
+                  }
+                }
+              ]
+            },
+            "language": "MetaGrammar",
+            "properties": {
+              "typeName": "distinct",
+              "languageName": "sql"
+            }
+          },
+          {
+            "name": "concreteNode",
+            "children": {
+              "attributes": [
+                {
+                  "name": "terminal",
+                  "language": "MetaGrammar",
+                  "properties": {
+                    "symbol": "*"
+                  }
+                }
+              ]
+            },
+            "language": "MetaGrammar",
+            "properties": {
+              "typeName": "star",
+              "languageName": "sql"
+            }
+          },
+          {
+            "name": "concreteNode",
+            "children": {
+              "attributes": [
+                {
+                  "name": "container",
+                  "children": {
+                    "attributes": [
+                      {
+                        "name": "terminal",
+                        "children": {
+                          "tags": [
+                            {
+                              "name": "tag",
+                              "language": "MetaGrammar",
+                              "properties": {
+                                "name": "space-after"
+                              }
+                            }
+                          ]
+                        },
+                        "language": "MetaGrammar",
+                        "properties": {
+                          "symbol": "FROM"
+                        }
+                      },
+                      {
+                        "name": "children",
+                        "children": {
+                          "references": [
+                            {
+                              "name": "nodeRefCardinality",
+                              "children": {
+                                "references": [
+                                  {
+                                    "name": "nodeRefOne",
+                                    "language": "MetaGrammar",
+                                    "properties": {
+                                      "typeName": "table",
+                                      "languageName": "sql"
+                                    }
+                                  }
+                                ],
+                                "cardinality": [
+                                  {
+                                    "name": "knownCardinality",
+                                    "language": "MetaGrammar",
+                                    "properties": {
+                                      "cardinality": "+"
+                                    }
+                                  }
+                                ]
+                              },
+                              "language": "MetaGrammar"
+                            }
+                          ]
+                        },
+                        "language": "MetaGrammar",
+                        "properties": {
+                          "base": "sequence",
+                          "name": "tables"
+                        }
+                      }
+                    ],
+                    "orientation": [
+                      {
+                        "name": "orientation",
+                        "language": "MetaGrammar",
+                        "properties": {
+                          "orientation": "horizontal"
+                        }
+                      }
+                    ]
+                  },
+                  "language": "MetaGrammar"
+                }
+              ]
+            },
+            "language": "MetaGrammar",
+            "properties": {
+              "typeName": "from",
+              "languageName": "sql"
+            }
+          },
+          {
+            "name": "concreteNode",
+            "children": {
+              "attributes": [
+                {
+                  "name": "property",
+                  "language": "MetaGrammar",
+                  "properties": {
+                    "base": "string",
+                    "name": "name"
+                  }
+                }
+              ]
+            },
+            "language": "MetaGrammar",
+            "properties": {
+              "typeName": "table",
+              "languageName": "sql"
+            }
+          }
+        ]
+      },
+      "language": "MetaGrammar",
+      "properties": {
+        "name": "sql"
+      }
+    }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-15 07:56:28.589016000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-11-04 11:48:51.218943000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: block_language_id
+  value_before_type_cast: df3ec59c-20c0-446d-8c84-7580e1c418bf
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: meta-grammar
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: compiled
+  value_before_type_cast: |-
+    {
+      "types": {
+        "sql": {
+          "expr": {
+            "type": "oneOf",
+            "oneOf": [
+              {
+                "languageName": "sql",
+                "typeName": "star"
+              }
+            ]
+          },
+          "select": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "container",
+                "orientation": "vertical",
+                "children": [
+                  {
+                    "type": "container",
+                    "orientation": "horizontal",
+                    "children": [
+                      {
+                        "type": "terminal",
+                        "symbol": "SELECT",
+                        "tags": [
+                          "space-after",
+                          "keyword"
+                        ]
+                      },
+                      {
+                        "type": "sequence",
+                        "name": "distinct",
+                        "nodeTypes": [
+                          {
+                            "nodeType": {
+                              "languageName": "sql",
+                              "typeName": "distinct"
+                            },
+                            "occurs": "?"
+                          }
+                        ],
+                        "tags": [
+                          "space-around"
+                        ]
+                      },
+                      {
+                        "type": "sequence",
+                        "name": "exprs",
+                        "nodeTypes": [
+                          {
+                            "nodeType": {
+                              "languageName": "sql",
+                              "typeName": "expr"
+                            },
+                            "occurs": "+"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "sequence",
+                    "name": "from",
+                    "nodeTypes": [
+                      {
+                        "languageName": "sql",
+                        "typeName": "from"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "distinct": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "terminal",
+                "symbol": "DISTINCT"
+              }
+            ]
+          },
+          "star": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "terminal",
+                "symbol": "*"
+              }
+            ]
+          },
+          "from": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "container",
+                "orientation": "horizontal",
+                "children": [
+                  {
+                    "type": "terminal",
+                    "symbol": "FROM",
+                    "tags": [
+                      "space-after"
+                    ]
+                  },
+                  {
+                    "type": "sequence",
+                    "name": "tables",
+                    "nodeTypes": [
+                      {
+                        "nodeType": {
+                          "languageName": "sql",
+                          "typeName": "table"
+                        },
+                        "occurs": "+"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "table": {
+            "type": "concrete",
+            "attributes": [
+              {
+                "type": "property",
+                "base": "string",
+                "name": "name"
+              }
+            ]
+          }
+        }
+      },
+      "foreignTypes": {
+      },
+      "visualisations": {
+      },
+      "foreignVisualisations": {
+      },
+      "root": {
+        "languageName": "sql",
+        "typeName": "select"
+      }
+    }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: assignment
+new_record: false
+active_record_yaml_version: 2

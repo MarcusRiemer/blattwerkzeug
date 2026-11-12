@@ -1,0 +1,298 @@
+--- !ruby/object:BlockLanguage
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: generated_from_id
+  value_before_type_cast: b2458013-6a2a-4887-8fff-d9ba58040910
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: slug
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: SQL
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 612018f8-e0ee-406b-a54a-71f3cc7d75bc
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-15 07:56:28.796667000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-11-04 11:48:51.392591000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: default_programming_language_id
+  value_before_type_cast: sql
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: grammar_id
+  value_before_type_cast: 1cf3a63c-97fd-4106-8deb-2ed478559f6c
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: sidebars
+  value_before_type_cast: "[]"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: editor_blocks
+  value_before_type_cast: |-
+    [
+      {
+        "visual": [
+          {
+            "children": [
+              {
+                "style": {
+                  "color": "white",
+                  "border": "2px solid red",
+                  "cursor": "default",
+                  "paddingLeft": "1ch",
+                  "paddingRight": "1ch",
+                  "border-radius": "500px",
+                  "background-color": "red"
+                },
+                "blockType": "error",
+                "excludedErrors": [
+                  "MISSING_CHILD",
+                  "INVALID_MIN_OCCURENCES"
+                ]
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "SELECT",
+                        "style": {
+                          "display": "inline-flex"
+                        },
+                        "blockType": "constant",
+                        "cssClasses": [
+                          "space-after",
+                          "keyword"
+                        ]
+                      },
+                      {
+                        "blockType": "iterator",
+                        "cssClasses": [
+                          "space-around"
+                        ],
+                        "childGroupName": "distinct",
+                        "emptyDropTarget": false
+                      },
+                      {
+                        "blockType": "iterator",
+                        "childGroupName": "exprs",
+                        "emptyDropTarget": false
+                      }
+                    ],
+                    "blockType": "container",
+                    "orientation": "horizontal"
+                  },
+                  {
+                    "blockType": "iterator",
+                    "childGroupName": "from",
+                    "emptyDropTarget": false
+                  }
+                ],
+                "blockType": "container",
+                "orientation": "vertical"
+              }
+            ],
+            "blockType": "block",
+            "dropTarget": {
+            }
+          }
+        ],
+        "describedType": {
+          "typeName": "select",
+          "languageName": "sql"
+        }
+      },
+      {
+        "visual": [
+          {
+            "children": [
+              {
+                "style": {
+                  "color": "white",
+                  "border": "2px solid red",
+                  "cursor": "default",
+                  "paddingLeft": "1ch",
+                  "paddingRight": "1ch",
+                  "border-radius": "500px",
+                  "background-color": "red"
+                },
+                "blockType": "error",
+                "excludedErrors": [
+                  "MISSING_CHILD",
+                  "INVALID_MIN_OCCURENCES"
+                ]
+              },
+              {
+                "text": "DISTINCT",
+                "style": {
+                  "display": "inline-flex"
+                },
+                "blockType": "constant"
+              }
+            ],
+            "blockType": "block",
+            "dropTarget": {
+            }
+          }
+        ],
+        "describedType": {
+          "typeName": "distinct",
+          "languageName": "sql"
+        }
+      },
+      {
+        "visual": [
+          {
+            "children": [
+              {
+                "style": {
+                  "color": "white",
+                  "border": "2px solid red",
+                  "cursor": "default",
+                  "paddingLeft": "1ch",
+                  "paddingRight": "1ch",
+                  "border-radius": "500px",
+                  "background-color": "red"
+                },
+                "blockType": "error",
+                "excludedErrors": [
+                  "MISSING_CHILD",
+                  "INVALID_MIN_OCCURENCES"
+                ]
+              },
+              {
+                "text": "*",
+                "style": {
+                  "display": "inline-flex"
+                },
+                "blockType": "constant"
+              }
+            ],
+            "blockType": "block",
+            "dropTarget": {
+            }
+          }
+        ],
+        "describedType": {
+          "typeName": "star",
+          "languageName": "sql"
+        }
+      },
+      {
+        "visual": [
+          {
+            "children": [
+              {
+                "style": {
+                  "color": "white",
+                  "border": "2px solid red",
+                  "cursor": "default",
+                  "paddingLeft": "1ch",
+                  "paddingRight": "1ch",
+                  "border-radius": "500px",
+                  "background-color": "red"
+                },
+                "blockType": "error",
+                "excludedErrors": [
+                  "MISSING_CHILD",
+                  "INVALID_MIN_OCCURENCES"
+                ]
+              },
+              {
+                "children": [
+                  {
+                    "text": "FROM",
+                    "style": {
+                      "display": "inline-flex"
+                    },
+                    "blockType": "constant",
+                    "cssClasses": [
+                      "space-after"
+                    ]
+                  },
+                  {
+                    "blockType": "iterator",
+                    "childGroupName": "tables",
+                    "emptyDropTarget": false
+                  }
+                ],
+                "blockType": "container",
+                "orientation": "horizontal"
+              }
+            ],
+            "blockType": "block",
+            "dropTarget": {
+            }
+          }
+        ],
+        "describedType": {
+          "typeName": "from",
+          "languageName": "sql"
+        }
+      },
+      {
+        "visual": [
+          {
+            "children": [
+              {
+                "style": {
+                  "color": "white",
+                  "border": "2px solid red",
+                  "cursor": "default",
+                  "paddingLeft": "1ch",
+                  "paddingRight": "1ch",
+                  "border-radius": "500px",
+                  "background-color": "red"
+                },
+                "blockType": "error",
+                "excludedErrors": [
+                  "MISSING_CHILD",
+                  "INVALID_MIN_OCCURENCES"
+                ]
+              },
+              {
+                "style": {
+                  "display": "inline-flex"
+                },
+                "property": "name",
+                "blockType": "input"
+              }
+            ],
+            "blockType": "block",
+            "dropTarget": {
+            }
+          }
+        ],
+        "describedType": {
+          "typeName": "table",
+          "languageName": "sql"
+        }
+      }
+    ]
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: editor_components
+  value_before_type_cast: |-
+    [
+      {
+        "componentType": "block-root"
+      },
+      {
+        "componentType": "validator"
+      },
+      {
+        "componentType": "generated-code"
+      }
+    ]
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: local_generator_instructions
+  value_before_type_cast: |-
+    {
+      "type": "manual"
+    }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: root_css_classes
+  value_before_type_cast: "{activate-block-outline,activate-keyword}"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: level
+new_record: false
+active_record_yaml_version: 2

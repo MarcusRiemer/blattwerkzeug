@@ -1,0 +1,35 @@
+--- !ruby/object:Project
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: slug
+  value_before_type_cast: lang-sql-backup
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: '"de"=>"Sprache: SQL (Backup)"'
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: bfb202fe-2e09-42ef-bb35-6ce74ebf7830
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: public
+  value_before_type_cast: false
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: preview
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: index_page_id
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-15 07:55:51.884114000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-01-15 08:23:12.414629000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: default_database_id
+  value_before_type_cast: 36d8b121-1336-43a6-a446-d6ebb7635cdd
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: user_id
+  value_before_type_cast: 00000000-0000-0000-0000-000000000002
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: description
+  value_before_type_cast: ''
+new_record: false
+active_record_yaml_version: 2

@@ -1,0 +1,179 @@
+--- !ruby/object:Grammar
+concise_attributes:
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: slug
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: name
+  value_before_type_cast: SQL
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: id
+  value_before_type_cast: 1cf3a63c-97fd-4106-8deb-2ed478559f6c
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: created_at
+  value_before_type_cast: 2026-01-15 07:56:28.646917000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: updated_at
+  value_before_type_cast: 2026-11-04 11:48:51.388394000 Z
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: programming_language_id
+  value_before_type_cast: meta-grammar
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: generated_from_id
+  value_before_type_cast: 3e174d5b-42c1-4818-8842-ce2a05c6904c
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: types
+  value_before_type_cast: |-
+    {
+      "sql": {
+        "expr": {
+          "type": "oneOf",
+          "oneOf": [
+            {
+              "typeName": "star",
+              "languageName": "sql"
+            }
+          ]
+        },
+        "from": {
+          "type": "concrete",
+          "attributes": [
+            {
+              "type": "container",
+              "children": [
+                {
+                  "tags": [
+                    "space-after"
+                  ],
+                  "type": "terminal",
+                  "symbol": "FROM"
+                },
+                {
+                  "name": "tables",
+                  "type": "sequence",
+                  "nodeTypes": [
+                    {
+                      "occurs": "+",
+                      "nodeType": {
+                        "typeName": "table",
+                        "languageName": "sql"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "orientation": "horizontal"
+            }
+          ]
+        },
+        "star": {
+          "type": "concrete",
+          "attributes": [
+            {
+              "type": "terminal",
+              "symbol": "*"
+            }
+          ]
+        },
+        "table": {
+          "type": "concrete",
+          "attributes": [
+            {
+              "base": "string",
+              "name": "name",
+              "type": "property"
+            }
+          ]
+        },
+        "select": {
+          "type": "concrete",
+          "attributes": [
+            {
+              "type": "container",
+              "children": [
+                {
+                  "type": "container",
+                  "children": [
+                    {
+                      "tags": [
+                        "space-after",
+                        "keyword"
+                      ],
+                      "type": "terminal",
+                      "symbol": "SELECT"
+                    },
+                    {
+                      "name": "distinct",
+                      "tags": [
+                        "space-around"
+                      ],
+                      "type": "sequence",
+                      "nodeTypes": [
+                        {
+                          "occurs": "?",
+                          "nodeType": {
+                            "typeName": "distinct",
+                            "languageName": "sql"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "name": "exprs",
+                      "type": "sequence",
+                      "nodeTypes": [
+                        {
+                          "occurs": "+",
+                          "nodeType": {
+                            "typeName": "expr",
+                            "languageName": "sql"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "orientation": "horizontal"
+                },
+                {
+                  "name": "from",
+                  "type": "sequence",
+                  "nodeTypes": [
+                    {
+                      "typeName": "from",
+                      "languageName": "sql"
+                    }
+                  ]
+                }
+              ],
+              "orientation": "vertical"
+            }
+          ]
+        },
+        "distinct": {
+          "type": "concrete",
+          "attributes": [
+            {
+              "type": "terminal",
+              "symbol": "DISTINCT"
+            }
+          ]
+        }
+      }
+    }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: foreign_types
+  value_before_type_cast: "{}"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: root
+  value_before_type_cast: |-
+    {
+      "typeName": "select",
+      "languageName": "sql"
+    }
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: visualisations
+  value_before_type_cast: "{}"
+- !ruby/object:ActiveModel::Attribute::FromDatabase
+  name: foreign_visualisations
+  value_before_type_cast: "{}"
+new_record: false
+active_record_yaml_version: 2
